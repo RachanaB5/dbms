@@ -1,0 +1,85 @@
+dashboard.html
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard">
+    <h1>Welcome, {{ session['username'] }}</h1>
+    <div class="dashboard-sections">
+        <section class="recent-orders">
+            <h2>Recent Orders</h2>
+            {% if orders %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.order_id }}</td>
+                        <td>{{ order.order_date.strftime('%b %d, %Y') }}</td>
+                        <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+                        <td class="status {{ order.status|lower }}">{{ order.status }}</td>
+                        <td><a href="{{ url_for('order_confirmation', order_id=order.order_id) }}">View</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="#" class="view-all">View All Orders</a>
+            {% else %}
+            <p>You haven't placed any orders yet.</p>
+            <a href="{{ url_for('products') }}" class="btn">Start Shopping</a>
+            {% endif %}
+        </section>
+        <section class="recent-reviews">
+            <h2>Your Reviews</h2>
+            {% if reviews %}
+            <div class="reviews-list">
+                {% for review in reviews %}
+                <div class="review">
+                    <div class="review-header">
+                        <span class="product">{{ review.product_name }}</span>
+                        <div class="rating">
+                            {% for i in range(1, 6) %}
+                                <i class="fas fa-star{% if i > review.rating %}-half-alt{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        <span class="date">{{ review.created_at.strftime('%b %d, %Y') }}</span>
+                    </div>
+                    <p class="review-text">{{ review.review_text }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="#" class="view-all">View All Reviews</a>
+            {% else %}
+            <p>You haven't reviewed any products yet.</p>
+            {% endif %}
+        </section>
+        <section class="account-info">
+            <h2>Account Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Username:</span>
+                    <span class="value">{{ session['username'] }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ session['email'] }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Member Since:</span>
+                    <span class="value">--</span>
+                </div>
+            </div>
+            <div class="actions">
+                <a href="#" class="btn">Edit Profile</a>
+                <a href="{{ url_for('logout') }}" class="btn outline">Logout</a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

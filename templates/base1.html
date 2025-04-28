@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy - Online Shopping</title>
+    <link rel="stylesheet" href="/static:/css:/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <div class="nav-logo border">
+                <div class="logo">
+                    <a href="index.html"><img src="logo.png" alt="ShopEasy Logo"></a>
+                </div>
+            </div>
+
+            <div class="navadd border" id="locationDropdown">
+                <p class="add1">Deliver to</p>
+                <div class="addicon">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <p class="add2" id="selectedLocation">India</p>
+                    <i class="fa-solid fa-caret-down"></i>
+                </div>
+                <div class="location-dropdown-content" style="display: block;">
+                    <div class="location-search">
+                        <input type="text" placeholder="Search for your location" class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div class="location-group">
+                        <h3>Popular Cities</h3>
+                        <div class="location-item" data-location="Mumbai">Mumbai</div>
+                        <div class="location-item" data-location="Delhi">Delhi</div>
+                        <div class="location-item" data-location="Bangalore">Bangalore</div>
+                        <div class="location-item" data-location="Hyderabad">Hyderabad</div>
+                        <div class="location-item" data-location="Chennai">Chennai</div>
+                    </div>
+                    <div class="location-group">
+                        <h3>States</h3>
+                        <div class="location-item" data-location="Maharashtra">Maharashtra</div>
+                        <div class="location-item" data-location="Delhi">Delhi</div>
+                        <div class="location-item" data-location="Karnataka">Karnataka</div>
+                        <div class="location-item" data-location="Tamil Nadu">Tamil Nadu</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navsearch">
+                <select class="select">
+                    <option>All Categories</option>
+                    <option>Electronics</option>
+                    <option>Fashion</option>
+                    <option>Home & Kitchen</option>
+                    <option>Beauty</option>
+                    <option>Books</option>
+                </select>
+                <input type="text" placeholder="Search Shop Easy" class="input" id="searchInput">
+                <div class="searchicon" id="searchButton">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+            
+            <div class="lang border" id="languageDropdown">
+                <p class="flag">🇺🇸</p>
+                <select class="EN" id="languageSelect">
+                    <option value="en">EN</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="mr">मराठी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                </select>
+                <div class="language-dropdown-content" style="display: block;">
+                    <div class="language-item" data-lang="en" data-flag="🇺🇸">English - EN</div>
+                    <div class="language-item" data-lang="hi" data-flag="🇮🇳">हिंदी - HI</div>
+                    <div class="language-item" data-lang="mr" data-flag="🇮🇳">मराठी - MR</div>
+                    <div class="language-item" data-lang="ta" data-flag="🇮🇳">தமிழ் - TA</div>
+                    <div class="language-item" data-lang="te" data-flag="🇮🇳">తెలుగు - TE</div>
+                    <div class="language-item" data-lang="kn" data-flag="🇮🇳">ಕನ್ನಡ - KN</div>
+                </div>
+            </div>
+
+            <div class="signin border" id="accountDropdown">
+                <p class="sign"><span id="greeting">Hello, sign in</span></p>
+                <p><span><select class="accounts" id="accountSelect">
+                    <option>Account & Lists</option>
+                    <option value="signin">Sign In</option>
+                    <option value="register">Register</option>
+                    <option value="orders">Your Orders</option>
+                    <option value="wishlist">Wish List</option>
+                </select></span></p>
+                <div class="account-dropdown-content" style="display: block;">
+                    <div class="auth-buttons">
+                        <button id="signInButton" class="auth-btn">Sign In</button>
+                        <button id="registerButton" class="auth-btn">Register</button>
+                    </div>
+                    <div class="account-links">
+                        <a href="orders.html">Your Orders</a>
+                        <a href="wishlist.html">Wish List</a>
+                        <a href="account.html">Account Settings</a>
+                        <a href="prime.html">Prime Membership</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="return border">
+                <p class="sign"><span>Returns</span></p>
+                <p class="accounts"><span>& Orders</span></p>
+            </div>
+
+            <div class="cart border" id="cartButton">
+                <div class="carticon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <p class="carttext">Cart</p>
+                <div class="cart-dropdown-content" id="cartDropdown" style="display: block;">
+                    <div class="cart-empty" id="emptyCartMessage">
+                        <p>Your Shopping Cart is empty</p>
+                        <button class="btn-continue-shopping">Continue Shopping</button>
+                    </div>
+                    <div class="cart-items" id="cartItemsContainer">
+                        <!-- Cart items will be dynamically inserted here -->
+                    </div>
+                    <div class="cart-total" id="cartTotalSection">
+                        <p>Subtotal (<span id="cartItemCount">0</span> items): <span id="cartTotalAmount">₹0.00</span></p>
+                        <button class="btn-checkout">Proceed to Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panelmenu border" id="mainMenuDropdown">
+                <i class="fa-solid fa-bars"></i>
+                <p class="all">All</p>
+                <div class="menu-dropdown-content" style="display: flex;">
+                    <div class="menu-category">
+                        <h3>Shop By Department</h3>
+                        <a href="electronics.html">Electronics</a>
+                        <a href="computers.html">Computers</a>
+                        <a href="smart-home.html">Smart Home</a>
+                        <a href="arts-crafts.html">Arts & Crafts</a>
+                        <a href="all-departments.html">See All</a>
+                    </div>
+                    <div class="menu-category">
+                        <h3>Help & Settings</h3>
+                        <a href="account.html">Your Account</a>
+                        <a href="customer-service.html">Customer Service</a>
+                        <a href="#" id="signOutLink">Sign Out</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panelops">
+                <a href="deals.html" class="border">Today's Deals</a> 
+                <a href="customer-service.html" class="border">Customer Service</a> 
+                <a href="registry.html" class="border">Registry</a> 
+                <a href="gift-cards.html" class="border">Gift Cards</a> 
+                <a href="sell.html" class="border">Sell</a>
+            </div>
+            
+            <div class="paneldeals border">Shop Cyber Monday deals</div>
+        </div>
+
+        <div class="herosec">
+            <p>You are on Shop Easy. Login to continue or register if you are new! <a href="https://www.amazon.in/?&tag=googhydrabk1-21&ref=pd_sl_5km84u9k2k_e&adgrpid=155259813113&hvpone=&hvptwo=&hvadid=713930225034&hvpos=&hvnetw=g&hvrand=16464114679325623057&hvqmt=e&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=1007768&hvtargid=kwd-304880464215&hydadcr=14450_2402232&gad_source=1">  Click here to login</a></p>
+        </div>
+
+    </header>
+
+    
+    <main class = "background">
+
+        <!-- Featured Categories Section -->
+        <section class="featured-categories">
+            <div class="shopsection">
+                <div class="box" onclick="window.location.href='electronics.html'">
+                    <div class="boxcontent">
+                        <h2>Electronics</h2>
+                        <div class="boximg" style="background-image: url('electronics.jpg');"></div>
+                        
+                    </div>
+                </div>
+                <div class="box" onclick="window.location.href='fashion.html'">
+                    <div class="boxcontent">
+                        <h2>Fashion</h2>
+                        <div class="boximg" style="background-image: url('fashion.jpg');"></div>
+                        
+                    </div>
+                </div>
+                <div class="box" onclick="window.location.href='home-kitchen.html'">
+                    <div class="boxcontent">
+                        <h2>Home & Kitchen</h2>
+                        <div class="boximg" style="background-image: url('home.jpg');"></div>
+                        
+                    </div>
+                </div>
+                <div class="box" onclick="window.location.href='beauty.html'">
+                    <div class="boxcontent">
+                        <h2>Beauty</h2>
+                        <div class="boximg" style="background-image: url('beauty.jpg');"></div>
+                        
+                    </div>
+                </div>
+            
+
+        <!-- Featured Products Section -->
+         
+        <section class="featured-categories">
+            <div class="shopsection">
+                <div class="products-grid">
+            
+            <div class="product-grid" id="featuredProducts">
+                <!-- Products will be loaded dynamically from database -->
+            </div>
+    </div>
+    </div>
+    </section>
+        </div></section></main>
+        <!-- Sign In Prompt -->
+        <div class="finalsign">
+            <h2>See personalized recommendations</h2>
+            <button class="btn-signin" onclick="window.location.href='login.html'">Sign In</button>
+            <p>New customer? <a href="register.html">Start here.</a></p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer1">
+            <p>Back to top</p>
+        </div>
+
+        <div class="footer2">
+            <div class="footer-column">
+                <h3>Get to Know Us</h3>
+                <a href="about.html">About Us</a>
+                <a href="careers.html">Careers</a>
+                <a href="press.html">Press Releases</a>
+                <a href="science.html">ShopEasy Science</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Make Money with Us</h3>
+                <a href="sell.html">Sell products</a>
+                <a href="affiliate.html">Become an Affiliate</a>
+                <a href="advertise.html">Advertise Your Products</a>
+                <a href="publish.html">Self-Publish with Us</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Payment Products</h3>
+                <a href="pay.html">ShopEasy Pay</a>
+                <a href="cards.html">ShopEasy Credit Cards</a>
+                <a href="installments.html">Installments</a>
+                <a href="gift-cards.html">Gift Cards</a>
+            </div>
+
+            <div class="footer-column">
+                <h3>Let Us Help You</h3>
+                <a href="covid.html">COVID-19 and ShopEasy</a>
+                <a href="account.html">Your Account</a>
+                <a href="returns.html">Returns & Replacements</a>
+                <a href="help.html">Help</a>
+            </div>
+        </div>
+
+        <div class="footer3">
+            <div class="footer-logo">
+                <img src="logo2.png" alt="ShopEasy Logo">
+            </div>
+            <div class="footer-links">
+                <a href="conditions.html">Conditions of Use</a>
+                <a href="privacy.html">Privacy Notice</a>
+                <a href="interest-based-ads.html">Interest-Based Ads</a>
+            </div>
+            <p>© 1996-2024, ShopEasy.com, Inc. or its affiliates</p>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Sign In</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email or mobile phone number</label>
+                    <input type="text" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="form-submit">Continue</button>
+            </form>
+            <div class="form-footer">
+                <p>New to ShopEasy? <a href="register.html">Create an account</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create Account</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Your name</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Mobile number</label>
+                    <input type="tel" id="registerPhone">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">Re-enter password</label>
+                    <input type="password" id="registerPasswordConfirm" required>
+                </div>
+                <button type="submit" class="form-submit">Create your ShopEasy account</button>
+            </form>
+            <div class="form-footer">
+                <p>Already have an account? <a href="login.html">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database simulation (in a real app, this would be server-side)
+        const products = [
+            {
+                id: 1,
+                name: "Laptop",
+                price: 74899,
+                rating: 4,
+                reviews: 34,
+                image: "image/laptop.jpg"
+            },
+            {
+                id: 2,
+                name: "Smart Watch",
+                price: 2499,
+                rating: 5,
+                reviews: 162,
+                image: "image/smart-watch.jpg"
+            },
+            {
+                id: 3,
+                name: "Tablet",
+                price: 39999,
+                rating: 5,
+                reviews: 994,
+                image: "image/tablet.jpg"
+            },
+            {id: 5,
+                name: "Gaming Console",
+                price: 79999,
+                rating: 3,
+                reviews: 894,
+                image: "image/gaming-console.jpg"
+            },
+            {id: 6,
+                name: "Wireless Mouse",
+                price: 1999,
+                rating: 4,
+                reviews: 32,
+                image: "image/mouse.jpg"
+            },
+            { id: 7,
+                name: "Smart Phone",
+                price: 24999,
+                rating: 3,
+                reviews: 687,
+                image: "image/smart-phone.jpg"
+            },
+            {
+                id: 8,
+                name: "Keyboard",
+                price: 5999,
+                rating: 4,
+                reviews: 320,
+                image: "image/keyboard.jpg"
+            },
+            {
+                id: 4,
+                name: "Wireless Bluetooth Headphones",
+                price: 2999,
+                rating: 4,
+                reviews: 125,
+                image: "image/headphones.jpg",
+                deal: true,
+                originalPrice: 1999,
+                discount:"25% off"
+            }
+        ];
+
+        // Function to generate star rating
+        function generateStars(rating) {
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < Math.floor(rating)) {
+                    stars += '⭐';
+                } else if (i === Math.floor(rating) && rating % 1 >= 0.5) {
+                    stars += '½';
+                } else {
+                    stars += '☆';
+                }
+            }
+            return stars;
+        }
+
+        // Function to render products
+        function renderProducts() {
+            const container = document.getElementById('featuredProducts');
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                let priceHtml = `<div class="product-price">₹${product.price.toLocaleString()}</div>`;
+                
+                if (product.deal) {
+                    priceHtml = `
+                        <div class="product-price">
+                            <span style="color: #B12704;">₹${product.price.toLocaleString()}</span>
+                            <span style="text-decoration: line-through; color: #555; font-size: 14px; margin-left: 5px;">₹${product.originalPrice.toLocaleString()}</span>
+                            <span style="color: #067D62; font-size: 14px; margin-left: 5px;">${product.discount}</span>
+                        </div>
+                    `;
+                }
+                
+                productCard.innerHTML = `
+                    <div class="product-image" style="background-image: url('${product.image}')"></div>
+                    <h3 class="product-title">${product.name}</h3>
+                    <div class="product-rating">
+                        ${generateStars(product.rating)} (${product.reviews})
+                    </div>
+                    ${priceHtml}
+                    <button class="add-to-cart" data-id="${product.id}">Add to Cart</button>
+                `;
+                
+                container.appendChild(productCard);
+            });
+            
+            // Add event listeners to all Add to Cart buttons
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = parseInt(this.getAttribute('data-id'));
+                    addToCart(productId);
+                });
+            });
+        }
+
+        // Cart functionality
+        let cart = [];
+        
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                cart.push(product);
+                alert(`${product.name} added to cart!`);
+                updateCartCount();
+            }
+        }
+        
+        function updateCartCount() {
+            // You would update your cart count display here
+            console.log(`Cart items: ${cart.length}`);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+        });
+
+
+        // Event listeners
+        document.addEventListener('click', function(e) {
+            // Add to cart button
+            if (e.target.classList.contains('add-to-cart')) {
+                const productId = parseInt(e.target.getAttribute('data-id'));
+                addToCart(productId);
+            }
+            
+            // Quantity buttons in cart
+            if (e.target.classList.contains('quantity-btn')) {
+                const productId = parseInt(e.target.getAttribute('data-id'));
+                const action = e.target.getAttribute('data-action');
+                updateQuantity(productId, action);
+            }
+            
+            // Remove item from cart
+            if (e.target.classList.contains('remove-item')) {
+                const productId = parseInt(e.target.getAttribute('data-id'));
+                removeFromCart(productId);
+            }
+            
+            // Location dropdown items
+            if (e.target.classList.contains('location-item')) {
+                const location = e.target.getAttribute('data-location');
+                document.getElementById('selectedLocation').textContent = location;
+            }
+            
+            // Language dropdown items
+            if (e.target.classList.contains('language-item')) {
+                const lang = e.target.getAttribute('data-lang');
+                const flag = e.target.getAttribute('data-flag');
+                flagElement.textContent = flag;
+                languageSelect.value = lang;
+                // In a real app, you would change the language here
+            }
+            
+            // Toggle cart dropdown
+            if (e.target === cartButton || cartButton.contains(e.target)) {
+                cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+            } else {
+                cartDropdown.style.display = 'none';
+            }
+        });
+
+        // Search functionality
+        searchButton.addEventListener('click', function() {
+            const query = searchInput.value.trim();
+            if (query) {
+                // In a real app, this would redirect to search results
+                alert(`Searching for: ${query}`);
+                // window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+            }
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+
+        // Modal functionality
+        signInButton.addEventListener('click', function() {
+            loginModal.style.display = 'block';
+        });
+
+        registerButton.addEventListener('click', function() {
+            registerModal.style.display = 'block';
+        });
+
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                loginModal.style.display = 'none';
+                registerModal.style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target === loginModal) {
+                loginModal.style.display = 'none';
+            }
+            if (e.target === registerModal) {
+                registerModal.style.display = 'none';
+            }
+        });
+
+        // Form submissions
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Simulate login (in real app, this would be an API call)
+            if (email && password) {
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', email.split('@')[0]);
+                document.getElementById('greeting').textContent = `Hello, ${email.split('@')[0]}`;
+                loginModal.style.display = 'none';
+                alert('Login successful!');
+            } else {
+                alert('Please enter both email and password');
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerPasswordConfirm').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            // Simulate registration (in real app, this would be an API call)
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('username', name);
+            document.getElementById('greeting').textContent = `Hello, ${name}`;
+            registerModal.style.display = 'none';
+            alert('Registration successful! You are now logged in.');
+        });
+
+        // Cart functions
+        function addToCart(productId) {
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ id: productId, quantity: 1 });
+            }
+            
+            updateCartUI();
+        }
+
+        function updateQuantity(productId, action) {
+            const item = cart.find(item => item.id === productId);
+            
+            if (item) {
+                if (action === 'increase') {
+                    item.quantity += 1;
+                } else if (action === 'decrease' && item.quantity > 1) {
+                    item.quantity -= 1;
+                }
+                
+                updateCartUI();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        // Back to top button
+        document.querySelector('.footer1 p').addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

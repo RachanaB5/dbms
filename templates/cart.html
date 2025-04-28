@@ -1,0 +1,51 @@
+<!-- cart.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="cart-container">
+    <h1>Your Shopping Cart</h1>
+
+    {% if items|length == 0 %}
+        <div style="text-align:center; color: #888; margin: 2rem 0; font-size: 1.2rem;">Your cart is empty.</div>
+    {% else %}
+        <div class="cart-summary">
+            <div class="cart-total">Total: ₹{{ total }}</div>
+            <a href="{{ url_for('checkout') }}" class="btn checkout-btn">Proceed to Checkout</a>
+        </div>
+    {% endif %}
+
+    {% for item in items %}
+    <div class="cart-item">
+        <div class="cart-item-image" style="background-image: url('{{ url_for('static', filename='image/' + item.product.image) }}')"></div>
+        <div class="cart-item-details">
+            <div class="cart-item-title">{{ item.product.name }}</div>
+            <div class="cart-item-price">₹{{ item.product.price }}</div>
+            <div class="cart-item-quantity">Quantity: {{ item.quantity }}</div>
+            <div class="cart-item-subtotal">Subtotal: ₹{{ item.subtotal }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Featured Products Section -->
+{% if featured_products %}
+<div class="featured-products-section" style="max-width:1200px;margin:3rem auto 2rem;">
+    <h2 style="text-align:center;color:var(--primary-dark);margin-bottom:2rem;">Featured Products</h2>
+    <div class="product-grid">
+        {% for product in featured_products %}
+        <div class="product-card">
+            <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) }}')"></div>
+            <div class="product-info">
+                <h3 class="product-title">{{ product.name }}</h3>
+                <div class="product-price">₹{{ product.price }}</div>
+                <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button class="add-to-cart" type="submit">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

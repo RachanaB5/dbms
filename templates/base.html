@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>curiocart - Elegant Shopping</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6a5acd;        /* Soft slate blue - primary brand color */
+            --primary-light: #9370db;   /* Lighter lavender */
+            --primary-dark: #483d8b;   /* Darker slate blue */
+            --secondary: #20b2aa;      /* Light sea green - accent color */
+            --secondary-light: #48d1cc; /* Lighter sea green */
+            --accent: #ff7f50;         /* Coral accent */
+            --light: #f8f8ff;          /* Ghost white background */
+            --light-gray: #e6e6fa;     /* Lavender blush for cards */
+            --dark: #2f4f4f;           /* Dark slate gray for text */
+            --success: #3cb371;        /* Medium sea green */
+            --text: #556b2f;           /* Dark olive green for secondary text */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.8;
+        }
+        
+        /* Elegant Header with Gradient */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 30px rgba(106, 90, 205, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, 
+                    rgba(255,255,255,0.1) 0%, 
+                    transparent 50%),
+                radial-gradient(circle at 80% 70%, 
+                    rgba(255,255,255,0.1) 0%, 
+                    transparent 50%);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            color: white;
+        }
+        
+        .tagline {
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        /* Curved Search Bar */
+        .search-container {
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            margin: 1.5rem 0;
+        }
+        
+        .search-bar {
+            display: flex;
+            border-radius: 50px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transform: none; /* Remove any rotation */
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 1.2rem 1.8rem;
+            border: none;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.95);
+            color: var(--dark);
+        }
+        
+        .search-input::placeholder {
+            color: var(--primary-light);
+            opacity: 0.7;
+        }
+        
+        .search-button {
+            width: 80px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-button:hover {
+            background: var(--secondary-light);
+        }
+        
+        /* Hexagonal Category Grid with Soft Colors */
+        .category-section {
+            padding: 4rem 2rem;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            color: var(--primary-dark);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            margin: 0.8rem auto 0;
+            border-radius: 2px;
+        }
+        
+        .hex-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .hex-item {
+            position: relative;
+            height: 200px;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            background: rgba(60,60,60,0.65); /* grey shade */
+            background-blend-mode: multiply;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: saturate(0.9);
+        }
+        
+        .hex-item:nth-child(even) {
+            transform: translateY(50px);
+        }
+        
+        .hex-item:hover {
+            transform: scale(1.1) !important;
+            filter: saturate(1.2) brightness(1.05);
+            z-index: 2;
+        }
+        
+        .hex-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: none; /* Remove blue overlay, keep only text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            opacity: 1; /* Always visible */
+            transition: opacity 0.3s;
+            border-radius: inherit;
+        }
+        
+        /* Product Cards with Soft Glass Effect */
+        .products-section {
+            padding: 4rem 2rem;
+            background-color: var(--light-gray);
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .product-card {
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(106, 90, 205, 0.1);
+            transition: all 0.4s;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(106, 90, 205, 0.2);
+            border-color: rgba(106, 90, 205, 0.2);
+        }
+        
+        .product-image {
+            height: 220px;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: white;
+            transition: all 0.5s;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.6);
+        }
+        
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .product-rating {
+            color: var(--accent);
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+        
+        .product-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin: 0.5rem 0 1rem;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(106, 90, 205, 0.3);
+        }
+        
+        .add-to-cart:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 90, 205, 0.4);
+        }
+        
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            box-shadow: 0 6px 20px rgba(32, 178, 170, 0.3);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 8px 25px rgba(32, 178, 170, 0.4);
+        }
+        
+        .fab-primary {
+            background: var(--primary);
+            box-shadow: 0 6px 20px rgba(106, 90, 205, 0.3);
+        }
+        
+        .fab-primary:hover {
+            box-shadow: 0 8px 25px rgba(106, 90, 205, 0.4);
+        }
+        
+        .fab-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* Wave-shaped Footer */
+        .footer {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 6rem 2rem 3rem;
+            margin-top: 4rem;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' fill='%23f8f8ff' opacity='.25'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' fill='%23f8f8ff'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .footer-column a {
+            display: block;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 0.8rem;
+            transition: all 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 900px) {
+            .hex-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hex-item:nth-child(even) {
+                transform: none;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .hex-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .search-bar {
+                transform: none;
+            }
+            
+            .logo {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .footer::before {
+                top: -30px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Elegant Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo"><img src="{{ url_for('static', filename='image/logo.png') }}" alt="curiocart logo" style="height:48px;vertical-align:middle;margin-right:10px;">curiocart</div>
+            <p class="tagline">Curated elegance for your lifestyle</p>
+            <!-- Auth/account/cart links -->
+            <div style="display:flex;gap:1.5rem;align-items:center;justify-content:flex-end;width:100%;margin-bottom:1rem;">
+                {% if current_user.is_authenticated %}
+                    <span>Welcome, {{ current_user.name }}</span>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                    <a href="{{ url_for('cart') }}">Cart <span id="cartCount">({{ session['cart']|length if session['cart'] else 0 }})</span></a>
+                    <a href="{{ url_for('dashboard') }}">Account</a>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin') }}">Admin Panel</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('show_login') }}">Login</a>
+                    <a href="{{ url_for('show_register') }}">Register</a>
+                    <a href="{{ url_for('cart') }}">Cart <span id="cartCount">({{ session['cart']|length if session['cart'] else 0 }})</span></a>
+                {% endif %}
+            </div>
+            <!-- Curved Search Bar -->
+            <div class="search-container">
+                <form class="search-bar" action="{{ url_for('search') }}" method="get">
+                    <input type="text" class="search-input" name="q" placeholder="Discover handpicked items..." required>
+                    <button class="search-button" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="max-width:600px;margin:20px auto;">
+          {% for message in messages %}
+            <div style="background:#f8d7da;color:#721c24;padding:10px 20px;border-radius:4px;margin-bottom:10px;border:1px solid #f5c6cb;">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Hexagonal Category Grid -->
+    <section class="category-section" style="background: url('{{ url_for('static', filename='image/background.jpg') }}') center/cover no-repeat;">
+        <h2 class="section-title">Our Collections</h2>
+        <div class="hex-grid">
+            <a href="{{ url_for('category_products', category_name='Electronics') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?electronics');"><div class="hex-overlay">Electronics</div></a>
+            <a href="{{ url_for('category_products', category_name='Fashion') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?fashion');"><div class="hex-overlay">Fashion</div></a>
+            <a href="{{ url_for('category_products', category_name='Home & Kitchen') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?home');"><div class="hex-overlay">Home</div></a>
+            <a href="{{ url_for('category_products', category_name='Beauty') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?beauty');"><div class="hex-overlay">Beauty</div></a>
+            <a href="{{ url_for('category_products', category_name='Books') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?books');"><div class="hex-overlay">Books</div></a>
+            <a href="{{ url_for('category_products', category_name='Gadgets') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?gadgets');"><div class="hex-overlay">Gadgets</div></a>
+        </div>
+    </section>
+    
+    <!-- Product Grid with Glass Effect -->
+    <section class="products-section">
+        <h2 class="section-title">Featured Products</h2>
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) }}')"></div>
+                <div class="product-info">
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <div class="product-rating">{{ '★' * (product.rating if product.rating else 0) }}{{ '☆' * (5 - (product.rating if product.rating else 0)) }}</div>
+                    <div class="product-price">₹{{ product.price }}</div>
+                    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button class="add-to-cart" type="submit">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <a href="{{ url_for('cart') }}" class="fab" id="cartButton">
+            <i class="fas fa-shopping-bag"></i>
+            <div class="fab-badge">{{ session['cart']|length if session['cart'] else 0 }}</div>
+        </a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="fab fab-primary" id="accountButton">
+            <i class="fas fa-user"></i>
+        </a>
+        {% else %}
+        <a href="{{ url_for('show_login') }}" class="fab fab-primary" id="accountButton">
+            <i class="fas fa-user"></i>
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Wave-shaped Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3><img src="{{ url_for('static', filename='image/logo.png') }}" alt="curiocart logo" style="height:28px;vertical-align:middle;margin-right:8px;">curiocart</h3>
+                <a href="#">Our Story</a>
+                <a href="#">Sustainability</a>
+                <a href="#">Careers</a>
+                <a href="#">Press</a>
+            </div>
+            <div class="footer-column">
+                <h3>Customer Care</h3>
+                <a href="#">Contact Us</a>
+                <a href="#">FAQs</a>
+                <a href="#">Shipping</a>
+                <a href="#">Returns</a>
+            </div>
+            <div class="footer-column">
+                <h3>Connect</h3>
+                <a href="#">Instagram</a>
+                <a href="#">Pinterest</a>
+                <a href="#">Twitter</a>
+                <a href="#">Facebook</a>
+            </div>
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">Cookies</a>
+                <a href="#">Accessibility</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 curiocart. All rights reserved. Crafted with ♡ in India</p>
+        </div>
+    </footer>
+    
+    <script>
+        // Interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hexagon hover effect
+            const hexItems = document.querySelectorAll('.hex-item');
+            hexItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.zIndex = '10';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.zIndex = '1';
+                });
+            });
+            
+            // FAB animations
+            const fabButtons = document.querySelectorAll('.fab');
+            fabButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Product card hover effect
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.addEventListener('mousemove', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const angleX = (y - centerY) / 20;
+                    const angleY = (centerX - x) / 20;
+                    
+                    this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

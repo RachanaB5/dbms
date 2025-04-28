@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Products - CurioCart{% endblock %}
+
+{% block content %}
+<div class="product-page-container">
+    {% if current_user.is_authenticated %}
+    <div class="user-info-banner">
+        <p>Welcome back, {{ current_user.name }} {% if current_user.is_admin %}(Admin){% endif %}</p>
+    </div>
+    {% endif %}
+
+    <h1 class="page-title">Discover Unique Finds</h1>
+    
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card" onclick="window.location.href='{{ url_for('product_detail', product_id=product.id) }}'">
+            <div class="product-image-container">
+                <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) }}')">
+                    {% if product.discount %}
+                    <div class="discount-badge">-{{ product.discount }}%</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-description">{{ product.description|truncate(100) }}</p>
+                
+                <div class="price-container">
+                    {% if product.discount %}
+                    <span class="original-price">₹{{ "%.2f"|format(product.price) }}</span>
+                    <span class="discounted-price">₹{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
+                    {% else %}
+                    <span class="product-price">₹{{ "%.2f"|format(product.price) }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-rating">
+                    <div class="stars">{{ '★' * product.rating }}{{ '☆' * (5 - product.rating) }}</div>
+                    <span class="review-count">({{ product.reviews }} reviews)</span>
+                </div>
+                
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <div class="admin-controls">
+                    <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}">
+                        <button type="submit" class="admin-btn delete-btn">
+                            <i class="fas fa-trash-alt"></i> Remove
+                        </button>
+                    </form>
+                    <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="admin-btn edit-btn">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        {# Sample additional products #}
+        <div class="product-card">
+            <div class="product-image-container">
+                <div class="product-image" style="background-image: url('https://source.unsplash.com/random/600x600?handmade')">
+                    <div class="discount-badge">-15%</div>
+                </div>
+            </div>
+            <div class="product-info">
+                <h3>Artisan Ceramic Mug</h3>
+                <p class="product-description">Handcrafted stoneware mug with unique glazing, perfect for your morning brew.</p>
+                <div class="price-container">
+                    <span class="original-price">₹1,200</span>
+                    <span class="discounted-price">₹1,020</span>
+                </div>
+                <div class="product-rating">
+                    <div class="stars">★★★★☆</div>
+                    <span class="review-count">(42 reviews)</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="product-card">
+            <div class="product-image-container">
+                <div class="product-image" style="background-image: url('https://source.unsplash.com/random/600x600?watch')"></div>
+            </div>
+            <div class="product-info">
+                <h3>Minimalist Wooden Watch</h3>
+                <p class="product-description">Sustainable bamboo timepiece with Japanese quartz movement.</p>
+                <div class="price-container">
+                    <span class="product-price">₹3,499</span>
+                </div>
+                <div class="product-rating">
+                    <div class="stars">★★★★★</div>
+                    <span class="review-count">(128 reviews)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-page-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
+    
+    .user-info-banner {
+        background: rgba(106, 90, 205, 0.1);
+        padding: 0.8rem 1.2rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .page-title {
+        font-size: 2.2rem;
+        color: var(--primary-dark);
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+    }
+    
+    .page-title::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: var(--secondary);
+        margin: 0.8rem auto 0;
+        border-radius: 2px;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 2rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.15);
+    }
+    
+    .product-image-container {
+        position: relative;
+        padding-top: 100%; /* 1:1 Aspect Ratio */
+        overflow: hidden;
+    }
+    
+    .product-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #f9f9f9;
+        transition: transform 0.5s;
+    }
+    
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+    
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--accent);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+    }
+    
+    .product-info h3 {
+        font-size: 1.2rem;
+        color: var(--dark);
+        margin-bottom: 0.8rem;
+    }
+    
+    .product-description {
+        color: var(--text);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+    
+    .price-container {
+        margin: 1rem 0;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .original-price {
+        text-decoration: line-through;
+        color: var(--text);
+        opacity: 0.7;
+        font-size: 0.9rem;
+        margin-right: 0.5rem;
+    }
+    
+    .discounted-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+    
+    .product-rating {
+        display: flex;
+        align-items: center;
+        margin: 0.8rem 0;
+    }
+    
+    .stars {
+        color: #FFA41C;
+        letter-spacing: 1px;
+        margin-right: 0.5rem;
+    }
+    
+    .review-count {
+        color: var(--text);
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+    
+    .admin-controls {
+        display: flex;
+        gap: 0.8rem;
+        margin-top: 1.2rem;
+    }
+    
+    .admin-btn {
+        flex: 1;
+        padding: 0.6rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s;
+    }
+    
+    .delete-btn {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .delete-btn:hover {
+        background: #f5c6cb;
+    }
+    
+    .edit-btn {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .edit-btn:hover {
+        background: #bee5eb;
+    }
+    
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>

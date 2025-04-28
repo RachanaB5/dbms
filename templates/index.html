@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+    <h2>Welcome to ShopEase</h2>
+    <p>Discover amazing products at unbeatable prices</p>
+    <a href="{{ url_for('products') }}" class="btn">Shop Now</a>
+</section>
+
+<section class="featured-products">
+    <h2>Featured Products</h2>
+    <div class="products-grid">
+        {% for product in featured_products %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.description }}</p>
+                <div class="product-price">₹{{ product.price }}</div>
+                <button class="add-to-cart" 
+                        data-id="{{ product.id }}"
+                        data-name="{{ product.name }}"
+                        data-price="{{ product.price }}"
+                        data-image="{{ url_for('static', filename='image/' + product.image) }}">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

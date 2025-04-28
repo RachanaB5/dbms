@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation - ShopEase{% endblock %}
+
+{% block content %}
+<div class="order-confirmation">
+    <h1>Order Confirmation</h1>
+    <div class="confirmation-message">
+        <i class="fas fa-check-circle"></i>
+        <h2>Thank you for your order!</h2>
+        <p>Your order has been placed successfully.</p>
+        <p>Order ID: #{{ order.order_id }}</p>
+    </div>
+    
+    <div class="order-summary">
+        <h3>Order Summary</h3>
+        <div class="summary-details">
+            <div class="detail">
+                <span>Order Date:</span>
+                <span>{{ order.order_date.strftime('%B %d, %Y %H:%M') }}</span>
+            </div>
+            <div class="detail">
+                <span>Payment Status:</span>
+                <span class="status {{ order.payment_status|lower }}">{{ order.payment_status }}</span>
+            </div>
+            <div class="detail">
+                <span>Total Amount:</span>
+                <span>₹{{ "%.2f"|format(order.total_amount) }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="order-items">
+        <h3>Order Items</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>₹{{ "%.2f"|format(item.price) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ "%.2f"|format(item.total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">Grand Total</td>
+                    <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <div class="actions">
+        <a href="{{ url_for('index') }}" class="btn">Continue Shopping</a>
+        <a href="{{ url_for('dashboard') }}" class="btn outline">View Order History</a>
+    </div>
+</div>
+{% endblock %}
