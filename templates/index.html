@@ -12,16 +12,26 @@
         {% for product in featured_products %}
         <div class="product-card">
             <div class="product-image">
+                {% if product.discount > 0 %}
+                <span class="discount-badge">-{{ product.discount }}%</span>
+                {% endif %}
                 <img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}">
             </div>
             <div class="product-info">
                 <h3>{{ product.name }}</h3>
                 <p>{{ product.description }}</p>
-                <div class="product-price">₹{{ product.price }}</div>
+                <div class="product-price">
+                    {% if product.discount > 0 %}
+                    <span class="original-price">₹{{ product.price }}</span>
+                    <span class="discounted-price">₹{{ (product.price * (1 - product.discount/100))|round|int }}</span>
+                    {% else %}
+                    <span class="price">₹{{ product.price }}</span>
+                    {% endif %}
+                </div>
                 <button class="add-to-cart" 
                         data-id="{{ product.id }}"
                         data-name="{{ product.name }}"
-                        data-price="{{ product.price }}"
+                        data-price="{{ (product.price * (1 - product.discount/100))|round|int }}"
                         data-image="{{ url_for('static', filename='image/' + product.image) }}">
                     Add to Cart
                 </button>

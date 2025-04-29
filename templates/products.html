@@ -14,8 +14,8 @@
     
     <div class="products-grid">
         {% for product in products %}
-        <div class="product-card" onclick="window.location.href='{{ url_for('product_detail', product_id=product.id) }}'">
-            <div class="product-image-container">
+        <div class="product-card">
+            <div class="product-image-container" onclick="window.location.href='{{ url_for('product_detail', product_id=product.id) }}'">
                 <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) }}')">
                     {% if product.discount %}
                     <div class="discount-badge">-{{ product.discount }}%</div>
@@ -23,7 +23,7 @@
                 </div>
             </div>
             <div class="product-info">
-                <h3>{{ product.name }}</h3>
+                <h3 class="product-title">{{ product.name }}</h3>
                 <p class="product-description">{{ product.description|truncate(100) }}</p>
                 
                 <div class="price-container">
@@ -39,6 +39,11 @@
                     <div class="stars">{{ '★' * product.rating }}{{ '☆' * (5 - product.rating) }}</div>
                     <span class="review-count">({{ product.reviews }} reviews)</span>
                 </div>
+
+                <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="add-to-cart-form">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="add-to-cart">Add to Cart</button>
+                </form>
                 
                 {% if current_user.is_authenticated and current_user.is_admin %}
                 <div class="admin-controls">
@@ -55,240 +60,199 @@
             </div>
         </div>
         {% endfor %}
-        
-        {# Sample additional products #}
-        <div class="product-card">
-            <div class="product-image-container">
-                <div class="product-image" style="background-image: url('https://source.unsplash.com/random/600x600?handmade')">
-                    <div class="discount-badge">-15%</div>
-                </div>
-            </div>
-            <div class="product-info">
-                <h3>Artisan Ceramic Mug</h3>
-                <p class="product-description">Handcrafted stoneware mug with unique glazing, perfect for your morning brew.</p>
-                <div class="price-container">
-                    <span class="original-price">₹1,200</span>
-                    <span class="discounted-price">₹1,020</span>
-                </div>
-                <div class="product-rating">
-                    <div class="stars">★★★★☆</div>
-                    <span class="review-count">(42 reviews)</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="product-card">
-            <div class="product-image-container">
-                <div class="product-image" style="background-image: url('https://source.unsplash.com/random/600x600?watch')"></div>
-            </div>
-            <div class="product-info">
-                <h3>Minimalist Wooden Watch</h3>
-                <p class="product-description">Sustainable bamboo timepiece with Japanese quartz movement.</p>
-                <div class="price-container">
-                    <span class="product-price">₹3,499</span>
-                </div>
-                <div class="product-rating">
-                    <div class="stars">★★★★★</div>
-                    <span class="review-count">(128 reviews)</span>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
 <style>
-    .product-page-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 1.5rem;
-    }
-    
-    .user-info-banner {
-        background: rgba(106, 90, 205, 0.1);
-        padding: 0.8rem 1.2rem;
-        border-radius: 8px;
-        margin-bottom: 1.5rem;
-        border-left: 4px solid var(--primary);
+.product-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.user-info-banner {
+    background: rgba(106, 90, 205, 0.1);
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary);
+}
+
+.page-title {
+    font-size: 2.2rem;
+    color: var(--primary-dark);
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 2rem;
+}
+
+.product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(106, 90, 205, 0.15);
+}
+
+.product-image-container {
+    position: relative;
+    padding-top: 75%;
+    overflow: hidden;
+}
+
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.product-info {
+    padding: 1.5rem;
+}
+
+.product-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+}
+
+.product-description {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.price-container {
+    margin-bottom: 1rem;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    margin-right: 0.5rem;
+}
+
+.discounted-price, .product-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.stars {
+    color: #ffd700;
+}
+
+.review-count {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.add-to-cart-form {
+    margin-top: 1rem;
+}
+
+.add-to-cart {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.add-to-cart:hover {
+    background: var(--primary-dark);
+}
+
+.admin-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.admin-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.delete-btn {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.delete-btn:hover {
+    background: #dc2626;
+    color: white;
+}
+
+.edit-btn {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+.edit-btn:hover {
+    background: #4f46e5;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     }
     
     .page-title {
-        font-size: 2.2rem;
-        color: var(--primary-dark);
-        margin-bottom: 2rem;
-        text-align: center;
-        position: relative;
+        font-size: 1.8rem;
     }
-    
-    .page-title::after {
-        content: '';
-        display: block;
-        width: 80px;
-        height: 4px;
-        background: var(--secondary);
-        margin: 0.8rem auto 0;
-        border-radius: 2px;
-    }
-    
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 30px;
-        margin-top: 2rem;
-    }
-    
-    .product-card {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(106, 90, 205, 0.15);
-    }
-    
-    .product-image-container {
-        position: relative;
-        padding-top: 100%; /* 1:1 Aspect Ratio */
-        overflow: hidden;
-    }
-    
-    .product-image {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-color: #f9f9f9;
-        transition: transform 0.5s;
-    }
-    
-    .product-card:hover .product-image {
-        transform: scale(1.05);
-    }
-    
-    .discount-badge {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: var(--accent);
-        color: white;
-        padding: 0.3rem 0.6rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-    
-    .product-info {
-        padding: 1.5rem;
-    }
-    
-    .product-info h3 {
-        font-size: 1.2rem;
-        color: var(--dark);
-        margin-bottom: 0.8rem;
-    }
-    
-    .product-description {
-        color: var(--text);
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-    
-    .price-container {
-        margin: 1rem 0;
-    }
-    
-    .product-price {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--primary);
-    }
-    
-    .original-price {
-        text-decoration: line-through;
-        color: var(--text);
-        opacity: 0.7;
-        font-size: 0.9rem;
-        margin-right: 0.5rem;
-    }
-    
-    .discounted-price {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--accent);
-    }
-    
-    .product-rating {
-        display: flex;
-        align-items: center;
-        margin: 0.8rem 0;
-    }
-    
-    .stars {
-        color: #FFA41C;
-        letter-spacing: 1px;
-        margin-right: 0.5rem;
-    }
-    
-    .review-count {
-        color: var(--text);
-        font-size: 0.8rem;
-        opacity: 0.8;
-    }
-    
-    .admin-controls {
-        display: flex;
-        gap: 0.8rem;
-        margin-top: 1.2rem;
-    }
-    
-    .admin-btn {
-        flex: 1;
-        padding: 0.6rem;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        transition: all 0.3s;
-    }
-    
-    .delete-btn {
-        background: #f8d7da;
-        color: #721c24;
-    }
-    
-    .delete-btn:hover {
-        background: #f5c6cb;
-    }
-    
-    .edit-btn {
-        background: #d1ecf1;
-        color: #0c5460;
-    }
-    
-    .edit-btn:hover {
-        background: #bee5eb;
-    }
-    
-    @media (max-width: 768px) {
-        .products-grid {
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        }
-        
-        .page-title {
-            font-size: 1.8rem;
-        }
-    }
+}
 </style>
+{% endblock %}

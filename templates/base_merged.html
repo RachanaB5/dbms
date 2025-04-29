@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>curiocart - Elegant Shopping</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='image/logo.png') }}" type="image/x-icon">
+</head>
+<body>
+    <!-- Header with navigation -->
+    <header>
+        <div class="navbar">
+            <div class="nav-logo border">
+                <div class="logo">
+                    <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='image/logo.png') }}" alt="curiocart logo"></a>
+                </div>
+            </div>
+            <div class="navadd border" id="locationDropdown">
+                <p class="add1">Deliver to</p>
+                <div class="addicon">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <p class="add2" id="selectedLocation">India</p>
+                    <i class="fa-solid fa-caret-down"></i>
+                </div>
+            </div>
+            <div class="navsearch">
+                <form class="search-bar" action="{{ url_for('search') }}" method="get">
+                    <select class="select" name="category">
+                        <option value="">All Categories</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Home & Kitchen">Home & Kitchen</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Books">Books</option>
+                    </select>
+                    <input type="text" placeholder="Search curiocart" class="input" id="searchInput" name="q" required>
+                    <button class="searchicon" id="searchButton" type="submit">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="lang border" id="languageDropdown">
+                <p class="flag">🇺🇸</p>
+                <select class="EN" id="languageSelect">
+                    <option value="en">EN</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="mr">मराठी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                </select>
+            </div>
+            <div class="signin border" id="accountDropdown">
+                {% if current_user.is_authenticated %}
+                    <span>Welcome, {{ current_user.name }}</span>
+                    <a href="{{ url_for('dashboard') }}">Account</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin') }}">Admin Panel</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('show_login') }}">Login</a>
+                    <a href="{{ url_for('show_register') }}">Register</a>
+                {% endif %}
+            </div>
+            <div class="cart border" id="cartButton">
+                <a href="{{ url_for('cart') }}">
+                    <div class="carticon">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-count">{{ g.cart_count if g.cart_count is defined else 0 }}</span>
+                    </div>
+                    <p class="carttext">Cart</p>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="max-width:600px;margin:20px auto;">
+          {% for message in messages %}
+            <div style="background:#f8d7da;color:#721c24;padding:10px 20px;border-radius:4px;margin-bottom:10px;border:1px solid #f5c6cb;">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Category Grid -->
+    <section class="category-section" style="background: url('{{ url_for('static', filename='image/background.jpg') }}') center/cover no-repeat;">
+        <h2 class="section-title">Our Collections</h2>
+        <div class="hex-grid">
+            <a href="{{ url_for('category_products', category_name='Electronics') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?electronics');"><div class="hex-overlay">Electronics</div></a>
+            <a href="{{ url_for('category_products', category_name='Fashion') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?fashion');"><div class="hex-overlay">Fashion</div></a>
+            <a href="{{ url_for('category_products', category_name='Home & Kitchen') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?home');"><div class="hex-overlay">Home</div></a>
+            <a href="{{ url_for('category_products', category_name='Beauty') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?beauty');"><div class="hex-overlay">Beauty</div></a>
+            <a href="{{ url_for('category_products', category_name='Books') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?books');"><div class="hex-overlay">Books</div></a>
+            <a href="{{ url_for('category_products', category_name='Gadgets') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?gadgets');"><div class="hex-overlay">Gadgets</div></a>
+        </div>
+    </section>
+
+    <!-- Product Grid -->
+    <section class="products-section">
+        <h2 class="section-title">Featured Products</h2>
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) }}')"></div>
+                <div class="product-info">
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <div class="product-rating">{{ '★' * (product.rating if product.rating else 0) }}{{ '☆' * (5 - (product.rating if product.rating else 0)) }}</div>
+                    <div class="product-price">₹{{ product.price }}</div>
+                    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button class="add-to-cart" type="submit">Add to Cart</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Floating Action Buttons -->
+    <div class="fab-container">
+        <a href="{{ url_for('cart') }}" class="fab">
+            <i class="fas fa-shopping-bag"></i>
+            <div class="fab-badge">{{ g.cart_count if g.cart_count is defined else 0 }}</div>
+        </a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="fab fab-primary">
+            <i class="fas fa-user"></i>
+        </a>
+        {% else %}
+        <a href="{{ url_for('show_login') }}" class="fab fab-primary">
+            <i class="fas fa-user"></i>
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3><img src="{{ url_for('static', filename='image/logo.png') }}" alt="curiocart logo" style="height:28px;vertical-align:middle;margin-right:8px;">curiocart</h3>
+                <a href="#">Our Story</a>
+                <a href="#">Sustainability</a>
+                <a href="#">Careers</a>
+                <a href="#">Press</a>
+            </div>
+            <div class="footer-column">
+                <h3>Customer Care</h3>
+                <a href="#">Contact Us</a>
+                <a href="#">FAQs</a>
+                <a href="#">Shipping</a>
+                <a href="#">Returns</a>
+            </div>
+            <div class="footer-column">
+                <h3>Connect</h3>
+                <a href="#">Instagram</a>
+                <a href="#">Pinterest</a>
+                <a href="#">Twitter</a>
+                <a href="#">Facebook</a>
+            </div>
+            <div class="footer-column">
+                <h3>Legal</h3>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">Cookies</a>
+                <a href="#">Accessibility</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 curiocart. All rights reserved. Crafted with ♡ in India</p>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

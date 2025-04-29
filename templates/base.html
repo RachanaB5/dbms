@@ -528,16 +528,16 @@
     
     <!-- Floating Action Buttons -->
     <div class="fab-container">
-        <a href="{{ url_for('cart') }}" class="fab" id="cartButton">
+        <a href="{{ url_for('cart') }}" class="fab">
             <i class="fas fa-shopping-bag"></i>
             <div class="fab-badge">{{ session['cart']|length if session['cart'] else 0 }}</div>
         </a>
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('dashboard') }}" class="fab fab-primary" id="accountButton">
+        <a href="{{ url_for('dashboard') }}" class="fab fab-primary">
             <i class="fas fa-user"></i>
         </a>
         {% else %}
-        <a href="{{ url_for('show_login') }}" class="fab fab-primary" id="accountButton">
+        <a href="{{ url_for('show_login') }}" class="fab fab-primary">
             <i class="fas fa-user"></i>
         </a>
         {% endif %}
@@ -581,53 +581,6 @@
         </div>
     </footer>
     
-    <script>
-        // Interactive elements
-        document.addEventListener('DOMContentLoaded', function() {
-            // Hexagon hover effect
-            const hexItems = document.querySelectorAll('.hex-item');
-            hexItems.forEach(item => {
-                item.addEventListener('mouseenter', function() {
-                    this.style.zIndex = '10';
-                });
-                
-                item.addEventListener('mouseleave', function() {
-                    this.style.zIndex = '1';
-                });
-            });
-            
-            // FAB animations
-            const fabButtons = document.querySelectorAll('.fab');
-            fabButtons.forEach(button => {
-                button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.1)';
-                });
-                
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
-                });
-            });
-            
-            // Product card hover effect
-            const productCards = document.querySelectorAll('.product-card');
-            productCards.forEach(card => {
-                card.addEventListener('mousemove', function(e) {
-                    const rect = this.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const angleX = (y - centerY) / 20;
-                    const angleY = (centerX - x) / 20;
-                    
-                    this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-                });
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,118 @@
+2025-04-28 23:16:22,898 ERROR: Exception on /login [POST] [in C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py:838]
+Traceback (most recent call last):
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 772, in cmd_query
+    self._cmysql.query(
+_mysql_connector.MySQLInterfaceError: Unknown column 'users.name' in 'field list'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 945, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\cursor_cext.py", line 356, in execute
+    self._connection.cmd_query(
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
+    return method(cnx, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
+    raise get_mysql_exception(
+mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'users.name' in 'field list'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\Desktop\dbms\app.py", line 316, in login
+    user = User.query.filter_by(email=email).first()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2759, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2858, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\session.py", line 2251, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1416, in execute
+    return meth(
+           ^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\sql\elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1638, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1843, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1983, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 2352, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 945, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\cursor_cext.py", line 356, in execute
+    self._connection.cmd_query(
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
+    return method(cnx, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
+    raise get_mysql_exception(
+sqlalchemy.exc.ProgrammingError: (mysql.connector.errors.ProgrammingError) 1054 (42S22): Unknown column 'users.name' in 'field list'
+[SQL: SELECT users.id AS users_id, users.name AS users_name, users.email AS users_email, users.phone AS users_phone, users.password_hash AS users_password_hash, users.is_admin AS users_is_admin 
+FROM users 
+WHERE users.email = %(email_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'email_1': 'kumar@gmail.com', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2025-04-28 23:16:22,912 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:53]
+2025-04-28 23:16:32,668 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:16:33,744 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:16:35,104 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:20:24,911 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:36]
+2025-04-28 23:20:27,839 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:27:33,962 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:36]
+2025-04-28 23:27:34,415 INFO: Database tables created successfully [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:99]
+2025-04-28 23:27:34,542 INFO: Admin user created successfully [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:113]
+2025-04-28 23:27:34,565 INFO: Sample products added successfully [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:233]
+2025-04-28 23:27:35,215 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:36]
+2025-04-28 23:27:35,685 INFO: Database tables created successfully [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:99]
+2025-04-28 23:27:35,809 INFO: Admin user created successfully [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:113]
+2025-04-28 23:27:35,828 INFO: Sample products added successfully [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:233]
+2025-04-28 23:27:43,718 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:27:59,060 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:27:59,067 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:28:08,265 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:28:08,276 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:28:10,466 INFO: Request: GET /register from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:28:44,667 INFO: Request: POST /register from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:28:44,667 INFO: Register route called [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:258]
+2025-04-28 23:28:44,808 INFO: User registered successfully: test@gmail.com [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:297]
+2025-04-28 23:28:44,816 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:28:56,277 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:28:56,411 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:29:04,589 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-04-28 23:29:04,593 INFO: /cart accessed by user_id=2, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:444]
+2025-04-28 23:29:04,600 INFO: Cart items found for user 2: [] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:447]

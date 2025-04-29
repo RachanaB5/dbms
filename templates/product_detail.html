@@ -82,7 +82,7 @@
             </div>
             
             {% if product.stock_quantity > 0 %}
-            <form method="POST" action="{{ url_for('add_to_cart', product_id=product.product_id) }}" class="action-buttons">
+            <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="action-buttons">
                 <div class="quantity-selector">
                     <label for="quantity">Quantity:</label>
                     <div class="quantity-input">
