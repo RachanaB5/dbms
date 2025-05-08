@@ -1,95 +1,84 @@
-2025-04-28 23:16:02,806 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
-2025-04-28 23:16:04,067 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
-2025-04-28 23:16:09,965 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
-2025-04-28 23:16:09,969 ERROR: Exception on /login [POST] [in C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py:838]
-Traceback (most recent call last):
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 772, in cmd_query
-    self._cmysql.query(
-_mysql_connector.MySQLInterfaceError: Unknown column 'users.name' in 'field list'
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
-    self.dialect.do_execute(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 945, in do_execute
-    cursor.execute(statement, parameters)
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\cursor_cext.py", line 356, in execute
-    self._connection.cmd_query(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
-    return method(cnx, *args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
-    raise get_mysql_exception(
-mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'users.name' in 'field list'
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\Desktop\dbms\app.py", line 316, in login
-    user = User.query.filter_by(email=email).first()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2759, in first
-    return self.limit(1)._iter().first()  # type: ignore
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2858, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-                                                  ^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
-    return self._execute_internal(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\session.py", line 2251, in _execute_internal
-    result: Result[Any] = compile_state_cls.orm_execute_statement(
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
-    result = conn.execute(
-             ^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1416, in execute
-    return meth(
-           ^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\sql\elements.py", line 523, in _execute_on_connection
-    return connection._execute_clauseelement(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1638, in _execute_clauseelement
-    ret = self._execute_context(
-          ^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1843, in _execute_context
-    return self._exec_single_context(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1983, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 2352, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
-    self.dialect.do_execute(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 945, in do_execute
-    cursor.execute(statement, parameters)
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\cursor_cext.py", line 356, in execute
-    self._connection.cmd_query(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
-    return method(cnx, *args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
-    raise get_mysql_exception(
-sqlalchemy.exc.ProgrammingError: (mysql.connector.errors.ProgrammingError) 1054 (42S22): Unknown column 'users.name' in 'field list'
-[SQL: SELECT users.id AS users_id, users.name AS users_name, users.email AS users_email, users.phone AS users_phone, users.password_hash AS users_password_hash, users.is_admin AS users_is_admin 
-FROM users 
-WHERE users.email = %(email_1)s 
- LIMIT %(param_1)s]
-[parameters: {'email_1': 'rachana@gmail.com', 'param_1': 1}]
-(Background on this error at: https://sqlalche.me/e/20/f405)
-2025-04-28 23:16:09,981 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:53]
-2025-04-28 23:16:14,455 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
-2025-04-28 23:16:22,895 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:65]
+2025-05-07 11:00:34,648 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
+2025-05-07 11:00:35,730 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
+2025-05-07 11:00:38,818 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:00:42,037 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:00:55,027 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:00:55,307 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:02,682 INFO: Request: GET /logout from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:02,700 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:04,184 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:13,183 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:13,440 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:50,908 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:51,196 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:53,082 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:53,675 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:55,179 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:58,068 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:01:58,350 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:02:15,216 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:02:15,220 INFO: /cart accessed by user_id=2, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:471]
+2025-05-07 11:02:15,228 INFO: Cart items found for user 2: [] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:474]
+2025-05-07 11:02:15,228 INFO: Items to render: [] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:491]
+2025-05-07 11:07:41,675 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
+2025-05-07 11:11:45,945 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
+2025-05-07 11:11:47,129 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
+2025-05-07 11:11:49,832 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:11:52,114 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:12:12,380 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:12:12,665 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:12:22,524 INFO: Request: GET /category/Books from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:12:25,486 INFO: Request: POST /add_to_cart/12 from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:12:25,531 INFO: Request: GET /products from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:12:28,868 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:12:28,870 INFO: /cart accessed by user_id=2, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:471]
+2025-05-07 11:12:28,876 INFO: Cart items found for user 2: [<Cart 1>] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:474]
+2025-05-07 11:12:28,882 INFO: Items to render: [{'product': <Product 12>, 'quantity': 1, 'subtotal': 499.0, 'unit_price': 499.0}] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:491]
+2025-05-07 11:12:45,594 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:13:22,884 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:13:22,887 INFO: /cart accessed by user_id=2, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:471]
+2025-05-07 11:13:22,893 INFO: Cart items found for user 2: [<Cart 1>] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:474]
+2025-05-07 11:13:22,893 INFO: Items to render: [{'product': <Product 12>, 'quantity': 1, 'subtotal': 499.0, 'unit_price': 499.0}] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:491]
+2025-05-07 11:13:26,861 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:13:26,872 INFO: /cart accessed by user_id=2, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:471]
+2025-05-07 11:13:26,874 INFO: Cart items found for user 2: [<Cart 1>] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:474]
+2025-05-07 11:13:26,874 INFO: Items to render: [{'product': <Product 12>, 'quantity': 1, 'subtotal': 499.0, 'unit_price': 499.0}] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:491]
+2025-05-07 11:14:15,377 INFO: Request: POST /add_to_cart/1 from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:14:15,409 INFO: Request: GET /products from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:14:38,180 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:14:38,186 INFO: /cart accessed by user_id=2, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:471]
+2025-05-07 11:14:38,191 INFO: Cart items found for user 2: [<Cart 1>, <Cart 2>] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:474]
+2025-05-07 11:14:38,216 INFO: Items to render: [{'product': <Product 12>, 'quantity': 1, 'subtotal': 499.0, 'unit_price': 499.0}, {'product': <Product 1>, 'quantity': 1, 'subtotal': 53999.1, 'unit_price': 53999.1}] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:491]
+2025-05-07 11:14:49,434 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
+2025-05-07 11:15:37,887 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:15:37,902 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-07 11:15:39,883 INFO: Request: GET /products from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:56:02,745 INFO: Request: GET /products from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:56:12,686 INFO: Request: POST /add_to_cart/1 from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:56:12,693 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:56:17,526 INFO: Request: GET /register from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:01,282 INFO: Request: POST /register from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:01,282 INFO: Register route called [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:276]
+2025-05-08 09:57:01,441 INFO: User registered successfully: ramesh@gmail.com [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:315]
+2025-05-08 09:57:01,446 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:12,582 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:12,699 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:21,093 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:24,617 INFO: Request: POST /add_to_cart/1 from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:24,647 INFO: Request: GET /products from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:28,744 INFO: Request: POST /add_to_cart/4 from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:28,765 INFO: Request: GET /products from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:37,445 INFO: Request: GET /category/Fashion from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:40,643 INFO: Request: GET /category/Home & Kitchen from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:43,439 INFO: Request: GET /category/Beauty from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:46,934 INFO: Request: GET /category/Books from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:49,832 INFO: Request: GET /category/Gadgets from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:57:54,909 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:58:09,727 INFO: Request: GET /search from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:58:17,730 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:58:17,733 INFO: /cart accessed by user_id=3, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:471]
+2025-05-08 09:58:17,736 INFO: Cart items found for user 3: [<Cart 3>, <Cart 4>] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:474]
+2025-05-08 09:58:17,737 INFO: Items to render: [{'product': <Product 1>, 'quantity': 1, 'subtotal': 53999.1, 'unit_price': 53999.1}, {'product': <Product 4>, 'quantity': 1, 'subtotal': 79999.0, 'unit_price': 79999.0}] [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:491]
+2025-05-08 09:58:20,221 INFO: Request: GET /dashboard from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:58:23,949 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 09:58:23,953 INFO: /cart accessed by user_id=3, is_authenticated=True [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:471]

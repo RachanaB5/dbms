@@ -1,8 +1,8 @@
-2025-05-08 22:43:21,421 ERROR: Exception on /login [POST] [in C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py:838]
+2025-05-08 22:34:00,130 ERROR: Exception on /products [GET] [in C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py:838]
 Traceback (most recent call last):
   File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 772, in cmd_query
     self._cmysql.query(
-_mysql_connector.MySQLInterfaceError: Unknown column 'users.phone' in 'field list'
+_mysql_connector.MySQLInterfaceError: Unknown column 'reviews.id' in 'field list'
 
 The above exception was the direct cause of the following exception:
 
@@ -18,7 +18,7 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
     raise get_mysql_exception(
-mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'users.phone' in 'field list'
+mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'reviews.id' in 'field list'
 
 The above exception was the direct cause of the following exception:
 
@@ -35,15 +35,27 @@ Traceback (most recent call last):
   File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\Desktop\dbms\app.py", line 334, in login
-    user = User.query.filter_by(email=email).first()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2759, in first
-    return self.limit(1)._iter().first()  # type: ignore
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2858, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-                                                  ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\Desktop\dbms\app.py", line 393, in products
+    product_list = prepare_product_list(products)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\Desktop\dbms\app.py", line 372, in prepare_product_list
+    reviews = product.reviews
+              ^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\attributes.py", line 566, in __get__
+    return self.impl.get(state, dict_)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\attributes.py", line 1086, in get
+    value = self._fire_loader_callables(state, key, passive)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\attributes.py", line 1121, in _fire_loader_callables
+    return self.callable_(state, passive)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\strategies.py", line 978, in _load_for_state
+    return self._emit_lazyload(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\strategies.py", line 1141, in _emit_lazyload
+    result = session.execute(
+             ^^^^^^^^^^^^^^^^
   File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
     return self._execute_internal(
            ^^^^^^^^^^^^^^^^^^^^^^^
@@ -80,32 +92,15 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
     raise get_mysql_exception(
-sqlalchemy.exc.ProgrammingError: (mysql.connector.errors.ProgrammingError) 1054 (42S22): Unknown column 'users.phone' in 'field list'
-[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.phone AS users_phone, users.password_hash AS users_password_hash, users.is_admin AS users_is_admin 
-FROM users 
-WHERE users.email = %(email_1)s 
- LIMIT %(param_1)s]
-[parameters: {'email_1': 'shush@test.com', 'param_1': 1}]
+sqlalchemy.exc.ProgrammingError: (mysql.connector.errors.ProgrammingError) 1054 (42S22): Unknown column 'reviews.id' in 'field list'
+[SQL: SELECT reviews.id AS reviews_id, reviews.user_id AS reviews_user_id, reviews.product_id AS reviews_product_id, reviews.rating AS reviews_rating, reviews.review_text AS reviews_review_text, reviews.created_at AS reviews_created_at, reviews.helpful_count AS reviews_helpful_count 
+FROM reviews 
+WHERE %(param_1)s = reviews.product_id]
+[parameters: {'param_1': 1}]
 (Background on this error at: https://sqlalche.me/e/20/f405)
-2025-05-08 22:43:21,439 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:71]
-2025-05-08 22:43:26,973 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:43:30,369 INFO: Request: GET /category/Fashion from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:43:33,173 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:46:18,285 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
-2025-05-08 22:46:19,139 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
-2025-05-08 22:46:25,953 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:46:27,055 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:46:35,138 INFO: Request: GET /products from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:46:40,399 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:57:14,031 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
-2025-05-08 22:57:14,948 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
-2025-05-08 22:57:20,373 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:57:24,773 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:58:11,364 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:58:21,963 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:58:22,180 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:71]
-2025-05-08 23:03:55,833 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
-2025-05-08 23:03:56,853 INFO: Ecommerce startup [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:49]
-2025-05-08 23:04:02,346 INFO: Request: GET / from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 23:04:07,937 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 23:04:11,966 INFO: Request: GET /register from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 22:34:00,144 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:71]
+2025-05-08 22:34:05,421 INFO: Request: GET /category/Electronics from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 22:34:09,258 INFO: Request: GET /category/Fashion from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 22:42:50,583 INFO: Request: GET /cart from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 22:42:50,602 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2025-05-08 22:43:03,088 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]

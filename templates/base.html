@@ -458,7 +458,7 @@
                 {% if current_user.is_authenticated %}
                     <span>Welcome, {{ current_user.name }}</span>
                     <a href="{{ url_for('logout') }}">Logout</a>
-                    <a href="{{ url_for('cart') }}">Cart <span id="cartCount">({{ session['cart']|length if session['cart'] else 0 }})</span></a>
+                    <a href="{{ url_for('cart') }}">Cart</a>
                     <a href="{{ url_for('dashboard') }}">Account</a>
                     {% if current_user.is_admin %}
                         <a href="{{ url_for('admin') }}">Admin Panel</a>
@@ -530,7 +530,7 @@
     <div class="fab-container">
         <a href="{{ url_for('cart') }}" class="fab">
             <i class="fas fa-shopping-bag"></i>
-            <div class="fab-badge">{{ session['cart']|length if session['cart'] else 0 }}</div>
+
         </a>
         {% if current_user.is_authenticated %}
         <a href="{{ url_for('dashboard') }}" class="fab fab-primary">

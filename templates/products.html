@@ -1,258 +1,425 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - CurioCart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6a5acd;        /* Soft slate blue - primary brand color */
+            --primary-light: #9370db;   /* Lighter lavender */
+            --primary-dark: #483d8b;   /* Darker slate blue */
+            --secondary: #20b2aa;      /* Light sea green - accent color */
+            --secondary-light: #48d1cc; /* Lighter sea green */
+            --accent: #ff7f50;         /* Coral accent */
+            --light: #f8f8ff;          /* Ghost white background */
+            --light-gray: #e6e6fa;     /* Lavender blush for cards */
+            --dark: #2f4f4f;           /* Dark slate gray for text */
+            --success: #3cb371;        /* Medium sea green */
+            --text: #556b2f;           /* Dark olive green for secondary text */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.8;
+        }
 
-{% block title %}Products - CurioCart{% endblock %}
+        /* Header Styles */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 30px rgba(106, 90, 205, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        /* Product Page Styles */
+        .product-page-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
 
-{% block content %}
-<div class="product-page-container">
-    {% if current_user.is_authenticated %}
-    <div class="user-info-banner">
-        <p>Welcome back, {{ current_user.name }} {% if current_user.is_admin %}(Admin){% endif %}</p>
-    </div>
-    {% endif %}
+        .user-info-banner {
+            background: rgba(106, 90, 205, 0.1);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
 
-    <h1 class="page-title">Discover Unique Finds</h1>
-    
-    <div class="products-grid">
-        {% for product in products %}
-        <div class="product-card">
-            <div class="product-image-container" onclick="window.location.href='{{ url_for('product_detail', product_id=product.id) }}'">
-                <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) }}')">
-                    {% if product.discount %}
-                    <div class="discount-badge">-{{ product.discount }}%</div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="product-info">
-                <h3 class="product-title">{{ product.name }}</h3>
-                <p class="product-description">{{ product.description|truncate(100) }}</p>
-                
-                <div class="price-container">
-                    {% if product.discount %}
-                    <span class="original-price">₹{{ "%.2f"|format(product.price) }}</span>
-                    <span class="discounted-price">₹{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
-                    {% else %}
-                    <span class="product-price">₹{{ "%.2f"|format(product.price) }}</span>
-                    {% endif %}
-                </div>
-                
-                <div class="product-rating">
-                    <div class="stars">{{ '★' * product.rating }}{{ '☆' * (5 - product.rating) }}</div>
-                    <span class="review-count">({{ product.reviews }} reviews)</span>
-                </div>
+        .page-title {
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+        }
 
-                <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="add-to-cart-form">
-                    <input type="hidden" name="quantity" value="1">
-                    <button type="submit" class="add-to-cart">Add to Cart</button>
-                </form>
-                
-                {% if current_user.is_authenticated and current_user.is_admin %}
-                <div class="admin-controls">
-                    <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}">
-                        <button type="submit" class="admin-btn delete-btn">
-                            <i class="fas fa-trash-alt"></i> Remove
-                        </button>
-                    </form>
-                    <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="admin-btn edit-btn">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 2rem;
+        }
 
-<style>
-.product-page-container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1.5rem;
-}
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
 
-.user-info-banner {
-    background: rgba(106, 90, 205, 0.1);
-    padding: 0.8rem 1.2rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    border-left: 4px solid var(--primary);
-}
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(106, 90, 205, 0.15);
+        }
 
-.page-title {
-    font-size: 2.2rem;
-    color: var(--primary-dark);
-    margin-bottom: 2rem;
-    text-align: center;
-    position: relative;
-}
+        .product-image-container {
+            position: relative;
+            padding-top: 75%;
+            overflow: hidden;
+            cursor: pointer;
+        }
 
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 2rem;
-}
+        .product-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.3s ease;
+        }
 
-.product-card {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
 
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(106, 90, 205, 0.15);
-}
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+        }
 
-.product-image-container {
-    position: relative;
-    padding-top: 75%;
-    overflow: hidden;
-}
+        .product-info {
+            padding: 1.5rem;
+        }
 
-.product-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
-    transition: transform 0.3s ease;
-}
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
 
-.product-card:hover .product-image {
-    transform: scale(1.05);
-}
+        .product-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
 
-.discount-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: var(--primary);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 500;
-}
+        .price-container {
+            margin-bottom: 1rem;
+        }
 
-.product-info {
-    padding: 1.5rem;
-}
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 0.5rem;
+        }
 
-.product-title {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: var(--dark);
-}
+        .discounted-price, .product-price {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
 
-.product-description {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-}
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
 
-.price-container {
-    margin-bottom: 1rem;
-}
+        .stars {
+            color: #ffd700;
+        }
 
-.original-price {
-    text-decoration: line-through;
-    color: #999;
-    margin-right: 0.5rem;
-}
+        .review-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
 
-.discounted-price, .product-price {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--primary);
-}
+        .add-to-cart-form {
+            margin-top: 1rem;
+        }
 
-.product-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
+        .add-to-cart {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
 
-.stars {
-    color: #ffd700;
-}
+        .add-to-cart:hover {
+            background: var(--primary-dark);
+        }
 
-.review-count {
-    color: #666;
-    font-size: 0.9rem;
-}
+        .admin-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
 
-.add-to-cart-form {
-    margin-top: 1rem;
-}
+        .admin-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
 
-.add-to-cart {
-    width: 100%;
-    padding: 0.8rem;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.3s;
-}
+        .delete-btn {
+            background: #fee2e2;
+            color: #dc2626;
+        }
 
-.add-to-cart:hover {
-    background: var(--primary-dark);
-}
+        .delete-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
 
-.admin-controls {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
+        .edit-btn {
+            background: #e0e7ff;
+            color: #4f46e5;
+        }
 
-.admin-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+        .edit-btn:hover {
+            background: #4f46e5;
+            color: white;
+        }
 
-.delete-btn {
-    background: #fee2e2;
-    color: #dc2626;
-}
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .fab {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            box-shadow: 0 6px 20px rgba(32, 178, 170, 0.3);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 8px 25px rgba(32, 178, 170, 0.4);
+        }
+        
+        .fab-primary {
+            background: var(--primary);
+            box-shadow: 0 6px 20px rgba(106, 90, 205, 0.3);
+        }
+        
+        .fab-primary:hover {
+            box-shadow: 0 8px 25px rgba(106, 90, 205, 0.4);
+        }
+        
+        .fab-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
 
-.delete-btn:hover {
-    background: #dc2626;
-    color: white;
-}
+        /* Footer Styles */
+        .footer {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 6rem 2rem 3rem;
+            margin-top: 4rem;
+            overflow: hidden;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .footer-column a {
+            display: block;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 0.8rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .footer-column a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
 
-.edit-btn {
-    background: #e0e7ff;
-    color: #4f46e5;
-}
+        /* Responsive Adjustments */
+        @media (max-width: 900px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
 
-.edit-btn:hover {
-    background: #4f46e5;
-    color: white;
-}
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
 
-@media (max-width: 768px) {
-    .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-    
-    .page-title {
-        font-size: 1.8rem;
-    }
-}
-</style>
-{% endblock %}
+            .nav-links {
+                width: 100%;
+                justify-content: space-around;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-card {
+                max-width: 350px;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>

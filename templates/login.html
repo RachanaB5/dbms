@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - ShopEasy</title>
+    <title>Login - CurioCart</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -21,7 +21,7 @@
             <button type="submit" class="form-submit">Continue</button>
         </form>
         <div class="form-footer">
-            <p>New to ShopEasy? <a href="{{ url_for('register') }}">Create an account</a></p>
+            <p>New to CurioCart? <a href="{{ url_for('register') }}">Create an account</a></p>
         </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}

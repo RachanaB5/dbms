@@ -120,7 +120,7 @@ def init_db():
             admin = User.query.filter_by(email='admin@example.com').first()
             if not admin:
                 admin = User(
-                    name='Admin',
+                    username='Admin',
                     email='admin@example.com',
                     password_hash=generate_password_hash('admin123'),
                     _is_admin=True,
@@ -304,7 +304,7 @@ def register():
     try:
         hashed_password = generate_password_hash(password)
         new_user = User(
-            name=name,
+            username=name,  # Changed from 'name'
             email=email,
             phone=phone,
             password_hash=hashed_password,
@@ -341,7 +341,7 @@ def login():
         flash('Login successful.')
         if user.is_admin:
             return redirect(url_for('admin'))
-        return redirect(url_for('index'))
+        return redirect(url_for('products'))  # Changed from index to products
     else:
         print('Invalid email or password')
         flash('Invalid email or password.')
@@ -366,11 +366,7 @@ def index():
         .all()
     return render_template('index.html', featured_products=featured_products)
 
-# Products listing route
-@app.route('/products')
-def products():
-    products = Product.query.all()
-    # Calculate review count and average rating for each product
+def prepare_product_list(products):
     product_list = []
     for product in products:
         reviews = product.reviews
@@ -388,13 +384,21 @@ def products():
             'reviews': review_count,
             'rating': avg_rating
         })
+    return product_list
+
+# Products listing route
+@app.route('/products')
+def products():
+    products = Product.query.all()
+    product_list = prepare_product_list(products)
     return render_template('products.html', products=product_list)
 
 # Category products route
 @app.route('/category/<category_name>')
 def category_products(category_name):
     products = Product.query.filter(Product.category == category_name).all()
-    return render_template('products.html', products=products, category=category_name)
+    product_list = prepare_product_list(products)
+    return render_template('products.html', products=product_list, category=category_name)
 
 # Product detail route
 @app.route('/product/<int:product_id>', methods=['GET'])
@@ -406,7 +410,7 @@ def product_detail(product_id):
     review_list = []
     for r in reviews:
         review_list.append({
-            'username': r.user.name if r.user else 'User',
+            'username': r.user.username if r.user else 'User',
             'created_at': r.created_at,
             'rating': r.rating,
             'review_text': r.review_text,
@@ -488,7 +492,7 @@ def cart():
         return render_template('cart.html', items=items, total=total)
     except Exception as e:
         app.logger.error(f"Error in /cart route: {str(e)}")
-        return redirect(url_for('dashboard'))
+        return render_template('errors/500.html'), 500
 
 # Update cart route
 @app.route('/update_cart/<int:product_id>', methods=['POST'])
@@ -837,6 +841,139 @@ def add_sample_products():
     db.session.commit()
     return 'Sample products added!'
 
+@app.route('/reset_products')
+def reset_products():
+    try:
+        # Delete all products
+        Product.query.delete()
+        db.session.commit()
+        
+        # Sample products data
+        sample_products = [
+            {
+                'name': 'Laptop',
+                'description': 'High-performance laptop for work and play.',
+                'price': 74899.00,
+                'category': 'Electronics',
+                'image': 'laptop.jpg',
+                'discount': 10,
+                'stock_quantity': 50
+            },
+            {
+                'name': 'Smartphone',
+                'description': 'Latest model smartphone with advanced features.',
+                'price': 24999.00,
+                'category': 'Electronics',
+                'image': 'smart-phone.jpg',
+                'discount': 8,
+                'stock_quantity': 100
+            },
+            {
+                'name': 'Headphones',
+                'description': 'Noise-canceling headphones for music lovers.',
+                'price': 2999.00,
+                'category': 'Electronics',
+                'image': 'headphones.jpg',
+                'discount': 12,
+                'stock_quantity': 75
+            },
+            {
+                'name': 'Smartwatch',
+                'description': 'Waterproof smartwatch with fitness tracking.',
+                'price': 2499.00,
+                'category': 'Electronics',
+                'image': 'smart-watch.jpg',
+                'discount': 5,
+                'stock_quantity': 60
+            },
+            {
+                'name': 'Tablet',
+                'description': 'Lightweight tablet for entertainment and productivity.',
+                'price': 39999.00,
+                'category': 'Electronics',
+                'image': 'tablet.jpg',
+                'discount': 15,
+                'stock_quantity': 80
+            },
+            {
+                'name': 'Gaming Console',
+                'description': 'Next-gen gaming console for immersive experiences.',
+                'price': 79999.00,
+                'category': 'Gadgets',
+                'image': 'gaming-console.jpg',
+                'discount': 0,
+                'stock_quantity': 40
+            },
+            {
+                'name': 'Wireless Mouse',
+                'description': 'Ergonomic wireless mouse for smooth navigation.',
+                'price': 1999.00,
+                'category': 'Gadgets',
+                'image': 'mouse.jpg',
+                'discount': 0,
+                'stock_quantity': 150
+            },
+            {
+                'name': 'Home Decor Set',
+                'description': 'Beautiful decor set to enhance your living space.',
+                'price': 122499.00,
+                'category': 'Home & Kitchen',
+                'image': 'home.jpg',
+                'discount': 20,
+                'stock_quantity': 18
+            },
+            {
+                'name': 'Beauty Kit',
+                'description': 'Complete beauty kit for your daily routine.',
+                'price': 1599.00,
+                'category': 'Beauty',
+                'image': 'beauty.jpg',
+                'discount': 10,
+                'stock_quantity': 22
+            },
+            {
+                'name': 'Fashion Handbag',
+                'description': 'Trendy handbag to complement your style.',
+                'price': 2199.00,
+                'category': 'Fashion',
+                'image': 'fashion.jpg',
+                'discount': 5,
+                'stock_quantity': 28
+            },
+            {
+                'name': 'Book: Learn Python',
+                'description': 'Comprehensive guide to learning Python programming.',
+                'price': 499.00,
+                'category': 'Books',
+                'image': 'book.jpg',
+                'discount': 0,
+                'stock_quantity': 60
+            },
+            {
+                'name': 'Keyboard',
+                'description': 'Mechanical keyboard for fast and accurate typing.',
+                'price': 3499.00,
+                'category': 'Electronics',
+                'image': 'keyboard.jpg',
+                'discount': 0,
+                'stock_quantity': 35
+            }
+        ]
+        
+        # Add all products
+        for prod_data in sample_products:
+            product = Product(**prod_data)
+            db.session.add(product)
+        
+        db.session.commit()
+        flash('Products reset successfully!')
+        return redirect(url_for('products'))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error resetting products: {str(e)}')
+        return redirect(url_for('products'))
+
 @app.route('/debug/products')
 def debug_products():
     try:
@@ -855,5 +992,5 @@ def debug_products():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    init_db()
+    # init_db()
     app.run(debug=True)
