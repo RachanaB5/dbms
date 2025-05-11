@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>curiocart - Elegant Shopping</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6a5acd;        /* Soft slate blue - primary brand color */
@@ -18,21 +19,41 @@
             --dark: #2f4f4f;           /* Dark slate gray for text */
             --success: #3cb371;        /* Medium sea green */
             --text: #556b2f;           /* Dark olive green for secondary text */
+            --primary-rgb: 106, 90, 205;       /* RGB values for primary */
+            --primary-dark-rgb: 72, 61, 139;   /* RGB values for primary-dark */
+            --font-primary: 'Poppins', sans-serif;
+            --font-heading: 'Poppins', sans-serif;
+            --font-size-base: 16px;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            font-family: var(--font-primary);
         }
-        
+
         body {
             background-color: var(--light);
             color: var(--dark);
             line-height: 1.8;
         }
-        
+
+        /* Global anchor styles */
+        a {
+            text-decoration: none;
+            transition: all 0.3s ease;
+            color: var(--primary);
+        }
+
+        a:hover {
+            color: var(--primary-dark);
+        }
+
         /* Elegant Header with Gradient */
         .main-header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -70,17 +91,33 @@
             z-index: 1;
         }
         
-        .logo {
-            font-size: 2.8rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .header-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
             color: white;
+            gap: 10px;
         }
-        
+
+        .logo {
+            width: 80px;  /* Reduced from default size */
+            height: 80px; /* Make it square */
+            object-fit: contain;
+        }
+
+        .header-logo span {
+            font-family: var(--font-heading);
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
         .tagline {
+            font-family: var(--font-heading);
+            font-size: var(--font-size-lg);
             font-weight: 300;
-            margin-bottom: 2rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
             opacity: 0.9;
         }
         
@@ -135,8 +172,11 @@
         }
         
         .section-title {
+            font-family: var(--font-heading);
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            letter-spacing: -0.5px;
             text-align: center;
-            font-size: 2.2rem;
             margin-bottom: 3rem;
             color: var(--primary-dark);
             position: relative;
@@ -152,63 +192,83 @@
             border-radius: 2px;
         }
         
+        /* Hexagonal Category Grid with Soft Colors */
+        .category-section {
+            padding: 4rem 2rem;
+            background: linear-gradient(to bottom, var(--light), white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 3rem;
+            color: var(--primary-dark);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            margin: 0.8rem auto 0;
+            border-radius: 2px;
+        }
+
         .hex-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            max-width: 1000px;
+            gap: 30px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 2rem;
         }
-        
+
         .hex-item {
             position: relative;
-            height: 200px;
+            height: 250px;
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-            background: rgba(60,60,60,0.65); /* grey shade */
-            background-blend-mode: multiply;
             background-size: cover;
             background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: saturate(0.9);
+            filter: brightness(0.9);
+         
         }
-        
-        .hex-item:nth-child(even) {
-            transform: translateY(50px);
-        }
-        
-        .hex-item:hover {
-            transform: scale(1.1) !important;
-            filter: saturate(1.2) brightness(1.05);
-            z-index: 2;
-        }
-        
+
         .hex-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: none; /* Remove blue overlay, keep only text */
+            inset: 0;
+        
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
             font-size: 1.5rem;
             font-weight: 600;
-            opacity: 1; /* Always visible */
-            transition: opacity 0.3s;
-            border-radius: inherit;
+            letter-spacing: 1px;
+    
+            opacity: 1;
+            transition: all 0.3s ease;
         }
-        
+
+        .hex-item:hover {
+            transform: translateY(-10px);
+            filter: brightness(1.1);
+        }
+
+        .hex-item:hover .hex-overlay {
+            background: linear-gradient;
+        }
+
         /* Product Cards with Soft Glass Effect */
         .products-section {
             padding: 4rem 2rem;
             background-color: var(--light-gray);
         }
-        
+
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -216,76 +276,80 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .product-card {
-            background: rgba(255,255,255,0.8);
+            background: white;
             backdrop-filter: blur(10px);
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(106, 90, 205, 0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             transition: all 0.4s;
             border: 1px solid rgba(255,255,255,0.3);
         }
-        
+
         .product-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(106, 90, 205, 0.2);
             border-color: rgba(106, 90, 205, 0.2);
         }
-        
+
         .product-image {
-            height: 220px;
+            height: 240px;
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
             background-color: white;
-            transition: all 0.5s;
+            transition: transform 0.3s ease;
         }
-        
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
         .product-info {
-            padding: 1.5rem;
+            padding: 1.25rem;
             background: rgba(255,255,255,0.6);
         }
-        
+
         .product-title {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
             color: var(--primary-dark);
             font-weight: 600;
         }
-        
+
         .product-rating {
             color: var(--accent);
             margin: 0.5rem 0;
             font-size: 0.9rem;
         }
-        
+
         .product-price {
             color: var(--primary);
             font-weight: 700;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin: 0.5rem 0 1rem;
         }
-        
+
         .add-to-cart {
             width: 100%;
             padding: 0.8rem;
             background: linear-gradient(to right, var(--primary), var(--primary-light));
             color: white;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 6px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(106, 90, 205, 0.3);
         }
-        
+
         .add-to-cart:hover {
             background: linear-gradient(to right, var(--primary-dark), var(--primary));
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(106, 90, 205, 0.4);
         }
-        
+
         /* Floating Action Buttons */
         .fab-container {
             position: fixed;
@@ -296,7 +360,7 @@
             gap: 15px;
             z-index: 1000;
         }
-        
+
         .fab {
             width: 60px;
             height: 60px;
@@ -311,21 +375,21 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        
+
         .fab:hover {
             transform: scale(1.1) rotate(10deg);
             box-shadow: 0 8px 25px rgba(32, 178, 170, 0.4);
         }
-        
+
         .fab-primary {
             background: var(--primary);
             box-shadow: 0 6px 20px rgba(106, 90, 205, 0.3);
         }
-        
+
         .fab-primary:hover {
             box-shadow: 0 8px 25px rgba(106, 90, 205, 0.4);
         }
-        
+
         .fab-badge {
             position: absolute;
             top: -5px;
@@ -342,29 +406,21 @@
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        
+
         /* Wave-shaped Footer */
         .footer {
             position: relative;
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             color: white;
-            padding: 6rem 2rem 3rem;
-            margin-top: 4rem;
+            padding: 4rem 1.5rem 2rem;
+            margin-top: 3rem;
             overflow: hidden;
         }
-        
+
         .footer::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' fill='%23f8f8ff' opacity='.25'/%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' fill='%23f8f8ff'/%3E%3C/svg%3E");
-            background-size: cover;
-            background-repeat: no-repeat;
+            display: none;
         }
-        
+
         .footer-content {
             max-width: 1200px;
             margin: 0 auto;
@@ -372,14 +428,14 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 3rem;
         }
-        
+
         .footer-column h3 {
             font-size: 1.3rem;
             margin-bottom: 1.5rem;
             position: relative;
             display: inline-block;
         }
-        
+
         .footer-column h3::after {
             content: '';
             position: absolute;
@@ -389,19 +445,22 @@
             height: 3px;
             background: var(--secondary);
         }
-        
+
         .footer-column a {
+            font-size: var(--font-size-base);
+            font-weight: 400;
+            opacity: 0.9;
             display: block;
             color: rgba(255,255,255,0.8);
             margin-bottom: 0.8rem;
             transition: all 0.3s;
         }
-        
+
         .footer-column a:hover {
             color: white;
             transform: translateX(5px);
         }
-        
+
         .footer-bottom {
             text-align: center;
             padding-top: 3rem;
@@ -410,40 +469,126 @@
             color: rgba(255,255,255,0.7);
             font-size: 0.9rem;
         }
-        
+
+        /* Alert Messages */
+        .alert {
+            padding: 1rem;
+            margin: 1rem auto;
+            border-radius: 4px;
+            max-width: 800px;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 900px) {
             .hex-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
+
             .hex-item:nth-child(even) {
                 transform: none;
             }
         }
-        
+
+        @media (max-width: 768px) {
+            :root {
+                --font-size-base: 14px;
+                --font-size-lg: 1rem;
+                --font-size-xl: 1.125rem;
+                --font-size-2xl: 1.25rem;
+                --font-size-3xl: 1.5rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-container {
+                position: static;
+                width: 100%;
+                transform: none;
+                margin-top: 1rem;
+            }
+
+            .hex-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hex-item:nth-child(even) {
+                transform: none;
+            }
+        }
+
         @media (max-width: 600px) {
             .hex-grid {
                 grid-template-columns: 1fr;
                 gap: 40px;
             }
-            
+
             .search-bar {
                 transform: none;
             }
-            
+
             .logo {
                 font-size: 2.2rem;
             }
-            
+
             .section-title {
                 font-size: 1.8rem;
             }
-            
+
             .footer::before {
                 top: -30px;
                 height: 60px;
             }
+        }
+
+        @media (max-width: 480px) {
+            .hex-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Navigation Links */
+        .nav-link {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: 0.3px;
+        }
+
+        /* Auth Links */
+        .header-content a {
+            color: white;
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .header-content a:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -451,36 +596,28 @@
     <!-- Elegant Header -->
     <header class="main-header">
         <div class="header-content">
-            <div class="logo"><img src="{{ url_for('static', filename='image/logo.png') }}" alt="curiocart logo" style="height:48px;vertical-align:middle;margin-right:10px;">curiocart</div>
-            <p class="tagline">Curated elegance for your lifestyle</p>
-            <!-- Auth/account/cart links -->
-            <div style="display:flex;gap:1.5rem;align-items:center;justify-content:flex-end;width:100%;margin-bottom:1rem;">
-                {% if current_user.is_authenticated %}
-                    <span>Welcome, {{ current_user.name }}</span>
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                    <a href="{{ url_for('cart') }}">Cart</a>
-                    <a href="{{ url_for('dashboard') }}">Account</a>
-                    {% if current_user.is_admin %}
-                        <a href="{{ url_for('admin') }}">Admin Panel</a>
-                    {% endif %}
-                {% else %}
-                    <a href="{{ url_for('show_login') }}">Login</a>
-                    <a href="{{ url_for('show_register') }}">Register</a>
-                    <a href="{{ url_for('cart') }}">Cart <span id="cartCount">({{ session['cart']|length if session['cart'] else 0 }})</span></a>
-                {% endif %}
-            </div>
-            <!-- Curved Search Bar -->
+            <a href="/" class="header-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="CurioCart Logo" class="logo">
+                <span style="font-family: 'Poppins'; font-size: 4rem">CurioCart</span>
+            </a>
+    
+            <p class="tagline" style="font-family: 'Poppins'; font-size: 1.5rem">Curated elegance for your lifestyle</p>
             <div class="search-container">
+
+          <!-- Curved Search Bar -->
                 <form class="search-bar" action="{{ url_for('search') }}" method="get">
-                    <input type="text" class="search-input" name="q" placeholder="Discover handpicked items..." required>
+                    <input type="text" style="font-family: 'Poppins';" class="search-input" name="q" placeholder="Discover handpicked items..." required>
                     <button class="search-button" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
             </div>
+
+        
+            
         </div>
     </header>
-    
+
     <!-- Flash messages -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -493,39 +630,42 @@
     {% endwith %}
 
     <!-- Hexagonal Category Grid -->
-    <section class="category-section" style="background: url('{{ url_for('static', filename='image/background.jpg') }}') center/cover no-repeat;">
+    <section class="category-section">
         <h2 class="section-title">Our Collections</h2>
         <div class="hex-grid">
-            <a href="{{ url_for('category_products', category_name='Electronics') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?electronics');"><div class="hex-overlay">Electronics</div></a>
-            <a href="{{ url_for('category_products', category_name='Fashion') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?fashion');"><div class="hex-overlay">Fashion</div></a>
-            <a href="{{ url_for('category_products', category_name='Home & Kitchen') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?home');"><div class="hex-overlay">Home</div></a>
-            <a href="{{ url_for('category_products', category_name='Beauty') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?beauty');"><div class="hex-overlay">Beauty</div></a>
-            <a href="{{ url_for('category_products', category_name='Books') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?books');"><div class="hex-overlay">Books</div></a>
-            <a href="{{ url_for('category_products', category_name='Gadgets') }}" class="hex-item" style="background-image: url('https://source.unsplash.com/random/600x600?gadgets');"><div class="hex-overlay">Gadgets</div></a>
+            <a href="{{ url_for('category_products', category_name='Electronics') }}" 
+               class="hex-item" 
+               style="background-image: url('{{ url_for('static', filename='images/categories/electronics.jpg') }}')">
+                <div class="hex-overlay">Electronics</div>
+            </a>
+            <a href="{{ url_for('category_products', category_name='Fashion') }}" 
+               class="hex-item" 
+               style="background-image: url('{{ url_for('static', filename='images/categories/fashion.jpg') }}')">
+                <div class="hex-overlay">Fashion</div>
+            </a>
+            <a href="{{ url_for('category_products', category_name='Home') }}" 
+               class="hex-item" 
+               style="background-image: url('{{ url_for('static', filename='images/categories/home.jpg') }}')">
+                <div class="hex-overlay">Home</div>
+            </a>
+            <a href="{{ url_for('category_products', category_name='Beauty') }}" 
+               class="hex-item" 
+               style="background-image: url('{{ url_for('static', filename='images/categories/beauty.jpg') }}')">
+                <div class="hex-overlay">Beauty</div>
+            </a>
+            <a href="{{ url_for('category_products', category_name='Books') }}" 
+               class="hex-item" 
+               style="background-image: url('{{ url_for('static', filename='images/categories/books.jpg') }}')">
+                <div class="hex-overlay">Books</div>
+            </a>
+            <a href="{{ url_for('category_products', category_name='Gadgets') }}" 
+               class="hex-item" 
+               style="background-image: url('{{ url_for('static', filename='images/categories/gadgets.jpg') }}')">
+                <div class="hex-overlay">Gadgets</div>
+            </a>
         </div>
     </section>
-    
-    <!-- Product Grid with Glass Effect -->
-    <section class="products-section">
-        <h2 class="section-title">Featured Products</h2>
-        <div class="product-grid">
-            {% for product in products %}
-            <div class="product-card">
-                <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) }}')"></div>
-                <div class="product-info">
-                    <h3 class="product-title">{{ product.name }}</h3>
-                    <div class="product-rating">{{ '★' * (product.rating if product.rating else 0) }}{{ '☆' * (5 - (product.rating if product.rating else 0)) }}</div>
-                    <div class="product-price">₹{{ product.price }}</div>
-                    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
-                        <input type="hidden" name="quantity" value="1">
-                        <button class="add-to-cart" type="submit">Add to Cart</button>
-                    </form>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-    
+
     <!-- Floating Action Buttons -->
     <div class="fab-container">
         <a href="{{ url_for('cart') }}" class="fab">
@@ -542,12 +682,12 @@
         </a>
         {% endif %}
     </div>
-    
+
     <!-- Wave-shaped Footer -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-column">
-                <h3><img src="{{ url_for('static', filename='image/logo.png') }}" alt="curiocart logo" style="height:28px;vertical-align:middle;margin-right:8px;">curiocart</h3>
+                <h3>CurioCart</h3>
                 <a href="#">Our Story</a>
                 <a href="#">Sustainability</a>
                 <a href="#">Careers</a>
@@ -575,12 +715,12 @@
                 <a href="#">Accessibility</a>
             </div>
         </div>
-        
+
         <div class="footer-bottom">
             <p>© 2024 curiocart. All rights reserved. Crafted with ♡ in India</p>
         </div>
     </footer>
-    
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
