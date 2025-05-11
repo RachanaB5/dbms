@@ -84,13 +84,22 @@ class Order(db.Model):
         return self.status.title()
 
 class OrderItem(db.Model):
-    __tablename__ = 'order_items'  # Fix table name
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)  # Match product_id column
+    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'))
+    product_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price_at_time = db.Column(db.Float, nullable=False)  # Store price at time of purchase
     discount_at_time = db.Column(db.Integer, nullable=True)  # Store discount at time of purchase
+
+    def __init__(self, order_id, product_id, quantity, price_at_time, discount_at_time=0):
+        self.order_id = order_id
+        self.product_id = product_id
+        product = Product.query.get(product_id)
+        self.product_name = product.name if product else None
+        self.quantity = quantity
+        self.price_at_time = price_at_time
+        self.discount_at_time = discount_at_time
 
     @property
     def subtotal(self):
@@ -113,10 +122,17 @@ class Payment(db.Model):
     # Remove this line: order = db.relationship('Order', backref=db.backref('payment', uselist=False))
 
 class Cart(db.Model):
-    __tablename__ = 'cart'
-    id = db.Column('cart_id', db.Integer, primary_key=True)
+    cart_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False, default=1)
+    product_name = db.Column(db.String(100), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
     user = db.relationship('User', backref='cart_items', lazy=True)
     product = db.relationship('Product', backref='cart_entries', lazy=True)
+    
+    def __init__(self, user_id, product_id, quantity):
+        self.user_id = user_id
+        self.product_id = product_id
+        product = Product.query.get(product_id)
+        self.product_name = product.name if product else None
+        self.quantity = quantity
