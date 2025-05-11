@@ -287,3 +287,8 @@ ALTER TABLE Orders ADD CONSTRAINT orders_ibfk_1 FOREIGN KEY (user_id) REFERENCES
 ALTER TABLE Cart ADD CONSTRAINT cart_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
 ALTER TABLE Reviews ADD CONSTRAINT reviews_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
 ALTER TABLE Payments ADD CONSTRAINT payments_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
+
+select * from users;
+select * from products;
+select * from orders;
+select * from cart;      
