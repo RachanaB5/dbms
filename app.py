@@ -217,7 +217,7 @@ def init_db():
                         'name': 'Home Decor Set',
                         'description': 'Beautiful decor set to enhance your living space.',
                         'price': 2499,
-                        'category': 'Home & Kitchen',
+                        'category': 'Home',
                         'image': 'home.jpg',
                         'discount': 20,
                         'stock_quantity': 18
@@ -248,6 +248,87 @@ def init_db():
                         'image': 'book.jpg',
                         'discount': 0,
                         'stock_quantity': 60
+                    },
+                    {
+                        'name': 'Decorative Wall Mirror',
+                        'description': 'Elegant wall mirror with carved wooden frame.',
+                        'price': 3499,
+                        'category': 'Home',
+                        'image': 'wall-mirror.jpg',
+                        'discount': 15,
+                        'stock_quantity': 25
+                    },
+                    {
+                        'name': 'Artificial Plants Set',
+                        'description': 'Set of 3 artificial plants in modern ceramic pots.',
+                        'price': 1499,
+                        'category': 'Home',
+                        'image': 'plants.jpg',
+                        'discount': 10,
+                        'stock_quantity': 30
+                    },
+                    {
+                        'name': 'Designer Heels',
+                        'description': 'Elegant designer heels for special occasions.',
+                        'price': 3999,
+                        'category': 'Fashion',
+                        'image': 'heels.jpg',
+                        'discount': 15,
+                        'stock_quantity': 40
+                    },
+                    {
+                        'name': 'Fashion Jewelry Set',
+                        'description': 'Designer necklace and earrings set.',
+                        'price': 1999,
+                        'category': 'Fashion',
+                        'image': 'jewelry.jpg',
+                        'discount': 10,
+                        'stock_quantity': 45
+                    },
+                    {
+                        'name': 'Premium Makeup Set',
+                        'description': 'Professional makeup kit with brushes.',
+                        'price': 2999,
+                        'category': 'Beauty',
+                        'image': 'makeup.jpg',
+                        'discount': 12,
+                        'stock_quantity': 35
+                    },
+                    {
+                        'name': 'Skincare Collection',
+                        'description': 'Luxury skincare products for daily routine.',
+                        'price': 3499,
+                        'category': 'Beauty',
+                        'image': 'skincare.jpg',
+                        'discount': 8,
+                        'stock_quantity': 30
+                    },
+                    {
+                        'name': 'Mystery Novel',
+                        'description': 'Bestselling mystery thriller book.',
+                        'price': 599,
+                        'category': 'Books',
+                        'image': 'novel.jpg',
+                        'discount': 5,
+                        'stock_quantity': 80
+                    },
+                    {
+                        'name': 'Fashion Magazine',
+                        'description': 'Latest trends and style magazine.',
+                        'price': 299,
+                        'category': 'Books',
+                        'image': 'magazine.jpg',
+                        'discount': 0,
+                        'stock_quantity': 100
+                    },
+                    {
+                        'name': 'Smart Speaker',
+                        'description': 'Wireless smart speaker with voice control.',
+                        'price': 4999,
+                        'category': 'Gadgets',
+                        'image': 'speaker.jpg',
+                        'discount': 15,
+                        'stock_quantity': 50
                     }
                 ]
                 
@@ -969,7 +1050,71 @@ def add_sample_products():
             'image': 'book.jpg',
             'discount': 0,
             'stock_quantity': 60
+        },
+        {
+            'name': 'Designer Heels',
+            'description': 'Elegant designer heels for special occasions.',
+            'price': 3999,
+            'category': 'Fashion',
+            'image': 'heels.jpg',
+            'discount': 15,
+            'stock_quantity': 40
+        },
+        {
+            'name': 'Fashion Jewelry Set',
+            'description': 'Designer necklace and earrings set.',
+            'price': 1999,
+            'category': 'Fashion',
+            'image': 'jewelry.jpg',
+            'discount': 10,
+            'stock_quantity': 45
+        },
+        {
+            'name': 'Premium Makeup Set',
+            'description': 'Professional makeup kit with brushes.',
+            'price': 2999,
+            'category': 'Beauty',
+            'image': 'makeup.jpg',
+            'discount': 12,
+            'stock_quantity': 35
+        },
+        {
+            'name': 'Skincare Collection',
+            'description': 'Luxury skincare products for daily routine.',
+            'price': 3499,
+            'category': 'Beauty',
+            'image': 'skincare.jpg',
+            'discount': 8,
+            'stock_quantity': 30
+        },
+        {
+            'name': 'Mystery Novel',
+            'description': 'Bestselling mystery thriller book.',
+            'price': 599,
+            'category': 'Books',
+            'image': 'novel.jpg',
+            'discount': 5,
+            'stock_quantity': 80
+        },
+        {
+            'name': 'Fashion Magazine',
+            'description': 'Latest trends and style magazine.',
+            'price': 299,
+            'category': 'Books',
+            'image': 'magazine.jpg',
+            'discount': 0,
+            'stock_quantity': 100
+        },
+        {
+            'name': 'Smart Speaker',
+            'description': 'Wireless smart speaker with voice control.',
+            'price': 4999,
+            'category': 'Gadgets',
+            'image': 'speaker.jpg',
+            'discount': 15,
+            'stock_quantity': 50
         }
+        
     ]
     for prod in sample_products:
         if not Product.query.filter_by(name=prod['name']).first():
