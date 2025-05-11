@@ -1,8 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Your Shopping Cart</title>
+    <title>Your Shopping Cart - CurioCart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #6a5acd;
+            --primary-dark: #483d8b;
+            --accent: #ff7f50;
+            --light: #f8f8ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+        }
+
+        .nav-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            height: var(--header-height);
+            padding: var(--header-padding);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            height: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-logo img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(1.1) contrast(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .nav-logo span {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, #fff, rgba(255,255,255,0.9));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--nav-item-gap, 1.2rem);
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .nav-links a i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover i {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .nav-header {
+                height: auto;
+                padding: 1rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+
+            .nav-links a {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
         .cart-container {
             max-width: 1200px;
             margin: 2rem auto;
@@ -31,9 +160,13 @@
             gap: 2rem;
             padding: 1.5rem;
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .cart-item:hover {
+            transform: translateY(-5px);
         }
         .cart-item-image {
             width: 120px;
@@ -76,11 +209,16 @@
         .quantity-btn {
             width: 30px;
             height: 30px;
-            border: 1px solid #4a6fa5;
+            border: 1px solid var(--primary);
             background: white;
-            color: #4a6fa5;
+            color: var(--primary);
             border-radius: 4px;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quantity-btn:hover {
+            background: var(--primary);
+            color: white;
         }
         .quantity-display {
             width: 50px;
@@ -116,13 +254,17 @@
         }
         .btn-checkout {
             padding: 1rem 2rem;
-            background: #4a6fa5;
+            background: var(--primary);
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 1.1rem;
             cursor: pointer;
             text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-checkout:hover {
+            background: var(--primary-dark);
         }
         @media (max-width: 768px) {
             .cart-item {
@@ -142,6 +284,23 @@
     </style>
 </head>
 <body>
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="CurioCart">
+                <span>CurioCart</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> Home</a>
+                <a href="{{ url_for('products') }}"><i class="fas fa-store"></i> Products</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a>
+                    <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
     <div class="cart-container">
         <h1 style="color: #3a5a8a; margin-bottom: 2rem;">Your Shopping Cart</h1>
         {% if items|length == 0 %}
@@ -152,7 +311,7 @@
         {% else %}
             {% for item in items %}
             <div class="cart-item" data-product-id="{{ item.product.id }}">
-                <div class="cart-item-image" style="background-image: url('{{ url_for('static', filename='image/' + item.product.image) }}')"></div>
+                <div class="cart-item-image" style="background-image: url('{{ url_for('static', filename='images/' + item.product.image) }}')"></div>
                 <div class="cart-item-details">
                     <h3 class="cart-item-title">{{ item.product.name }}</h3>
                     <div class="cart-item-price">
@@ -188,7 +347,9 @@
             {% endfor %}
             <div class="cart-summary">
                 <div class="cart-total">Total: ₹<span id="cartTotal">{{ "%.2f"|format(total) }}</span></div>
-                <a href="{{ url_for('checkout') }}" class="btn-checkout">Proceed to Checkout</a>
+                {% if items %}
+                    <a href="{{ url_for('checkout') }}" class="btn-checkout">Proceed to Checkout</a>
+                {% endif %}
             </div>
         {% endif %}
     </div>
