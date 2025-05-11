@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, abort
 from extensions import db, login_manager
-from models import User, Product, Review, Order, Payment, Cart as CartModel
+from models import User, Product, Review, Order, OrderItem, Payment, Cart as CartModel
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
@@ -629,103 +629,93 @@ def update_cart(product_id):
 @login_required
 def checkout():
     try:
+        # Get cart items
         cart_items = CartModel.query.filter_by(user_id=current_user.id).all()
         if not cart_items:
-            flash('Your cart is empty.')
+            flash('Your cart is empty')
             return redirect(url_for('cart'))
 
-        if request.method == 'POST':
-            app.logger.info('Processing checkout POST request')
+        # Calculate total and prepare items list
+        items = []
+        total = Decimal('0.0')
+        
+        for cart_item in cart_items:
+            product = Product.query.get(cart_item.product_id)
+            if not product or product.stock_quantity < cart_item.quantity:
+                flash(f'Sorry, {product.name if product else "an item"} is out of stock')
+                return redirect(url_for('cart'))
             
-            # Calculate total amount first
-            total_amount = sum(
-                float(item.product.price) * (1 - float(item.product.discount or 0)/100) * item.quantity
-                for item in cart_items
-            )
+            price = product.get_discounted_price()
+            subtotal = price * Decimal(str(cart_item.quantity))
+            total += subtotal
+            
+            items.append({
+                'product': product,
+                'quantity': cart_item.quantity,
+                'subtotal': float(subtotal),
+                'unit_price': float(price)
+            })
 
-            # Create new order record
-            new_order = Order(
-                user_id=current_user.id,
-                total_amount=total_amount,
-                order_date=datetime.utcnow(),
-                status='pending',
-                shipping_address=request.form.get('address'),
-                shipping_city=request.form.get('city'),
-                shipping_state=request.form.get('state'),
-                shipping_zip=request.form.get('zip')
-            )
-
+        if request.method == 'POST':
             try:
-                # Save order first to get ID
-                db.session.add(new_order)
+                # Create new order
+                order = Order(
+                    user_id=current_user.id,
+                    shipping_address=request.form.get('address'),
+                    shipping_city=request.form.get('city'),
+
+                    shipping_zip=request.form.get('zip'),
+                    status='pending'
+                )
+                db.session.add(order)
                 db.session.flush()
 
-                # Create order items
+                # Add order items and update stock
                 for cart_item in cart_items:
                     product = Product.query.get(cart_item.product_id)
+                    if not product.update_stock(cart_item.quantity):
+                        db.session.rollback()
+                        flash(f'Sorry, {product.name} is out of stock')
+                        return redirect(url_for('cart'))
                     
-                    # Create order item
                     order_item = OrderItem(
-                        order_id=new_order.id,
+                        order_id=order.id,
                         product_id=cart_item.product_id,
                         quantity=cart_item.quantity,
                         price_at_time=float(product.price),
                         discount_at_time=product.discount
                     )
                     db.session.add(order_item)
-                    
-                    # Update stock
-                    product.stock_quantity -= cart_item.quantity
 
                 # Create payment record
                 payment = Payment(
-                    order_id=new_order.id,
-                    amount=total_amount,
+                    order_id=order.id,
+                    amount=float(total),
                     payment_status='pending',
-                    payment_method=request.form.get('payment_method', 'credit_card'),
-                    payment_date=datetime.utcnow()
+                    payment_method=request.form.get('payment_method', 'credit_card')
                 )
                 db.session.add(payment)
 
-                # Clear cart after successful order
-                for cart_item in cart_items:
-                    db.session.delete(cart_item)
+                # Clear cart
+                for item in cart_items:
+                    db.session.delete(item)
 
-                # Final commit
                 db.session.commit()
-                app.logger.info(f'Order {new_order.id} created successfully')
                 flash('Order placed successfully!')
-                return redirect(url_for('order_confirmation', order_id=new_order.id))
+                return redirect(url_for('order_confirmation', order_id=order.id))
 
             except Exception as e:
                 db.session.rollback()
-                app.logger.error(f'Order creation failed: {str(e)}')
-                flash('Error creating order. Please try again.')
+                app.logger.error(f'Checkout error: {str(e)}')
+                flash('An error occurred while processing your order')
                 return redirect(url_for('cart'))
 
-        # GET request handling remains the same
-        items = []
-        total = 0
-        for cart_item in cart_items:
-            product = Product.query.get(cart_item.product_id)
-            if product:
-                price = product.get_discounted_price()
-                subtotal = price * cart_item.quantity
-                total += subtotal
-                items.append({
-                    'product': product,
-                    'quantity': cart_item.quantity,
-                    'subtotal': subtotal,
-                    'unit_price': price
-                })
-        return render_template('checkout.html', 
-                            items=items, 
-                            total=total,
-                            user=current_user)
+        app.logger.info(f"Checkout initiated for user {current_user.id} with {len(items)} items")
+        return render_template('checkout.html', items=items, total=float(total))
 
     except Exception as e:
         app.logger.error(f'Checkout error: {str(e)}')
-        flash('Error processing checkout. Please try again.')
+        flash('An error occurred while processing your checkout')
         return redirect(url_for('cart'))
 
 @app.route('/order_confirmation/<int:order_id>')
@@ -981,7 +971,6 @@ def add_sample_products():
             'stock_quantity': 60
         }
     ]
-    
     for prod in sample_products:
         if not Product.query.filter_by(name=prod['name']).first():
             p = Product(**prod)
