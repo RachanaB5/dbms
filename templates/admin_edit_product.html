@@ -1,37 +1,134 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="admin-container" style="max-width:500px;margin:40px auto;padding:30px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<div class="edit-container">
     <h1>Edit Product</h1>
-    <form method="POST">
+    
+    <form method="POST" class="edit-form">
         <div class="form-group">
-            <label for="name">Product Name</label>
-            <input type="text" id="name" name="name" value="{{ product.name }}" required>
+            <label>Product Name</label>
+            <input type="text" name="name" value="{{ product.name }}" required>
         </div>
+        
         <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" required>{{ product.description }}</textarea>
+            <label>Description</label>
+            <textarea name="description" required>{{ product.description }}</textarea>
         </div>
-        <div class="form-group">
-            <label for="price">Price</label>
-            <input type="number" id="price" name="price" step="0.01" value="{{ product.price }}" required>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Price (₹)</label>
+                <input type="number" name="price" step="0.01" value="{{ product.price }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Stock Quantity</label>
+                <input type="number" name="stock_quantity" value="{{ product.stock_quantity }}" required>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="image">Image Filename (in static/image/)</label>
-            <input type="text" id="image" name="image" value="{{ product.image }}" required>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category" required>
+                    <option value="">Select Category</option>
+                    {% for cat in ['Electronics', 'Gadgets', 'Fashion', 'Home & Kitchen', 'Beauty', 'Books'] %}
+                        <option value="{{ cat }}" {% if product.category == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Discount (%)</label>
+                <input type="number" name="discount" min="0" max="100" value="{{ product.discount or 0 }}">
+            </div>
         </div>
+        
         <div class="form-group">
-            <label for="category">Category</label>
-            <select id="category" name="category" required>
-                <option value="">Select Category</option>
-                <option value="Electronics" {% if product.category=='Electronics' %}selected{% endif %}>Electronics</option>
-                <option value="Fashion" {% if product.category=='Fashion' %}selected{% endif %}>Fashion</option>
-                <option value="Home & Kitchen" {% if product.category=='Home & Kitchen' %}selected{% endif %}>Home & Kitchen</option>
-                <option value="Beauty" {% if product.category=='Beauty' %}selected{% endif %}>Beauty</option>
-                <option value="Books" {% if product.category=='Books' %}selected{% endif %}>Books</option>
+            <label>Product Image</label>
+            <select name="image" required>
+                <option value="">Select Image</option>
+                {% for img in ['laptop.jpg', 'smart-watch.jpg', 'tablet.jpg', 'gaming-console.jpg', 
+                             'mouse.jpg', 'smart-phone.jpg', 'headphones.jpg', 'keyboard.jpg', 
+                             'home.jpg', 'beauty.jpg', 'fashion.jpg', 'book.jpg'] %}
+                    <option value="{{ img }}" {% if product.image == img %}selected{% endif %}>
+                        {{ img.split('.')[0]|title }}
+                    </option>
+                {% endfor %}
             </select>
+            
+            <div class="image-preview">
+                <img src="{{ url_for('static', filename='images/' + product.image) }}" 
+                     alt="{{ product.name }}" id="imagePreview">
+            </div>
         </div>
-        <button type="submit" class="form-submit">Update Product</button>
-        <a href="{{ url_for('admin') }}" class="btn" style="margin-left:10px;">Cancel</a>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Save Changes</button>
+            <a href="{{ url_for('admin') }}" class="btn-cancel">Cancel</a>
+        </div>
     </form>
 </div>
+
+<style>
+.edit-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.image-preview {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-save, .btn-cancel {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn-save {
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+}
+</style>
+
+<script>
+document.querySelector('select[name="image"]').addEventListener('change', function() {
+    const preview = document.getElementById('imagePreview');
+    preview.src = "{{ url_for('static', filename='images/') }}" + this.value;
+});
+</script>
 {% endblock %}
