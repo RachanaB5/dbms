@@ -72,6 +72,9 @@ CREATE TABLE Cart (
     FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
 );
 
+-- Add product_name column to Cart table
+ALTER TABLE Cart ADD COLUMN product_name VARCHAR(100);
+
 -- Insert sample data into Cart
 INSERT INTO Cart (user_id, product_id, quantity) VALUES
 (1, 1, 1),
@@ -288,7 +291,20 @@ ALTER TABLE Cart ADD CONSTRAINT cart_ibfk_1 FOREIGN KEY (user_id) REFERENCES Use
 ALTER TABLE Reviews ADD CONSTRAINT reviews_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
 ALTER TABLE Payments ADD CONSTRAINT payments_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
 
+-- Add order_items table for storing ordered products
+CREATE TABLE OrderItems (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    product_name VARCHAR(100),
+    quantity INT,
+    price_at_time DECIMAL(10,2),
+    discount_at_time INT,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE SET NULL
+);
+
 select * from users;
 select * from products;
 select * from orders;
-select * from cart;      
+select * from cart;
