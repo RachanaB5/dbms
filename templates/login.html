@@ -11,7 +11,7 @@
         <h2 style="text-align:center;">Login to Your Account</h2>
         <form id="loginForm" method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
-                <label for="loginEmail">Email or mobile phone number</label>
+                <label for="loginEmail">Enter your Email</label>
                 <input type="text" id="loginEmail" name="email" required>
             </div>
             <div class="form-group">
@@ -25,11 +25,11 @@
         </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul class="flashes">
+            <div class="flashes" style="text-align: center; margin-top: 20px; color: #4CAF50; font-weight: 500;">
             {% for message in messages %}
-                <li>{{ message }}</li>
+                <p>{{ message }}</p>
             {% endfor %}
-            </ul>
+            </div>
         {% endif %}
         {% endwith %}
     </div>
