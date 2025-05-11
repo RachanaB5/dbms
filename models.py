@@ -61,42 +61,43 @@ class Review(db.Model):
     helpful_count = db.Column(db.Integer, default=0)
 
 class Order(db.Model):
-    __tablename__ = 'orders'
+    __tablename__ = 'orders'  # Match existing table name
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
-    price_at_time = db.Column(db.Numeric(10, 2), nullable=False)
-    discount_at_time = db.Column(db.Integer)
-    shipping_address = db.Column(db.Text, nullable=False)
-    shipping_city = db.Column(db.String(100), nullable=False) 
-    shipping_state = db.Column(db.String(100), nullable=False)
-    shipping_zip = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='pending')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    order_number = db.Column(db.String(50), unique=True)
-    confirmed_at = db.Column(db.DateTime)
-    payment_confirmed = db.Column(db.Boolean, default=False)
-    
-    # Add relationships
-    user = db.relationship('User', backref=db.backref('orders', lazy=True))
-    product = db.relationship('Product', backref=db.backref('orders', lazy=True))
-    payment = db.relationship('Payment', backref='order', uselist=False)
+    status = db.Column(db.String(20), nullable=False, default='pending')  # pending, confirmed, shipped, delivered, cancelled
+    items = db.relationship('OrderItem', backref='order', lazy=True)
+    shipping_address = db.Column(db.Text, nullable=True)
+    shipping_city = db.Column(db.String(100), nullable=True)
+    shipping_state = db.Column(db.String(100), nullable=True)
+    shipping_zip = db.Column(db.String(20), nullable=True)
+    tracking_number = db.Column(db.String(100), nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    # Add relationship to Payment without backref
+    payment = db.relationship('Payment', backref='order_info', lazy=True, uselist=False)
 
     @property
     def total_amount(self):
-        if self.discount_at_time:
-            return float(self.price_at_time) * (1 - self.discount_at_time/100) * self.quantity
-        return float(self.price_at_time) * self.quantity
+        return sum(item.subtotal for item in self.items)
 
     def get_status_display(self):
         return self.status.title()
 
-    def confirm_order(self):
-        self.status = 'confirmed'
-        self.confirmed_at = datetime.utcnow()
-        self.order_number = f'ORD-{self.id}-{int(datetime.utcnow().timestamp())}'
-        return self.order_number
+class OrderItem(db.Model):
+    __tablename__ = 'order_items'  # Fix table name
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)  # Match product_id column
+    quantity = db.Column(db.Integer, nullable=False)
+    price_at_time = db.Column(db.Float, nullable=False)  # Store price at time of purchase
+    discount_at_time = db.Column(db.Integer, nullable=True)  # Store discount at time of purchase
+
+    @property
+    def subtotal(self):
+        if self.discount_at_time:
+            discounted_price = self.price_at_time * (1 - self.discount_at_time/100)
+            return discounted_price * self.quantity
+        return self.price_at_time * self.quantity
 
 class Payment(db.Model):
     __tablename__ = 'payments'
@@ -107,6 +108,9 @@ class Payment(db.Model):
     payment_status = db.Column(db.String(20), nullable=False)  # pending, completed, failed, refunded
     payment_method = db.Column(db.String(50), nullable=False)  # credit_card, debit_card, upi, net_banking
     transaction_id = db.Column(db.String(100), nullable=True)
+
+    # Remove the conflicting relationship definition
+    # Remove this line: order = db.relationship('Order', backref=db.backref('payment', uselist=False))
 
 class Cart(db.Model):
     __tablename__ = 'cart'
