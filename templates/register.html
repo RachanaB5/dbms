@@ -3,12 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - ShopEasy</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Register - CurioCart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="register-container" style="max-width:400px;margin:60px auto;padding:30px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
         <h2 style="text-align:center;">Create an Account</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <form id="registerForm" method="POST" action="{{ url_for('register') }}">
             <div class="form-group">
                 <label for="registerName">Your name</label>
@@ -35,15 +46,51 @@
         <div class="form-footer">
             <p>Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
         </div>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        {% endwith %}
     </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerPasswordConfirm').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            
+            // Remove any existing error messages
+            document.querySelectorAll('.error').forEach(el => el.remove());
+            
+            let hasError = false;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                const error = document.createElement('div');
+                error.className = 'error';
+                error.textContent = 'Passwords do not match';
+                document.getElementById('registerPasswordConfirm').parentNode.appendChild(error);
+                hasError = true;
+            }
+            
+            if (password.length < 8) {
+                e.preventDefault();
+                const error = document.createElement('div');
+                error.className = 'error';
+                error.textContent = 'Password must be at least 8 characters long';
+                document.getElementById('registerPassword').parentNode.appendChild(error);
+                hasError = true;
+            }
+            
+            if (phone && !/^\d{10}$/.test(phone)) {
+                e.preventDefault();
+                const error = document.createElement('div');
+                error.className = 'error';
+                error.textContent = 'Please enter a valid 10-digit phone number';
+                document.getElementById('registerPhone').parentNode.appendChild(error);
+                hasError = true;
+            }
+            
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
