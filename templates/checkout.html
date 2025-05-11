@@ -1,69 +1,187 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Checkout</title>
+    <title>Checkout - CurioCart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #6a5acd;
+            --primary-dark: #483d8b;
+            --primary-light: #9370db;
+            --accent: #ff7f50;
+            --light: #f8f8ff;
+            --text: #2f4f4f;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--light);
             margin: 0;
             padding: 0;
+            color: var(--text);
         }
-        .checkout-container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+        .nav-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 1rem 0;
+            margin-bottom: 2rem;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
         }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
+
+        .nav-logo {
+            color: white;
+            font-size: 1.5rem;
+            text-decoration: none;
             font-weight: bold;
         }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .checkout-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
         .form-group input {
             width: 100%;
-            padding: 10px;
+            padding: 0.8rem;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .order-summary {
-            background: #f8f9fa;
-            padding: 15px;
             border-radius: 6px;
-            margin-bottom: 15px;
+            transition: border-color 0.3s;
         }
-        .order-summary ul {
-            list-style: none;
-            padding: 0;
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.1);
         }
-        .order-summary li {
-            margin-bottom: 8px;
-            padding-bottom: 8px;
+
+        .payment-methods {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-option {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary);
+            background: rgba(106, 90, 205, 0.05);
+        }
+
+        .order-summary {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
             border-bottom: 1px solid #eee;
         }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+        }
+
         .btn-checkout {
-            display: block;
             width: 100%;
-            padding: 12px;
-            background-color: #4a6fa5;
+            padding: 1rem;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: background 0.3s;
         }
+
+        .btn-checkout:hover {
+            background: var(--primary-dark);
+        }
+
         #cardDetails {
-            display: none;
-            margin-top: 10px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkout-container {
+                margin: 20px;
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -72,26 +190,34 @@
         <h1>Checkout</h1>
         <form method="POST" action="{{ url_for('checkout') }}">
             <h2>Shipping Address</h2>
-            <div class="form-group">
-                <label for="address">Address</label>
-                <input type="text" id="address" name="address" required value="{{ current_user.address if current_user.address else '' }}">
-            </div>
-            <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" required value="{{ current_user.city if current_user.city else '' }}">
-            </div>
-            <div class="form-group">
-                <label for="zip">ZIP/Postal Code</label>
-                <input type="text" id="zip" name="zip" required value="{{ current_user.zip_code if current_user.zip_code else '' }}">
-            </div>
-            <div class="form-group">
-                <label for="country">Country</label>
-                <input type="text" id="country" name="country" value="India" required>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" required value="{{ current_user.address if current_user.address else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" required value="{{ current_user.city if current_user.city else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="zip">ZIP/Postal Code</label>
+                    <input type="text" id="zip" name="zip" required value="{{ current_user.zip_code if current_user.zip_code else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" id="country" name="country" value="India" required>
+                </div>
             </div>
             
             <h2>Payment Method</h2>
-            <label><input type="radio" name="payment_method" value="cod" checked> Cash on Delivery</label><br>
-            <label><input type="radio" name="payment_method" value="card"> Credit/Debit Card</label>
+            <div class="payment-methods">
+                <div class="payment-option">
+                    <label><input type="radio" name="payment_method" value="cod" checked> Cash on Delivery</label>
+                </div>
+                <div class="payment-option">
+                    <label><input type="radio" name="payment_method" value="card"> Credit/Debit Card</label>
+                </div>
+            </div>
             
             <div id="cardDetails">
                 <div class="form-group">
@@ -113,12 +239,12 @@
                 {% if items %}
                     <ul>
                     {% for item in items %}
-                        <li>
+                        <li class="order-item">
                             <strong>{{ item.product.name }}</strong> x{{ item.quantity }} - ₹{{ item.subtotal }}
                         </li>
                     {% endfor %}
                     </ul>
-                    <div style="font-weight:bold;">Total: ₹{{ total }}</div>
+                    <div class="total-row">Total: ₹{{ total }}</div>
                 {% else %}
                     <p>Your cart is empty.</p>
                 {% endif %}
@@ -161,7 +287,7 @@
             cardNumber.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 e.target.value = value;
-            });
+            }); 
         }
     </script>
 </body>
