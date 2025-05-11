@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="hero">
-    <h2>Welcome to ShopEase</h2>
-    <p>Discover amazing products at unbeatable prices</p>
-    <a href="{{ url_for('products') }}" class="btn">Shop Now</a>
+    <div class="hero-content">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="CurioCart Logo" class="hero-logo">
+        <h2>Welcome to CurioCart</h2>
+        <p>Discover amazing products at unbeatable prices</p>
+        <a href="{{ url_for('products') }}" class="btn">Shop Now</a>
+    </div>
 </section>
 
 <section class="featured-products">
