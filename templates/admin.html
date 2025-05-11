@@ -1,10 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="admin-container" style="max-width:700px;margin:40px auto;padding:30px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<div class="admin-container" style="max-width:1000px;margin:40px auto;padding:30px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
     <h1>Admin - Manage Products</h1>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert" style="padding:1rem;margin-bottom:1rem;background:#e3f2fd;border-radius:4px;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     {% if current_user.is_authenticated and current_user.is_admin %}
         <h2>Add New Product</h2>
-        <form method="POST" action="{{ url_for('admin_add_product') }}" enctype="multipart/form-data" style="margin-bottom:2em;">
+        <form method="POST" action="{{ url_for('admin_add_product') }}" style="margin-bottom:2em;">
             <div class="form-group">
                 <label for="name">Product Name</label>
                 <input type="text" id="name" name="name" required>
@@ -14,18 +25,41 @@
                 <textarea id="description" name="description" required></textarea>
             </div>
             <div class="form-group">
-                <label for="price">Price</label>
+                <label for="price">Price (₹)</label>
                 <input type="number" id="price" name="price" step="0.01" required>
             </div>
             <div class="form-group">
-                <label for="image">Image Filename (place image in static/image/)</label>
-                <input type="text" id="image" name="image" required>
+                <label for="discount">Discount (%)</label>
+                <input type="number" id="discount" name="discount" min="0" max="100" value="0">
+            </div>
+            <div class="form-group">
+                <label for="stock_quantity">Stock Quantity</label>
+                <input type="number" id="stock_quantity" name="stock_quantity" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="image">Image Filename</label>
+                <select id="image" name="image" required>
+                    <option value="">Select Image</option>
+                    <option value="laptop.jpg">Laptop</option>
+                    <option value="smart-watch.jpg">Smart Watch</option>
+                    <option value="tablet.jpg">Tablet</option>
+                    <option value="gaming-console.jpg">Gaming Console</option>
+                    <option value="mouse.jpg">Mouse</option>
+                    <option value="smart-phone.jpg">Smartphone</option>
+                    <option value="headphones.jpg">Headphones</option>
+                    <option value="keyboard.jpg">Keyboard</option>
+                    <option value="home.jpg">Home Decor</option>
+                    <option value="beauty.jpg">Beauty Kit</option>
+                    <option value="fashion.jpg">Fashion</option>
+                    <option value="book.jpg">Book</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="category">Category</label>
                 <select id="category" name="category" required>
                     <option value="">Select Category</option>
                     <option value="Electronics">Electronics</option>
+                    <option value="Gadgets">Gadgets</option>
                     <option value="Fashion">Fashion</option>
                     <option value="Home & Kitchen">Home & Kitchen</option>
                     <option value="Beauty">Beauty</option>
@@ -54,18 +88,73 @@
                 <td>{{ product.id }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.description }}</td>
-                <td>₹{{ product.price }}</td>
-                <td><img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}" style="height:40px;"></td>
+                <td>₹{{ "%.2f"|format(product.price) }}</td>
+                <td><img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" style="height:40px;object-fit:cover;"></td>
                 <td>{{ product.category }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="display:inline;">
-                        <button type="submit" onclick="return confirm('Delete this product?')">Delete</button>
+                        <button type="submit" onclick="return confirm('Delete this product?')" class="btn-delete">Delete</button>
                     </form>
-                    <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="btn" style="background:#0275d8;color:#fff;padding:4px 10px;border-radius:4px;margin-left:5px;">Edit</a>
+                    <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="btn-edit">Edit</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+
+<style>
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-submit {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background: #0275d8;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+</style>
 {% endblock %}
