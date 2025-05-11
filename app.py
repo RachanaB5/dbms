@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, abort
 from extensions import db, login_manager
-from models import User, Product, Review, Order, OrderItem, Payment, Cart as CartModel
+from models import User, Product, Review, Order, Payment, Cart as CartModel
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
@@ -10,13 +10,20 @@ import logging
 from logging.handlers import RotatingFileHandler
 import secrets
 import atexit
+from sqlalchemy import create_engine
+from decimal import Decimal
 
 app = Flask(__name__)
 
 # Security configurations
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'mysql+mysqlconnector://root:0555@localhost/EcommerceDB')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Rachana%4005@localhost/EcommerceDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_recycle': 3600,
+    'pool_timeout': 30,
+    'pool_size': 10
+}
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 app.config['SESSION_COOKIE_SECURE'] = True
@@ -123,7 +130,7 @@ def init_db():
                     username='Admin',
                     email='admin@example.com',
                     password_hash=generate_password_hash('admin123'),
-                    _is_admin=True,
+                    is_admin=True,
                     phone=''
                 )
                 db.session.add(admin)
@@ -271,56 +278,50 @@ def admin_required(f):
     return decorated_function
 
 # User registration route
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    app.logger.info('Register route called')
-    data = request.form
-    app.logger.debug(f'Form data: {data}')
-    
-    name = data.get('name')
-    email = data.get('email')
-    phone = data.get('phone')
-    password = data.get('password')
-    confirm_password = data.get('confirm_password')
+    if request.method == 'POST':
+        try:
+            # Get form data
+            name = request.form.get('name')
+            email = request.form.get('email')
+            phone = request.form.get('phone')
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
 
-    # Validate required fields
-    if not all([name, email, password, confirm_password]):
-        app.logger.warning('Missing required fields')
-        flash('Please fill out all required fields.')
-        return redirect(url_for('show_register'))
+            # Validation
+            if not all([name, email, password, confirm_password]):
+                flash('All fields except phone are required', 'error')
+                return render_template('register.html')
 
-    if password != confirm_password:
-        app.logger.warning('Passwords do not match')
-        flash('Passwords do not match.')
-        return redirect(url_for('show_register'))
+            # Check if user already exists
+            existing_user = User.query.filter_by(email=email).first()
+            if existing_user:
+                flash('Email already registered', 'error')
+                return render_template('register.html')
 
-    # Check if user already exists
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        app.logger.warning(f'Email already registered: {email}')
-        flash('Email already registered.')
-        return redirect(url_for('show_register'))
+            # Create new user
+            new_user = User(
+                username=name,
+                email=email,
+                password_hash=generate_password_hash(password),
+                phone=phone if phone else None
+            )
 
-    try:
-        hashed_password = generate_password_hash(password)
-        new_user = User(
-            username=name,  # Changed from 'name'
-            email=email,
-            phone=phone,
-            password_hash=hashed_password,
-            _is_admin=False
-        )
-        db.session.add(new_user)
-        db.session.commit()
-        app.logger.info(f'User registered successfully: {email}')
-        flash('Registration successful. Please log in.')
-        return redirect(url_for('show_login'))
-        
-    except Exception as e:
-        app.logger.error(f'Registration error: {e}')
-        db.session.rollback()
-        flash('An error occurred during registration. Please try again.')
-        return redirect(url_for('show_register'))
+            # Save to database
+            db.session.add(new_user)
+            db.session.commit()
+
+            flash('Registration successful! Please login.', 'success')
+            return redirect(url_for('show_login'))
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"Registration error: {e}")
+            flash('Registration failed. Please try again.', 'error')
+            return render_template('register.html')
+
+    return render_template('register.html')
 
 # User login route
 @app.route('/login', methods=['POST'])
@@ -389,24 +390,112 @@ def prepare_product_list(products):
 # Products listing route
 @app.route('/products')
 def products():
-    products = Product.query.all()
-    product_list = prepare_product_list(products)
-    return render_template('products.html', products=product_list)
+    try:
+        # Direct SQL query to verify table and data
+        from sqlalchemy import text
+        with db.engine.connect() as conn:
+            # Check if table exists
+            result = conn.execute(text("""
+                SELECT TABLE_NAME 
+                FROM information_schema.TABLES 
+                WHERE TABLE_SCHEMA = 'EcommerceDB' 
+                AND TABLE_NAME = 'products'
+            """))
+            if not result.fetchone():
+                app.logger.error("Products table does not exist!")
+                init_db()  # Create tables and add sample data
+            
+            # Verify table structure
+            result = conn.execute(text("DESCRIBE products"))
+            columns = [row[0] for row in result]
+            app.logger.info(f"Table columns: {columns}")
+            
+            # Check for data
+            result = conn.execute(text("SELECT * FROM products LIMIT 1"))
+            row = result.fetchone()
+            app.logger.info(f"Sample product row: {row}")
+            
+            if not row:
+                app.logger.info("No products found, adding sample data...")
+                init_db()
+
+        # Now try to fetch products again
+        products = Product.query.all()
+        if not products:
+            flash("No products available. Adding sample products...")
+            init_db()
+            products = Product.query.all()
+        
+        product_list = []
+        for p in products:
+            product_dict = {
+                'id': p.id,
+                'name': p.name,
+                'description': p.description,
+                'price': float(p.price),
+                'category': p.category,
+                'image': p.image,
+                'discount': float(p.discount or 0),
+                'stock_quantity': p.stock_quantity,
+                'rating': 0,
+                'reviews': 0
+            }
+            product_list.append(product_dict)
+
+        return render_template('products.html', 
+                            products=product_list,
+                            debug=app.debug)
+                            
+    except Exception as e:
+        app.logger.error(f"Error in products route: {str(e)}")
+        return render_template('products.html', 
+                            products=[],
+                            error=str(e),
+                            debug=app.debug)
 
 # Category products route
 @app.route('/category/<category_name>')
 def category_products(category_name):
-    products = Product.query.filter(Product.category == category_name).all()
-    product_list = prepare_product_list(products)
-    return render_template('products.html', products=product_list, category=category_name)
+    try:
+        products = Product.query.filter(Product.category == category_name).all()
+        product_list = []
+        for p in products:
+            price = float(p.price)
+            discount = float(p.discount or 0)
+            discounted_price = float(price * (1 - discount/100))
+            
+            product_dict = {
+                'id': p.id,
+                'name': p.name,
+                'description': p.description,
+                'price': price,
+                'category': p.category,
+                'image': p.image,
+                'discount': discount,
+                'discounted_price': discounted_price,
+                'stock_quantity': p.stock_quantity,
+                'rating': 0,
+                'reviews': 0
+            }
+            product_list.append(product_dict)
+        
+        return render_template('products.html',
+                            products=product_list,
+                            category=category_name,
+                            category_title=category_name.replace('_', ' ').title())
+    except Exception as e:
+        app.logger.error(f"Error in category products: {str(e)}")
+        return render_template('products.html', 
+                            products=[],
+                            error=str(e))
+
+# Product detail route
 
 # Product detail route
 @app.route('/product/<int:product_id>', methods=['GET'])
 def product_detail(product_id):
     product = Product.query.get_or_404(product_id)
     reviews = Review.query.filter_by(product_id=product_id).order_by(Review.created_at.desc()).all()
-    avg_rating = round(sum([r.rating for r in reviews]) / len(reviews), 1) if reviews else 0
-    # Prepare review data for template
     review_list = []
     for r in reviews:
         review_list.append({
@@ -468,31 +557,38 @@ def add_to_cart(product_id):
 @app.route('/cart', methods=['GET'])
 @login_required
 def cart():
-    app.logger.info(f"/cart accessed by user_id={getattr(current_user, 'id', None)}, is_authenticated={getattr(current_user, 'is_authenticated', None)}")
     try:
         cart_items = CartModel.query.filter_by(user_id=current_user.id).all()
-        app.logger.info(f"Cart items found for user {current_user.id}: {cart_items}")
         items = []
         total = 0
+        
         for cart_item in cart_items:
             product = Product.query.get(cart_item.product_id)
             if product:
-                price = product.price
-                if hasattr(product, 'discount') and product.discount:
-                    price = price * (1 - product.discount/100)
-                subtotal = price * cart_item.quantity
+                # Calculate price with discount
+                unit_price = float(product.price)
+                if product.discount:
+                    unit_price = unit_price * (1 - float(product.discount)/100)
+                
+                subtotal = unit_price * cart_item.quantity
                 total += subtotal
+                
                 items.append({
                     'product': product,
                     'quantity': cart_item.quantity,
-                    'subtotal': subtotal,
-                    'unit_price': price
+                    'unit_price': unit_price,
+                    'subtotal': subtotal
                 })
-        app.logger.info(f"Items to render: {items}")
-        return render_template('cart.html', items=items, total=total)
+        
+        return render_template('cart.html', 
+                            items=items, 
+                            total=total,
+                            cart_count=len(items))
+                            
     except Exception as e:
-        app.logger.error(f"Error in /cart route: {str(e)}")
-        return render_template('errors/500.html'), 500
+        app.logger.error(f"Cart error: {str(e)}")
+        flash('Error loading cart. Please try again.')
+        return redirect(url_for('products'))
 
 # Update cart route
 @app.route('/update_cart/<int:product_id>', methods=['POST'])
@@ -529,89 +625,108 @@ def update_cart(product_id):
         flash('Failed to update cart')
         return redirect(url_for('cart'))
 
-# Checkout route
 @app.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
-    # Fetch cart items from the Cart table for the current user
-    cart_items = CartModel.query.filter_by(user_id=current_user.id).all()
-    if not cart_items:
-        flash('Your cart is empty.')
-        return redirect(url_for('cart'))
-
-    if request.method == 'POST':
-        # Validate stock availability before creating order
-        for cart_item in cart_items:
-            product = Product.query.get(cart_item.product_id)
-            if not product or product.stock_quantity < cart_item.quantity:
-                flash(f'Sorry, {product.name} is out of stock or has insufficient quantity.')
-                return redirect(url_for('cart'))
-
-        # Create new order
-        new_order = Order(
-            user_id=current_user.id,
-            shipping_address=request.form.get('address'),
-            shipping_city=request.form.get('city'),
-            shipping_state=request.form.get('state'),
-            shipping_zip=request.form.get('zip'),
-            status='pending'
-        )
-        db.session.add(new_order)
-        try:
-            # Add order items and update stock
-            for cart_item in cart_items:
-                product = Product.query.get(cart_item.product_id)
-                if not product.update_stock(cart_item.quantity):
-                    db.session.rollback()
-                    flash(f'Sorry, {product.name} went out of stock.')
-                    return redirect(url_for('cart'))
-                order_item = OrderItem(
-                    order_id=new_order.id,
-                    product_id=cart_item.product_id,
-                    quantity=cart_item.quantity,
-                    price_at_time=product.price,
-                    discount_at_time=product.discount
-                )
-                db.session.add(order_item)
-            # Create payment record
-            payment = Payment(
-                order_id=new_order.id,
-                amount=sum(Product.query.get(item.product_id).get_discounted_price() * item.quantity for item in cart_items),
-                payment_status='pending',
-                payment_method=request.form.get('payment_method', 'credit_card')
-            )
-            db.session.add(payment)
-            # Clear user's cart in the database
-            for cart_item in cart_items:
-                db.session.delete(cart_item)
-            db.session.commit()
-            flash('Order placed successfully! You will receive a confirmation email shortly.')
-            return redirect(url_for('order_confirmation', order_id=new_order.id))
-        except Exception as e:
-            app.logger.error(f'Order creation failed: {str(e)}')
-            db.session.rollback()
-            flash('There was an error processing your order. Please try again.')
+    try:
+        cart_items = CartModel.query.filter_by(user_id=current_user.id).all()
+        if not cart_items:
+            flash('Your cart is empty.')
             return redirect(url_for('cart'))
 
-    # GET request - show checkout form
-    items = []
-    total = 0
-    for cart_item in cart_items:
-        product = Product.query.get(cart_item.product_id)
-        if product:
-            price = product.get_discounted_price()
-            subtotal = price * cart_item.quantity
-            total += subtotal
-            items.append({
-                'product': product,
-                'quantity': cart_item.quantity,
-                'subtotal': subtotal,
-                'unit_price': price
-            })
-    return render_template('checkout.html', 
-                         items=items, 
-                         total=total,
-                         user=current_user)
+        if request.method == 'POST':
+            app.logger.info('Processing checkout POST request')
+            
+            # Calculate total amount first
+            total_amount = sum(
+                float(item.product.price) * (1 - float(item.product.discount or 0)/100) * item.quantity
+                for item in cart_items
+            )
+
+            # Create new order record
+            new_order = Order(
+                user_id=current_user.id,
+                total_amount=total_amount,
+                order_date=datetime.utcnow(),
+                status='pending',
+                shipping_address=request.form.get('address'),
+                shipping_city=request.form.get('city'),
+                shipping_state=request.form.get('state'),
+                shipping_zip=request.form.get('zip')
+            )
+
+            try:
+                # Save order first to get ID
+                db.session.add(new_order)
+                db.session.flush()
+
+                # Create order items
+                for cart_item in cart_items:
+                    product = Product.query.get(cart_item.product_id)
+                    
+                    # Create order item
+                    order_item = OrderItem(
+                        order_id=new_order.id,
+                        product_id=cart_item.product_id,
+                        quantity=cart_item.quantity,
+                        price_at_time=float(product.price),
+                        discount_at_time=product.discount
+                    )
+                    db.session.add(order_item)
+                    
+                    # Update stock
+                    product.stock_quantity -= cart_item.quantity
+
+                # Create payment record
+                payment = Payment(
+                    order_id=new_order.id,
+                    amount=total_amount,
+                    payment_status='pending',
+                    payment_method=request.form.get('payment_method', 'credit_card'),
+                    payment_date=datetime.utcnow()
+                )
+                db.session.add(payment)
+
+                # Clear cart after successful order
+                for cart_item in cart_items:
+                    db.session.delete(cart_item)
+
+                # Final commit
+                db.session.commit()
+                app.logger.info(f'Order {new_order.id} created successfully')
+                flash('Order placed successfully!')
+                return redirect(url_for('order_confirmation', order_id=new_order.id))
+
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f'Order creation failed: {str(e)}')
+                flash('Error creating order. Please try again.')
+                return redirect(url_for('cart'))
+
+        # GET request handling remains the same
+        items = []
+        total = 0
+        for cart_item in cart_items:
+            product = Product.query.get(cart_item.product_id)
+            if product:
+                price = product.get_discounted_price()
+                subtotal = price * cart_item.quantity
+                total += subtotal
+                items.append({
+                    'product': product,
+                    'quantity': cart_item.quantity,
+                    'subtotal': subtotal,
+                    'unit_price': price
+                })
+        return render_template('checkout.html', 
+                            items=items, 
+                            total=total,
+                            user=current_user)
+
+    except Exception as e:
+        app.logger.error(f'Checkout error: {str(e)}')
+        flash('Error processing checkout. Please try again.')
+        return redirect(url_for('cart'))
 
 @app.route('/order_confirmation/<int:order_id>')
 @login_required
@@ -634,12 +749,44 @@ def show_register():
 # Search route
 @app.route('/search')
 def search():
-    query = request.args.get('q', '').strip()
-    if not query:
-        flash('Please enter a search term.')
+    try:
+        query = request.args.get('q', '').strip()
+        if not query:
+            flash('Please enter a search term.')
+            return redirect(url_for('products'))
+        
+        products = Product.query.filter(Product.name.ilike(f'%{query}%')).all()
+        product_list = [] 
+        
+        for p in products:
+            # Convert Decimal to float for calculations
+            price = float(p.price)
+            discount = float(p.discount or 0)
+            discounted_price = price * (1 - discount/100)
+            
+            product_dict = {
+                'id': p.id,
+                'name': p.name,
+                'description': p.description,
+                'price': price,
+                'category': p.category,
+                'image': p.image,
+                'discount': discount,
+                'discounted_price': discounted_price,
+                'stock_quantity': p.stock_quantity,
+                'rating': 0,
+                'reviews': 0
+            }
+            product_list.append(product_dict)
+            
+        return render_template('products.html', 
+                            products=product_list,
+                            search_query=query)
+                            
+    except Exception as e:
+        app.logger.error(f"Search error: {str(e)}")
+        flash('Search failed. Please try again.')
         return redirect(url_for('products'))
-    products = Product.query.filter(Product.name.ilike(f'%{query}%')).all()
-    return render_template('products.html', products=products, search_query=query)
 
 # Admin page route
 @app.route('/admin')
@@ -834,6 +981,7 @@ def add_sample_products():
             'stock_quantity': 60
         }
     ]
+    
     for prod in sample_products:
         if not Product.query.filter_by(name=prod['name']).first():
             p = Product(**prod)
@@ -991,6 +1139,50 @@ def debug_products():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+def test_db_connection():
+    try:
+        with app.app_context():
+            db.engine.connect()
+            app.logger.info("Database connection successful")
+    except Exception as e:
+        app.logger.error(f"Database connection failed: {str(e)}")
+        raise
+
+def init_database():
+    try:
+        # Create database if it doesn't exist
+        engine = create_engine('mysql://root:Rachana@05@localhost')
+        with engine.connect() as conn:
+            conn.execute("CREATE DATABASE IF NOT EXISTS EcommerceDB")
+            conn.execute("USE EcommerceDB")
+            
+            # Reset MySQL root password
+            conn.execute("ALTER USER 'root'@'localhost' IDENTIFIED BY 'Rachana@05'")
+            conn.execute("GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost'")
+            conn.execute("FLUSH PRIVILEGES")
+        
+        with app.app_context():
+            db.create_all()
+            app.logger.info("Database initialized successfully")
+            
+    except Exception as e:
+        app.logger.error(f"Database initialization error: {e}")
+        raise
+
+with app.app_context():
+    init_db()
+
 if __name__ == '__main__':
-    # init_db()
-    app.run(debug=True)
+    try:
+        # Initialize database first
+        init_database()
+        app.run(debug=True, port=5002)
+    except Exception as e:
+        print(f"Failed to start application: {e}")
+        print("Please follow these steps to fix MySQL:")
+        print("1. mysql -u root")
+        print("2. ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Rachana@05';")
+        print("3. FLUSH PRIVILEGES;")
+        print("4. exit;")
+        print("5. brew services restart mysql@8.4")
+        app.logger.error(f"Application startup error: {e}")
