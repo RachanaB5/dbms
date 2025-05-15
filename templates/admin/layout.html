@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{{ url_for('admin_dashboard') }}">Admin Panel</a>
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" href="{{ url_for('admin_products') }}">Products</a>
+            <a class="nav-item nav-link" href="{{ url_for('admin_orders') }}">Orders</a>
+            <a class="nav-item nav-link" href="{{ url_for('admin_users') }}">Users</a>
+            <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
