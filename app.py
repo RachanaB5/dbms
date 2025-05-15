@@ -123,19 +123,28 @@ def init_db():
             db.create_all()
             app.logger.info("Database tables created successfully")
             
-            # Create admin user if it doesn't exist
-            admin = User.query.filter_by(email='admin@example.com').first()
-            if not admin:
-                admin = User(
-                    username='Admin',
-                    email='admin@example.com',
-                    password_hash=generate_password_hash('admin123'),
-                    is_admin=True,
-                    phone=''
-                )
-                db.session.add(admin)
-                db.session.commit()
-                app.logger.info("Admin user created successfully")
+            # Create admin users
+            admin1 = User(
+                username='Rachana',
+                email='rachana@gmail.com',
+                phone='',
+                password_hash=generate_password_hash('12345678'),
+                is_admin=True
+            )
+            
+            admin2 = User(
+                username='Priyanshu',
+                email='priyanshu@gmail.com',
+                phone='',
+                password_hash=generate_password_hash('98765432'),
+                is_admin=True
+            )
+            
+            # Add both admins
+            db.session.add(admin1)
+            db.session.add(admin2)
+            db.session.commit()
+            app.logger.info("Both admin users created successfully!")
 
             # Initialize sample data only if products table is empty
             if Product.query.count() == 0:
@@ -420,7 +429,7 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         print('Password check passed')
         login_user(user)
-        flash('Login successful.')
+        flash('Welcome Admin!')
         if user.is_admin:
             return redirect(url_for('admin'))
         return redirect(url_for('products'))  # Changed from index to products
@@ -865,8 +874,7 @@ def search():
 def admin():
     if not current_user.is_admin:
         abort(403)
-    products = Product.query.all()
-    return render_template('admin.html', products=products)
+    return render_template('admin/dashboard.html')
 
 # Admin add product route
 @app.route('/admin/add', methods=['POST'])
@@ -876,6 +884,9 @@ def admin_add_product():
     description = request.form.get('description')
     price = request.form.get('price')
     image = request.form.get('image')
+    if len(image) > 500:
+        flash('Image URL is too long. Please use a shorter URL or image path.')
+        return redirect(url_for('admin'))
     category = request.form.get('category')
     if not all([name, description, price, image, category]):
         flash('All fields are required.')
@@ -910,7 +921,7 @@ def admin_edit_product(product_id):
         db.session.commit()
         flash('Product updated successfully!')
         return redirect(url_for('admin'))
-    return render_template('admin_edit_product.html', product=product)
+    return render_template('admin/edit_product.html', product=product)
 
 # Dashboard route
 @app.route('/dashboard')
@@ -1305,6 +1316,71 @@ def init_database():
 
 with app.app_context():
     init_db()
+
+@app.route('/admin/dashboard')
+@login_required
+@admin_required
+def admin_dashboard():
+    product_count = Product.query.count()
+    order_count = Order.query.count()
+    user_count = User.query.count()
+    return render_template('admin/dashboard.html',
+                         product_count=product_count,
+                         order_count=order_count,
+                         user_count=user_count)
+
+@app.route('/admin/products')
+@login_required
+@admin_required
+def admin_products():
+    products = Product.query.all()
+    return render_template('admin/products.html', products=products)
+
+@app.route('/admin/orders')
+@login_required
+@admin_required
+def admin_orders():
+    orders = Order.query.options(db.joinedload(Order.user)).order_by(Order.created_at.desc()).all()
+    return render_template('admin/orders.html', orders=orders)
+
+@app.route('/admin/users')
+@login_required
+@admin_required
+def admin_users():
+    users = User.query.all()
+    return render_template('admin/users.html', users=users)
+
+@app.route('/admin/users/<int:user_id>/orders')
+@admin_required
+def admin_user_orders(user_id):
+    user = User.query.get_or_404(user_id)
+    orders = Order.query.filter_by(user_id=user_id).order_by(Order.created_at.desc()).all()
+    return render_template('admin/user.html', user=user, orders=orders)
+
+@app.route('/admin/users/<int:user_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def admin_edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        user.username = request.form.get('username')
+        user.email = request.form.get('email')
+        user.phone = request.form.get('phone')
+        db.session.commit()
+        flash('User updated successfully')
+        return redirect(url_for('admin_users'))
+    return render_template('admin/edit_user.html', user=user)
+
+@app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+@admin_required
+def admin_delete_user(user_id):
+    if current_user.id == user_id:
+        return jsonify({'error': 'Cannot delete yourself'}), 400
+    user = User.query.get_or_404(user_id)
+    if user.is_admin:
+        return jsonify({'error': 'Cannot delete admin users'}), 400
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'User deleted successfully'})
 
 if __name__ == '__main__':
     try:
