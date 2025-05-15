@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+
+
+<div class="container my-4">
+    <h2>Order Management</h2>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.order_id }}</td>
+                <td>{% if order.user %}{{ order.user.username }}{% else %}Deleted User{% endif %}</td>
+                <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td><span class="badge badge-{{ order.status|lower }}">{{ order.status }}</span></td>
+                <td>${{ "%.2f"|format(order.total_amount) if order.total_amount else '0.00' }}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" onclick="viewOrder({{ order.order_id }})">View</button>
+                    <button class="btn btn-sm btn-success" onclick="updateStatus({{ order.order_id }})">Update Status</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
