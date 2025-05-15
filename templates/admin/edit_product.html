@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Edit Product{% endblock %}
+{% block header %}CurioCart{% endblock %}
+
+
+{% block content %}
+<div class="container px-4">
+    <div class="card admin-card shadow-sm">
+        <div class="card-header admin-card-header py-3">
+            <h2 class="mb-0">Edit Product</h2>
+        </div>
+        <div class="card-body admin-card-body p-4">
+            <form method="POST" action="{{ url_for('admin_edit_product', product_id=product.id) }}" class="admin-form">
+                <div class="form-group mb-3">
+                    <label>Product Name</label>
+                    <input type="text" name="name" class="form-control admin-form-control" value="{{ product.name }}" required>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label>Description</label>
+                    <textarea name="description" class="form-control admin-form-control" rows="3" required>{{ product.description }}</textarea>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label>Price</label>
+                    <input type="number" name="price" class="form-control admin-form-control" value="{{ product.price }}" step="0.01" required>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label>Category</label>
+                    <select name="category" class="form-control admin-form-control" required>
+                        <option value="Electronics" {% if product.category == 'Electronics' %}selected{% endif %}>Electronics</option>
+                        <option value="Gadgets" {% if product.category == 'Gadgets' %}selected{% endif %}>Gadgets</option>
+                        <option value="Fashion" {% if product.category == 'Fashion' %}selected{% endif %}>Fashion</option>
+                        <option value="Books" {% if product.category == 'Books' %}selected{% endif %}>Books</option>
+                        <option value="Beauty" {% if product.category == 'Beauty' %}selected{% endif %}>Beauty</option>
+                        <option value="Home" {% if product.category == 'Home' %}selected{% endif %}>Home</option>
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label>Image URL</label>
+                    <input type="text" name="image" class="form-control admin-form-control" value="{{ product.image }}" required>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Stock Quantity</label>
+                    <input type="number" name="stock_quantity" class="form-control admin-form-control" value="{{ product.stock_quantity }}" required>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label>Discount (%)</label>
+                    <input type="number" name="discount" class="form-control admin-form-control" value="{{ product.discount }}" min="0" max="100">
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary btn-admin">Update Product</button>
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-secondary btn-admin">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
