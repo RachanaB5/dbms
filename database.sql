@@ -240,6 +240,9 @@ ALTER TABLE products ADD COLUMN category VARCHAR(50);
 ALTER TABLE products ADD COLUMN image VARCHAR(100);
 ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 
+-- Modify image column length
+ALTER TABLE products MODIFY COLUMN image VARCHAR(500);
+
 SHOW TABLES;
 SELECT * FROM users;
 SELECT * FROM cart;
@@ -307,4 +310,7 @@ CREATE TABLE OrderItems (
 select * from users;
 select * from products;
 select * from orders;
+select * from order_items;
+select * from payments;
 select * from cart;
+select * from reviews;
