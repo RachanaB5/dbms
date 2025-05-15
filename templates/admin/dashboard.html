@@ -1,0 +1,60 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-4 mb-4">
+        <div class="admin-card card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Total Products</h6>
+                        <h2 class="admin-stats">{{ product_count }}</h2>
+                    </div>
+                    <i class="fas fa-box fa-2x text-primary"></i>
+                </div>
+                <a href="{{ url_for('admin_products') }}" class="btn btn-admin btn-primary mt-3">
+                    Manage Products
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="admin-card card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Total Orders</h6>
+                        <h2 class="admin-stats">{{ order_count }}</h2>
+                    </div>
+                    <i class="fas fa-shopping-cart fa-2x text-success"></i>
+                </div>
+                <a href="{{ url_for('admin_orders') }}" class="btn btn-admin btn-success mt-3">
+                    View Orders
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="admin-card card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted">Total Users</h6>
+                        <h2 class="admin-stats">{{ user_count }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-2x text-info"></i>
+                </div>
+                <a href="{{ url_for('admin_users') }}" class="btn btn-admin btn-info mt-3">
+                    Manage Users
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
