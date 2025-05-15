@@ -29,7 +29,7 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     price = db.Column(db.Numeric(10, 2), nullable=False)
-    image = db.Column(db.String(200))
+    image = db.Column(db.String(500))  # Increased from default length to 500
     category = db.Column(db.String(50))
     discount = db.Column(db.Integer, default=0)
     stock_quantity = db.Column(db.Integer, default=0)
@@ -63,7 +63,8 @@ class Review(db.Model):
 class Order(db.Model):
     __tablename__ = 'orders'  # Match existing table name
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    user = db.relationship('User', backref=db.backref('orders', lazy=True))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), nullable=False, default='pending')  # pending, confirmed, shipped, delivered, cancelled
     items = db.relationship('OrderItem', backref='order', lazy=True)
