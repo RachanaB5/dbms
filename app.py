@@ -429,7 +429,7 @@ def login():
     if user and check_password_hash(user.password_hash, password):
         print('Password check passed')
         login_user(user)
-        flash('Welcome Admin!')
+        flash('Login Successful')
         if user.is_admin:
             return redirect(url_for('admin'))
         return redirect(url_for('products'))  # Changed from index to products
