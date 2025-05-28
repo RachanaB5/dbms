@@ -119,6 +119,12 @@ CREATE TABLE Payments (
     FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
 );
 
+ALTER TABLE Payments
+ADD COLUMN card_number VARCHAR(16),
+ADD COLUMN card_expiry VARCHAR(5),
+ADD COLUMN card_holder VARCHAR(100),
+ADD COLUMN payment_method VARCHAR(50) DEFAULT 'card';
+
 -- Insert sample data into Payments
 INSERT INTO Payments (user_id, order_id, amount, payment_status) VALUES
 (1, 1, 1200.00, 'Completed'),
@@ -310,7 +316,6 @@ CREATE TABLE OrderItems (
 select * from users;
 select * from products;
 select * from orders;
-select * from order_items;
-select * from payments;
 select * from cart;
 select * from reviews;
+select * from payments;
