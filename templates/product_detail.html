@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }} - CurioCart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
     <style>
         :root {
             --primary: #6a5acd;        /* Soft slate blue - primary brand color */
@@ -108,111 +109,44 @@
             padding: 0 1.5rem;
         }
         
-        .product-detail {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .product-main {
+            display: flex;
             gap: 3rem;
             margin-bottom: 4rem;
         }
         
-        .product-gallery {
-            position: sticky;
-            top: 1rem;
+        .product-image {
+            flex: 1;
+            position: relative;
         }
         
-        .main-image {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            margin-bottom: 1rem;
-        }
-        
-        .main-image img {
+        .product-image img {
             width: 100%;
             height: auto;
-            display: block;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
         
-        .thumbnail-container {
+        .product-info {
+            flex: 1;
             display: flex;
-            gap: 1rem;
+            flex-direction: column;
         }
         
-        .thumbnail {
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        
-        .thumbnail:hover, .thumbnail.active {
-            border-color: var(--primary);
-        }
-        
-        .thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .product-info h1 {
-            font-size: 2rem;
-            color: var(--primary-dark);
-            margin-bottom: 1rem;
-        }
-        
-        .meta-info {
-            margin-bottom: 2rem;
-        }
-        
-        .rating-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stars {
-            color: #FFA41C;
-        }
-        
-        .review-count {
-            color: var(--text);
-            font-size: 0.9rem;
-        }
-        
-        .bestseller-tag {
-            background: var(--accent);
-            color: white;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        
-        .price-container {
+        .price-section {
             display: flex;
             align-items: center;
             gap: 1rem;
             margin: 1.5rem 0;
         }
         
-        .discount-badge {
+        .discount-tag {
             background: var(--accent);
             color: white;
             padding: 0.3rem 0.6rem;
             border-radius: 4px;
             font-size: 0.9rem;
             font-weight: bold;
-        }
-        
-        .current-price {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
         }
         
         .original-price {
@@ -221,29 +155,10 @@
             opacity: 0.7;
         }
         
-        .stock-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.95rem;
-            margin: 1rem 0;
-        }
-        
-        .stock-status i {
-            font-size: 1.1rem;
-        }
-        
-        .in-stock {
-            color: var(--success);
-        }
-        
-        .out-of-stock {
-            color: var(--error);
-        }
-        
         .product-description {
             margin: 2rem 0;
             line-height: 1.7;
+            flex-grow: 1;
         }
         
         .product-description h3 {
@@ -252,73 +167,23 @@
             color: var(--primary-dark);
         }
         
-        .highlights {
-            margin-top: 2rem;
-        }
-        
-        .highlights ul {
-            list-style: none;
-            margin-top: 1rem;
-        }
-        
-        .highlights li {
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .highlights i {
-            color: var(--success);
-        }
-        
-        .action-buttons {
-            margin: 2rem 0;
+        .add-to-cart {
+            margin-top: 1.5rem;
         }
         
         .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             margin-bottom: 1.5rem;
         }
         
-        .quantity-selector label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .quantity-input {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            width: fit-content;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        
-        .quantity-btn {
-            width: 40px;
-            height: 40px;
-            background: #f5f5f5;
-            border: none;
-            font-size: 1.1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .quantity-btn:hover {
-            background: #e9e9e9;
-        }
-        
-        .quantity-input input {
+        .quantity-selector input {
             width: 60px;
             height: 40px;
             text-align: center;
-            border: none;
-            border-left: 1px solid #ddd;
-            border-right: 1px solid #ddd;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             font-size: 1rem;
         }
         
@@ -343,52 +208,50 @@
             box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
         }
         
-        .btn-secondary {
-            background: white;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            padding: 1rem 2rem;
+        /* Enhanced Submit Button Styles */
+        .btn-submit {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
             border-radius: 8px;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(106, 90, 205, 0.2);
+            width: auto;
+            min-width: 200px;
+            margin-top: 1rem;
         }
-        
-        .btn-secondary:hover {
-            background: rgba(106, 90, 205, 0.05);
+
+        .btn-submit:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 90, 205, 0.3);
         }
-        
-        .delivery-info {
-            margin-top: 2rem;
-            border-top: 1px solid #eee;
-            padding-top: 2rem;
+
+        .btn-submit:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(106, 90, 205, 0.2);
         }
-        
-        .delivery-option {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
-        
-        .delivery-option i {
+
+        .btn-submit i {
             font-size: 1.2rem;
-            color: var(--primary);
-            margin-top: 0.2rem;
+            margin-right: 0.5rem;
         }
-        
-        .delivery-option strong {
-            display: block;
-            margin-bottom: 0.2rem;
-        }
-        
-        .delivery-option span {
-            font-size: 0.9rem;
-            color: var(--text);
-        }
-        
+
         /* Reviews Section */
         .reviews-section {
             border-top: 1px solid #eee;
@@ -520,26 +383,57 @@
             font-weight: 500;
         }
         
+        /* FIXED: Star Rating Input (Form) - Normal Order */
         .star-rating {
-            direction: rtl;
-            display: inline-block;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 0.25rem;
+            margin: 1rem 0;
         }
-        
+
         .star-rating input {
             display: none;
         }
-        
+
         .star-rating label {
-            color: #ddd;
-            font-size: 1.5rem;
-            padding: 0 0.2rem;
             cursor: pointer;
+            font-size: 2rem;
+            color: #ddd;
+            transition: color 0.2s ease;
+            order: 0; /* Ensure normal order */
         }
-        
-        .star-rating input:checked ~ label,
+
+        /* Fix the star rating logic for input form */
         .star-rating label:hover,
         .star-rating label:hover ~ label {
-            color: #FFA41C;
+            color: #ffd700;
+        }
+
+        /* When a radio is checked, color it and all previous stars */
+        .star-rating input:checked ~ label {
+            color: #ffd700;
+        }
+
+        /* Reverse the hover effect to work correctly */
+        .star-rating:hover label {
+            color: #ddd;
+        }
+        
+        .star-rating label:hover,
+        .star-rating:hover label:hover ~ label {
+            color: #ffd700;
+        }
+
+        /* FIXED: Display Stars (Reviews) - Correct Order */
+        .rating {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .rating .fas.fa-star {
+            font-size: 1.2rem;
         }
         
         textarea {
@@ -623,87 +517,91 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        /* Footer Styles */
-        .footer {
-            position: relative;
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-            color: white;
-            padding: 6rem 2rem 3rem;
-            margin-top: 4rem;
-            overflow: hidden;
+        /* Review Section Styles */
+        .review-section {
+            padding: 2rem;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin: 2rem 0;
         }
-        
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 3rem;
+
+        .review-form {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
         }
-        
-        .footer-column h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            display: inline-block;
+
+        .review-image-upload {
+            margin: 1rem 0;
         }
-        
-        .footer-column h3::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--secondary);
+
+        .review-preview {
+            max-width: 200px;
+            margin-top: 1rem;
+            border-radius: 8px;
+            display: none;
         }
-        
-        .footer-column a {
-            display: block;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 0.8rem;
-            transition: all 0.3s;
-            text-decoration: none;
+
+        .review-image {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
-        .footer-column a:hover {
-            color: white;
-            transform: translateX(5px);
+
+        .review-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 3rem;
-            margin-top: 3rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.7);
-            font-size: 0.9rem;
+
+        .image-preview-container {
+            margin-top: 1rem;
+            max-width: 200px;
         }
-        
+
+        .review-preview {
+            width: 100%;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .review-image-upload {
+            margin: 1.5rem 0;
+        }
+
+        .review-image-upload input[type="file"] {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 900px) {
-            .product-detail {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-            
-            .product-gallery {
-                position: static;
+            .product-main {
+                flex-direction: column;
             }
         }
         
         @media (max-width: 600px) {
-            .price-container {
+            .price-section {
                 flex-wrap: wrap;
             }
             
-            .action-buttons {
+            .add-to-cart {
                 display: flex;
                 flex-direction: column;
                 gap: 1rem;
             }
             
-            .btn-primary, .btn-secondary {
+            .btn-primary {
                 width: 100%;
                 justify-content: center;
                 margin-right: 0;
@@ -727,5 +625,317 @@
                 flex-wrap: wrap;
             }
         }
+
+        .review-image-container {
+            margin-top: 1rem;
+            max-width: 300px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .review-image-container:hover {
+            transform: scale(1.02);
+        }
+        
+        .review-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 50px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 8px;
+        }
     </style>
 </head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <a href="/" class="logo" style="text-decoration: none;">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="CurioCart">
+                <span>CurioCart</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/"><i class="fas fa-home"></i> Home</a>
+                <a href="/products"><i class="fas fa-store"></i> Products</a>
+                {% if current_user.is_authenticated %}
+                    <a href="/cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+                    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                {% else %}
+                    <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="product-detail-container">
+        <div class="product-main">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="No image available">
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <h1>{{ product.name }}</h1>
+                <div class="price-section">
+                    {% if product.discount > 0 %}
+                        <span class="original-price">₹{{ "%.2f"|format(product.price) }}</span>
+                        <span class="discounted-price">₹{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
+                        <span class="discount-tag">-{{ product.discount }}%</span>
+                    {% else %}
+                        <span class="price">₹{{ "%.2f"|format(product.price) }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="product-description">
+                    <h3>Description</h3>
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <div class="add-to-cart">
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                        <div class="quantity-selector">
+                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}">
+                        </div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-cart-plus"></i> Add to Cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="review-section">
+            <h2>Customer Reviews</h2>
+
+            {% if current_user.is_authenticated %}
+                <form action="{{ url_for('add_review', product_id=product.id) }}" method="POST" enctype="multipart/form-data" class="review-form">
+                    <!-- FIXED: Rating stars with correct order -->
+                    <div class="rating-group">
+                        <label>Your Rating:</label>
+                        <div class="star-rating">
+                            <input type="radio" name="rating" value="1" id="star1" required>
+                            <label for="star1" title="1 star">
+                                <i class="fas fa-star"></i>
+                            </label>
+                            <input type="radio" name="rating" value="2" id="star2" required>
+                            <label for="star2" title="2 stars">
+                                <i class="fas fa-star"></i>
+                            </label>
+                            <input type="radio" name="rating" value="3" id="star3" required>
+                            <label for="star3" title="3 stars">
+                                <i class="fas fa-star"></i>
+                            </label>
+                            <input type="radio" name="rating" value="4" id="star4" required>
+                            <label for="star4" title="4 stars">
+                                <i class="fas fa-star"></i>
+                            </label>
+                            <input type="radio" name="rating" value="5" id="star5" required>
+                            <label for="star5" title="5 stars">
+                                <i class="fas fa-star"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Review text -->
+                    <div class="form-group">
+                        <label for="review_text">Your Review:</label>
+                        <textarea name="review_text" id="review_text" rows="4" required></textarea>
+                    </div>
+
+                    <!-- FIXED: Image upload with proper preview -->
+                    <div class="review-image-upload">
+                        <label for="review_image" class="upload-label">Add Photo:</label>
+                        <input type="file" 
+                               name="review_image" 
+                               id="review_image" 
+                               accept="image/*" 
+                               class="form-control">
+                        <div class="image-preview-container">
+                            <img id="review-preview" 
+                                 class="review-preview" 
+                                 alt="Image preview">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit Review
+                    </button>
+                </form>
+            {% endif %}
+
+            <!-- Update the reviews list section -->
+            <div class="reviews-list">
+                {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <span class="reviewer-name">{{ review.username }}</span>
+                                <div class="rating">
+                                    {% for i in range(1, 6) %}
+                                        <i class="fas fa-star" style="color: {% if i <= review.rating %}#ffd700{% else %}#ddd{% endif %};"></i>
+                                    {% endfor %}
+                                    <span style="margin-left: 8px; color: #666;">({{ review.rating }}/5)</span>
+                                </div>
+                            </div>
+                            <span class="review-date">{{ review.created_at.strftime('%B %d, %Y') }}</span>
+                        </div>
+                        
+                        <p class="review-text">{{ review.review_text }}</p>
+                        
+                        {% if review.review_image %}
+                            <div class="review-image-container">
+                                <img src="{{ url_for('serve_review_image', review_id=review.id) }}" 
+                                     alt="Review image"
+                                     class="review-image"
+                                     style="display: block; max-width: 300px; width: 100%; margin-top: 1rem; cursor: pointer;"
+                                     onclick="showFullImage(this.src)">
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Add image viewer modal -->
+    <div id="imageModal" class="modal" onclick="this.style.display='none'">
+        <img class="modal-content" id="fullImage">
+    </div>
+
+    <script>
+        // FIXED: Star Rating JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const starRating = document.querySelector('.star-rating');
+            const stars = starRating.querySelectorAll('label');
+            const radioButtons = starRating.querySelectorAll('input[type="radio"]');
+
+            // Handle star hover effects
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseenter', function() {
+                    // Light up this star and all previous stars
+                    for (let i = 0; i <= index; i++) {
+                        stars[i].style.color = '#ffd700';
+                    }
+                    // Dim all following stars
+                    for (let i = index + 1; i < stars.length; i++) {
+                        stars[i].style.color = '#ddd';
+                    }
+                });
+
+                star.addEventListener('click', function() {
+                    // Set the corresponding radio button
+                    radioButtons[index].checked = true;
+                    updateStarDisplay();
+                });
+            });
+
+            // Handle mouse leave
+            starRating.addEventListener('mouseleave', function() {
+                updateStarDisplay();
+            });
+
+            // Update star display based on selected rating
+            function updateStarDisplay() {
+                const checkedRadio = starRating.querySelector('input[type="radio"]:checked');
+                const selectedValue = checkedRadio ? parseInt(checkedRadio.value) : 0;
+
+                stars.forEach((star, index) => {
+                    if (index < selectedValue) {
+                        star.style.color = '#ffd700';
+                    } else {
+                        star.style.color = '#ddd';
+                    }
+                });
+            }
+
+            // Update image preview functionality
+            const fileInput = document.getElementById('review_image');
+            const preview = document.getElementById('review-preview');
+            
+            fileInput.addEventListener('change', function() {
+                if (!this.files || !this.files[0]) {
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                const file = this.files[0];
+                
+                // Check file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file (JPG, PNG, etc)');
+                    this.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                // Check file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size too large (max 5MB)');
+                    this.value = '';
+                    preview.style.display = 'none';
+                    return;
+                }
+
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+
+        function incrementQuantity() {
+            const input = document.querySelector('input[name="quantity"]');
+            const currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+
+        function decrementQuantity() {
+            const input = document.querySelector('input[name="quantity"]');
+            const max = parseInt(input.getAttribute('max'));
+            const currentValue = parseInt(input.value);
+            if (currentValue < max) {
+                input.value = currentValue + 1;
+            }
+        }
+
+        function showFullImage(src) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('fullImage');
+            modal.style.display = "block";
+            modalImg.src = src;
+        }
+
+    </script>
+</body>
+</html>
