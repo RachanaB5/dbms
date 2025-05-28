@@ -188,7 +188,7 @@
 <body>
     <div class="checkout-container">
         <h1>Checkout</h1>
-        <form method="POST" action="{{ url_for('checkout') }}">
+        <form method="POST" action="{{ url_for('checkout') }}" id="checkoutForm" onsubmit="return validateForm()">
             <h2>Shipping Address</h2>
             <div class="form-grid">
                 <div class="form-group">
@@ -212,10 +212,10 @@
             <h2>Payment Method</h2>
             <div class="payment-methods">
                 <div class="payment-option">
-                    <label><input type="radio" name="payment_method" value="card"> Credit/Debit Card</label>
+                    <label><input type="radio" name="payment_method" value="card" checked> Credit/Debit Card</label>
                 </div>
                  <div class="payment-option">
-                    <label><input type="radio" name="payment_method" value="cod" checked> Cash on Delivery</label>
+                    <label><input type="radio" name="payment_method" value="cod" > Cash on Delivery</label>
                 </div>
             </div>
             
@@ -255,6 +255,21 @@
     </div>
 
     <script>
+        function validateForm() {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            if (paymentMethod === 'card') {
+                const cardNumber = document.getElementById('cardNumber').value;
+                const cardExpiry = document.getElementById('cardExpiry').value;
+                const cardCVV = document.getElementById('cardCVV').value;
+                
+                if (!cardNumber || !cardExpiry || !cardCVV) {
+                    alert('Please fill in all card details');
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // Show/hide card details based on payment method
         const paymentRadios = document.getElementsByName('payment_method');
         const cardDetails = document.getElementById('cardDetails');
