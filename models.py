@@ -2,6 +2,8 @@ from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
 from decimal import Decimal
+from flask import url_for  # Add this import at the top
+from utils.encryption import hash_card_number, get_last_four_digits
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -30,6 +32,8 @@ class Product(db.Model):
     description = db.Column(db.Text)
     price = db.Column(db.Numeric(10, 2), nullable=False)
     image = db.Column(db.String(500))  # Increased from default length to 500
+    image_data = db.Column(db.LargeBinary(length=(2**32)-1))  # Using LONGBLOB
+    image_mimetype = db.Column(db.String(100))  # For storing image type
     category = db.Column(db.String(50))
     discount = db.Column(db.Integer, default=0)
     stock_quantity = db.Column(db.Integer, default=0)
@@ -47,18 +51,45 @@ class Product(db.Model):
             return True
         return False
 
+    def get_image_url(self):
+        if self.image_data:
+            return url_for('serve_image', product_id=self.id)
+        elif self.image:
+            return url_for('static', filename=f'images/{self.image}')
+        return url_for('static', filename='images/default.jpg')
+
     def __repr__(self):
         return f'<Product {self.name}>'
 
+class ReviewMedia(db.Model):
+    __tablename__ = 'review_media'
+    id = db.Column(db.Integer, primary_key=True)
+    review_id = db.Column(db.Integer, db.ForeignKey('reviews.id'), nullable=False)
+    media_data = db.Column(db.LargeBinary(length=(2**32)-1))
+    media_type = db.Column(db.String(20))  # 'image' or 'video'
+    media_mimetype = db.Column(db.String(100))
+
 class Review(db.Model):
-    __tablename__ = 'reviews'  # Match existing table name
+    __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)  # Match product_id column
+    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     review_text = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     helpful_count = db.Column(db.Integer, default=0)
+    # Add image fields
+    review_image = db.Column(db.LargeBinary(length=(2**32)-1))  # For storing image data
+    image_mimetype = db.Column(db.String(100))  # For storing image type
+    media = db.relationship('ReviewMedia', backref='review', lazy=True, cascade='all, delete-orphan')
+
+    def get_image_url(self):
+        if self.review_image:
+            return url_for('serve_review_image', review_id=self.id)
+        return None
+
+    def __repr__(self):
+        return f'<Review {self.id}>'
 
 class Order(db.Model):
     __tablename__ = 'orders'  # Match existing table name
@@ -115,12 +146,31 @@ class Payment(db.Model):
     order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     payment_date = db.Column(db.DateTime, default=datetime.utcnow)
-    payment_status = db.Column(db.String(20), nullable=False)  # pending, completed, failed, refunded
-    payment_method = db.Column(db.String(50), nullable=False)  # credit_card, debit_card, upi, net_banking
+    payment_status = db.Column(db.String(20), nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
     transaction_id = db.Column(db.String(100), nullable=True)
+    # Add card details columns
+    card_number_hash = db.Column(db.String(256), nullable=True)  # Store full number hashed
+    card_last_four = db.Column(db.String(4), nullable=True)  # Store last 4 digits for display
 
-    # Remove the conflicting relationship definition
-    # Remove this line: order = db.relationship('Order', backref=db.backref('payment', uselist=False))
+    def set_card_number(self, card_number):
+        if card_number:
+            self.card_number_hash = hash_card_number(card_number)
+            self.card_last_four = get_last_four_digits(card_number)
+
+    def get_masked_card_number(self):
+        if self.card_last_four:
+            return f"****-****-****-{self.card_last_four}"
+        return None
+
+class PaymentDetails(db.Model):
+    __tablename__ = 'payment_details'
+    id = db.Column(db.Integer, primary_key=True)
+    payment_id = db.Column(db.Integer, db.ForeignKey('payments.id'), nullable=False)
+    card_number = db.Column(db.String(16))  # Store last 4 digits only in production
+    card_expiry = db.Column(db.String(5))
+    card_holder = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Cart(db.Model):
     cart_id = db.Column(db.Integer, primary_key=True)
