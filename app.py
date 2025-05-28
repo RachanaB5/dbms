@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, abort
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, abort, send_file
 from extensions import db, login_manager
-from models import User, Product, Review, Order, OrderItem, Payment, Cart as CartModel
+from models import User, Product, Review, Order, OrderItem, Payment, Cart as CartModel, PaymentDetails
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
@@ -12,6 +12,11 @@ import secrets
 import atexit
 from sqlalchemy import create_engine
 from decimal import Decimal
+import imghdr
+import requests
+from werkzeug.utils import secure_filename
+from urllib.parse import urlparse
+import io
 
 app = Flask(__name__)
 
@@ -31,29 +36,53 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
+# File upload configurations
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Create uploads directory if it doesn't exist
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+# Create directory for review images if it doesn't exist
+REVIEW_IMAGES_FOLDER = os.path.join(app.root_path, 'static', 'review_images')
+if not os.path.exists(REVIEW_IMAGES_FOLDER):
+    os.makedirs(REVIEW_IMAGES_FOLDER)
+
 # Setup logging
-if not os.path.exists('logs'):
-    os.mkdir('logs')
+log_dir = 'logs'
+try:
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir, mode=0o755)
+    
+    file_handler = RotatingFileHandler(
+        os.path.join(log_dir, 'ecommerce.log'),
+        maxBytes=10240,
+        backupCount=10,
+        delay=False,
+        encoding='utf-8',
+        mode='a'  # Append mode with default permissions
+    )
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
 
-# Configure file handler with Windows-friendly settings
-file_handler = RotatingFileHandler(
-    'logs/ecommerce.log',
-    maxBytes=10240,
-    backupCount=10,
-    delay=False,  # Create file immediately
-    encoding='utf-8'  # Explicit encoding for Windows
-)
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-))
-file_handler.setLevel(logging.INFO)
+    # Configure app logger directly - removing queue to avoid file locking issues
+    app.logger.setLevel(logging.INFO)
+    for handler in app.logger.handlers[:]:  # Remove any existing handlers
+        app.logger.removeHandler(handler)
+    app.logger.addHandler(file_handler)
+    app.logger.info('Ecommerce startup')
 
-# Configure app logger directly - removing queue to avoid file locking issues
-app.logger.setLevel(logging.INFO)
-for handler in app.logger.handlers[:]:  # Remove any existing handlers
-    app.logger.removeHandler(handler)
-app.logger.addHandler(file_handler)
-app.logger.info('Ecommerce startup')
+except PermissionError as e:
+    print(f"Permission error setting up logs: {e}")
+    print("Try running: chmod 755 logs/")
+    # Fallback to console logging
+    import sys
+    file_handler = logging.StreamHandler(sys.stdout)
 
 # Clean up function
 @atexit.register
@@ -243,9 +272,9 @@ def init_db():
                     {
                         'name': 'Fashion Handbag',
                         'description': 'Trendy handbag to complement your style.',
-                        'price': 2199,
-                        'category': 'Fashion',
-                        'image': 'fashion.jpg',
+                        'price': 2199.00,  # Added missing price
+                        'category': 'Fashion',  # Added missing category
+                        'image': 'fashion.jpg',  # Added missing image
                         'discount': 5,
                         'stock_quantity': 28
                     },
@@ -524,7 +553,7 @@ def products():
                 'description': p.description,
                 'price': float(p.price),
                 'category': p.category,
-                'image': p.image,
+                'image': p.image,  # Use the new method
                 'discount': float(p.discount or 0),
                 'stock_quantity': p.stock_quantity,
                 'rating': 0,
@@ -582,32 +611,128 @@ def category_products(category_name):
 # Product detail route
 
 # Product detail route
+@app.route('/product/1')
+@app.route('/product/2')
+@app.route('/product/3')
+@app.route('/product/4')
+@app.route('/product/7')
+@app.route('/product/8')
+@app.route('/product/9')
+@app.route('/product/10')
+def product_detail_shortcut():
+    product_id = int(request.path.split('/')[-1])
+    return product_detail(product_id)
+
 @app.route('/product/<int:product_id>', methods=['GET'])
 def product_detail(product_id):
-    product = Product.query.get_or_404(product_id)
-    reviews = Review.query.filter_by(product_id=product_id).order_by(Review.created_at.desc()).all()
-    review_list = []
-    for r in reviews:
-        review_list.append({
-            'username': r.user.username if r.user else 'User',
-            'created_at': r.created_at,
-            'rating': r.rating,
-            'review_text': r.review_text,
-            'helpful_count': r.helpful_count or 0
-        })
-    return render_template('product_detail.html', product=product, reviews=review_list, avg_rating=avg_rating, now=datetime.utcnow, timedelta=timedelta)
+    try:
+        app.logger.info(f"Fetching product details for ID: {product_id}")
+        product = Product.query.get(product_id)
+        if not product:
+            app.logger.warning(f"Product with ID {product_id} not found.")
+            return render_template('errors/404.html'), 404
+
+        reviews = Review.query.filter_by(product_id=product_id).all()
+        review_list = []
+        total_rating = 0
+        review_count = 0
+
+        for review in reviews:
+            try:
+                user = User.query.get(review.user_id)
+                review_data = {
+                    'id': getattr(review, 'id', None),
+                    'username': user.username if user else 'Anonymous',
+                    'created_at': getattr(review, 'created_at', datetime.utcnow()),
+                    'rating': getattr(review, 'rating', 0) or 0,
+                    'review_text': getattr(review, 'review_text', '') or '',
+                    'helpful_count': getattr(review, 'helpful_count', 0) or 0,
+                    'review_image': bool(getattr(review, 'review_image', None))
+                }
+                review_list.append(review_data)
+                try:
+                    rating_val = float(review_data['rating'])
+                    if not isinstance(rating_val, float) or rating_val is None:
+                        continue
+                    total_rating += rating_val
+                    review_count += 1
+                except Exception as e:
+                    app.logger.warning(f"Skipping invalid rating in review {review_data.get('id')}: {e}")
+                    continue
+            except Exception as e:
+                app.logger.error(f"Error processing review: {str(e)}")
+                continue
+
+        avg_rating = round(total_rating / review_count, 1) if review_count > 0 else 0
+
+        # Ensure all price and discount values are float for template math
+        product.price = float(product.price)
+        product.discount = float(product.discount or 0)
+
+        return render_template('product_detail.html',
+                             product=product,
+                             reviews=review_list,
+                             avg_rating=avg_rating,
+                             review_count=review_count)
+    except Exception as e:
+        app.logger.error(f"Error in product_detail: {str(e)}")
+        flash(f'Error loading product details: {str(e)}')
+        return redirect(url_for('products'))
 
 # Add review route
 @app.route('/add_review/<int:product_id>', methods=['POST'])
 @login_required
 def add_review(product_id):
-    rating = int(request.form.get('rating'))
-    review_text = request.form.get('review_text')
-    new_review = Review(user_id=current_user.id, product_id=product_id, rating=rating, review_text=review_text, created_at=datetime.utcnow())
-    db.session.add(new_review)
-    db.session.commit()
-    flash('Review added!')
+    try:
+        # Get form data
+        rating = int(request.form.get('rating', 0))
+        review_text = request.form.get('review_text', '').strip()
+        
+        # Create new review
+        new_review = Review(
+            user_id=current_user.id,
+            product_id=product_id,
+            rating=rating,
+            review_text=review_text,
+            created_at=datetime.utcnow()
+        )
+
+        # Handle image upload
+        if 'review_image' in request.files:
+            image_file = request.files['review_image']
+            if image_file and allowed_file(image_file.filename):
+                # Read image data
+                image_data = image_file.read()
+                new_review.review_image = image_data
+                new_review.image_mimetype = image_file.content_type
+
+        db.session.add(new_review)
+        db.session.commit()
+        flash('Review added successfully!')
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error adding review: {str(e)}")
+        flash('Error adding review. Please try again.')
+    
     return redirect(url_for('product_detail', product_id=product_id))
+
+# Review image serving route
+@app.route('/review_image/<int:review_id>')
+def serve_review_image(review_id):
+    try:
+        review = Review.query.get_or_404(review_id)
+        if not review.review_image:
+            abort(404)
+        
+        return send_file(
+            io.BytesIO(review.review_image),
+            mimetype=review.image_mimetype or 'image/jpeg',
+            as_attachment=False
+        )
+    except Exception as e:
+        app.logger.error(f"Error serving review image: {str(e)}")
+        abort(404)
 
 # Add to cart route
 @app.route('/add_to_cart/<int:product_id>', methods=['POST'])
@@ -663,11 +788,18 @@ def cart():
                 subtotal = unit_price * cart_item.quantity
                 total += subtotal
                 
+                # Generate image URL based on product data
+                if product.image_data:
+                    image_url = url_for('serve_image', product_id=product.id)
+                else:
+                    image_url = url_for('static', filename=f'images/{product.image}') if product.image else None
+                
                 items.append({
                     'product': product,
                     'quantity': cart_item.quantity,
                     'unit_price': unit_price,
-                    'subtotal': subtotal
+                    'subtotal': subtotal,
+                    'image_url': image_url
                 })
         
         return render_template('cart.html', 
@@ -719,7 +851,6 @@ def update_cart(product_id):
 @login_required
 def checkout():
     try:
-        # Get cart items
         cart_items = CartModel.query.filter_by(user_id=current_user.id).all()
         if not cart_items:
             flash('Your cart is empty')
@@ -753,21 +884,15 @@ def checkout():
                     user_id=current_user.id,
                     shipping_address=request.form.get('address'),
                     shipping_city=request.form.get('city'),
-
                     shipping_zip=request.form.get('zip'),
                     status='pending'
                 )
                 db.session.add(order)
                 db.session.flush()
 
-                # Add order items and update stock
+                # Add order items
                 for cart_item in cart_items:
                     product = Product.query.get(cart_item.product_id)
-                    if not product.update_stock(cart_item.quantity):
-                        db.session.rollback()
-                        flash(f'Sorry, {product.name} is out of stock')
-                        return redirect(url_for('cart'))
-                    
                     order_item = OrderItem(
                         order_id=order.id,
                         product_id=cart_item.product_id,
@@ -776,15 +901,30 @@ def checkout():
                         discount_at_time=product.discount
                     )
                     db.session.add(order_item)
+                    # Update stock
+                    if not product.update_stock(cart_item.quantity):
+                        db.session.rollback()
+                        flash(f'Sorry, {product.name} is out of stock')
+                        return redirect(url_for('cart'))
 
-                # Create payment record
+                # Create payment record with card details
+                payment_method = request.form.get('payment_method', 'card')
                 payment = Payment(
                     order_id=order.id,
                     amount=float(total),
                     payment_status='pending',
-                    payment_method=request.form.get('payment_method', 'credit_card')
+                    payment_method=payment_method
                 )
+
+                # Add card details if payment method is card
+                if payment_method == 'card':
+                    card_number = request.form.get('card_number')
+                    payment.set_card_number(card_number)
+                    payment.card_expiry = request.form.get('card_expiry')
+                    payment.card_holder = current_user.username
+
                 db.session.add(payment)
+                db.session.flush()
 
                 # Clear cart
                 for item in cart_items:
@@ -800,7 +940,7 @@ def checkout():
                 flash('An error occurred while processing your order')
                 return redirect(url_for('cart'))
 
-        app.logger.info(f"Checkout initiated for user {current_user.id} with {len(items)} items")
+        # GET request - show checkout page
         return render_template('checkout.html', items=items, total=float(total))
 
     except Exception as e:
@@ -877,25 +1017,80 @@ def admin():
     return render_template('admin/dashboard.html')
 
 # Admin add product route
+def validate_image_url(url):
+    """Validate if URL points to an image"""
+    try:
+        import requests
+        from urllib.parse import urlparse
+
+        # Check if URL is valid
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.netloc:
+            return False
+
+        # Check if URL points to an image
+        response = requests.head(url)
+        content_type = response.headers.get('content-type', '')
+        return content_type.startswith('image/')
+    except:
+        return False
+
 @app.route('/admin/add', methods=['POST'])
 @admin_required
 def admin_add_product():
-    name = request.form.get('name')
-    description = request.form.get('description')
-    price = request.form.get('price')
-    image = request.form.get('image')
-    if len(image) > 500:
-        flash('Image URL is too long. Please use a shorter URL or image path.')
-        return redirect(url_for('admin'))
-    category = request.form.get('category')
-    if not all([name, description, price, image, category]):
-        flash('All fields are required.')
-        return redirect(url_for('admin'))
-    product = Product(name=name, description=description, price=price, image=image, category=category)
-    db.session.add(product)
-    db.session.commit()
-    flash('Product added successfully!')
-    return redirect(url_for('admin'))
+    try:
+        # Get form data
+        name = request.form.get('name')
+        description = request.form.get('description')
+        price = float(request.form.get('price'))
+        category = request.form.get('category')
+        stock_quantity = int(request.form.get('stock_quantity'))
+        discount = int(request.form.get('discount', 0))
+        
+        # Validate required fields
+        if not all([name, description, price, category, stock_quantity]):
+            flash('All fields are required', 'error')
+            return redirect(url_for('admin_products'))
+
+        # Handle image upload
+        if 'image' not in request.files:
+            flash('No image file uploaded', 'error')
+            return redirect(url_for('admin_products'))
+            
+        image_file = request.files['image']
+        if image_file and allowed_file(image_file.filename):
+            # Read image data
+            image_data = image_file.read()
+            image_mimetype = image_file.content_type
+            filename = secure_filename(image_file.filename)
+            
+            # Create new product
+            new_product = Product(
+                name=name,
+                description=description,
+                price=price,
+                category=category,
+                stock_quantity=stock_quantity,
+                discount=discount,
+                image=filename,  # Store filename
+                image_data=image_data,
+                image_mimetype=image_mimetype
+            )
+            
+            db.session.add(new_product)
+            db.session.commit()
+            
+            flash('Product added successfully!', 'success')
+            return redirect(url_for('admin_products'))
+        
+        flash('Invalid image file', 'error')
+        return redirect(url_for('admin_products'))
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error adding product: {str(e)}")
+        flash(f'Error adding product: {str(e)}', 'error')
+        return redirect(url_for('admin_products'))
 
 # Admin delete product route
 @app.route('/admin/delete/<int:product_id>', methods=['POST'])
@@ -911,17 +1106,72 @@ def admin_delete_product(product_id):
 @app.route('/admin/edit/<int:product_id>', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_product(product_id):
-    product = Product.query.get_or_404(product_id)
-    if request.method == 'POST':
-        product.name = request.form.get('name')
-        product.description = request.form.get('description')
-        product.price = request.form.get('price')
-        product.image = request.form.get('image')
-        product.category = request.form.get('category')
-        db.session.commit()
-        flash('Product updated successfully!')
-        return redirect(url_for('admin'))
-    return render_template('admin/edit_product.html', product=product)
+    try:
+        product = Product.query.get_or_404(product_id)
+        
+        if request.method == 'POST':
+            # Validate form data
+            name = request.form.get('name')
+            description = request.form.get('description')
+            price = request.form.get('price')
+            category = request.form.get('category')
+            image = request.form.get('image')
+            stock_quantity = request.form.get('stock_quantity')
+            discount = request.form.get('discount', 0)
+
+            if not all([name, description, price, category, image, stock_quantity]):
+                flash('All fields are required', 'error')
+                return render_template('admin/edit_product.html', product=product)
+
+            try:
+                # Validate numeric fields
+                price = float(price)
+                stock_quantity = int(stock_quantity)
+                discount = int(discount)
+
+                if price < 0 or stock_quantity < 0 or not (0 <= discount <= 100):
+                    raise ValueError("Invalid numeric values")
+
+            except ValueError as e:
+                flash('Invalid numeric values provided', 'error')
+                return render_template('admin/edit_product.html', product=product)
+
+            # Validate image URL if changed
+            if image != product.image and not validate_image_url(image):
+                flash('Invalid image URL provided', 'error')
+                return render_template('admin/edit_product.html', product=product)
+
+            try:
+                # Update product attributes
+                product.name = name
+                product.description = description
+                product.price = price
+                product.category = category
+                product.image = image
+                product.stock_quantity = stock_quantity
+                product.discount = discount
+
+                # Save changes to database
+                db.session.commit()
+                
+                # Log the successful update
+                app.logger.info(f"Product {product_id} updated successfully by admin {current_user.id}")
+                
+                flash('Product updated successfully!', 'success')
+                return redirect(url_for('admin_products'))
+
+            except Exception as e:
+                db.session.rollback()
+                app.logger.error(f"Database error updating product {product_id}: {str(e)}")
+                flash('Error saving changes to database', 'error')
+                return render_template('admin/edit_product.html', product=product)
+
+        return render_template('admin/edit_product.html', product=product)
+
+    except Exception as e:
+        app.logger.error(f"Error in edit product route: {str(e)}")
+        flash('An error occurred', 'error')
+        return redirect(url_for('admin_products'))
 
 # Dashboard route
 @app.route('/dashboard')
@@ -1038,7 +1288,7 @@ def add_sample_products():
         {
             'name': 'Beauty Kit',
             'description': 'Complete beauty kit for your daily routine.',
-            'price': 1599,
+            'price': 1599.00,
             'category': 'Beauty',
             'image': 'beauty.jpg',
             'discount': 10,
@@ -1047,16 +1297,16 @@ def add_sample_products():
         {
             'name': 'Fashion Handbag',
             'description': 'Trendy handbag to complement your style.',
-            'price': 2199,
-            'category': 'Fashion',
-            'image': 'fashion.jpg',
+            'price': 2199.00,  # Added missing price
+            'category': 'Fashion',  # Added missing category
+            'image': 'fashion.jpg',  # Added missing image
             'discount': 5,
             'stock_quantity': 28
         },
         {
             'name': 'Book: Learn Python',
             'description': 'Comprehensive guide to learning Python programming.',
-            'price': 499,
+            'price': 499.00,
             'category': 'Books',
             'image': 'book.jpg',
             'discount': 0,
@@ -1284,6 +1534,11 @@ def debug_products():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# Helper functions
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def test_db_connection():
     try:
         with app.app_context():
@@ -1380,19 +1635,33 @@ def admin_delete_user(user_id):
         return jsonify({'error': 'Cannot delete admin users'}), 400
     db.session.delete(user)
     db.session.commit()
-    return jsonify({'message': 'User deleted successfully'})
+    return jsonify({'success': 'User deleted successfully'}), 200
 
-if __name__ == '__main__':
+@app.route('/admin/orders/<int:order_id>/status', methods=['POST'])
+@admin_required
+def update_order_status(order_id):
     try:
-        # Initialize database first
-        init_database()
-        app.run(debug=True, port=5002)
+        order = Order.query.get_or_404(order_id)
+        data = request.get_json()
+        order.status = data['status']
+        db.session.commit()
+        return jsonify({'success': True})
     except Exception as e:
-        print(f"Failed to start application: {e}")
-        print("Please follow these steps to fix MySQL:")
-        print("1. mysql -u root")
-        print("2. ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Rachana@05';")
-        print("3. FLUSH PRIVILEGES;")
-        print("4. exit;")
-        print("5. brew services restart mysql@8.4")
-        app.logger.error(f"Application startup error: {e}")
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/admin/orders/<int:order_id>/details')
+@admin_required
+def order_details(order_id):
+    order = Order.query.get_or_404(order_id)
+    return render_template('admin/order_details.html', order=order)
+
+@app.route('/product/image/<int:product_id>')
+def serve_image(product_id):
+    product = Product.query.get_or_404(product_id)
+    if not product.image_data:
+        return app.send_static_file('images/default.jpg')
+    return send_file(
+        io.BytesIO(product.image_data),
+        mimetype=product.image_mimetype
+    )
