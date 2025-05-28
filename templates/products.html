@@ -166,9 +166,7 @@
         }
 
         .product-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
-                       0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-5px);
         }
 
         .product-image-container {
@@ -524,6 +522,12 @@
             background: var(--primary-light);
             color: white;
         }
+
+        .product-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -575,36 +579,38 @@
             {% if products %}
                 {% for product in products %}
                     <div class="product-card">
-                        <div class="product-image-container">
-                            <div class="product-image" style="background-image: url('{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/default.jpg') }}')"></div>
-                            {% if product.discount and product.discount > 0 %}
-                                <div class="discount-badge">-{{ product.discount }}%</div>
-                            {% endif %}
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">{{ product.name }}</h3>
-                            <p class="product-description">{{ product.description }}</p>
-                            <div class="price-container">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-link">
+                            <div class="product-image-container">
+                                <div class="product-image" style="background-image: url('{{ url_for('static', filename='images/' + product.image) if product.image else url_for('static', filename='images/default.jpg') }}')"></div>
                                 {% if product.discount and product.discount > 0 %}
-                                    <span class="original-price">₹{{ "%.2f"|format(product.price) }}</span>
-                                    <span class="discounted-price">₹{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
-                                {% else %}
-                                    <span class="product-price">₹{{ "%.2f"|format(product.price) }}</span>
+                                    <div class="discount-badge">-{{ product.discount }}%</div>
                                 {% endif %}
                             </div>
-                            {% if current_user.is_authenticated %}
-                                <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="add-to-cart-btn">
-                                        <i class="fas fa-cart-plus"></i> Add to Cart
-                                    </button>
-                                </form>
-                            {% else %}
-                                <a href="{{ url_for('show_login') }}" class="login-to-buy">
-                                    <i class="fas fa-user"></i> Login to Buy
-                                </a>
-                            {% endif %}
-                        </div>
+                            <div class="product-info">
+                                <h3 class="product-title">{{ product.name }}</h3>
+                                <p class="product-description">{{ product.description }}</p>
+                                <div class="price-container">
+                                    {% if product.discount and product.discount > 0 %}
+                                        <span class="original-price">₹{{ "%.2f"|format(product.price) }}</span>
+                                        <span class="discounted-price">₹{{ "%.2f"|format(product.price * (1 - product.discount/100)) }}</span>
+                                    {% else %}
+                                        <span class="product-price">₹{{ "%.2f"|format(product.price) }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if current_user.is_authenticated %}
+                                    <form class="add-to-cart-form" action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="add-to-cart-btn">
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a href="{{ url_for('show_login') }}" class="login-to-buy">
+                                        <i class="fas fa-user"></i> Login to Buy
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </a>
                     </div>
                 {% endfor %}
             {% else %}
