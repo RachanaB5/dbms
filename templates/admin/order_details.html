@@ -1,0 +1,43 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Order Information</h4>
+            <p><strong>Order ID:</strong> {{ order.order_id }}</p>
+            <p><strong>Date:</strong> {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Status:</strong> <span class="badge badge-{{ order.status|lower }}">{{ order.status }}</span></p>
+        </div>
+        <div class="col-md-6">
+            <h4>Customer Information</h4>
+            <p><strong>Name:</strong> {{ order.user.username if order.user else 'Deleted User' }}</p>
+            <p><strong>Email:</strong> {{ order.user.email if order.user else 'N/A' }}</p>
+            <p><strong>Shipping Address:</strong> {{ order.shipping_address }}</p>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <h4>Order Items</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>{{ item.product.name if item.product else 'Deleted Product' }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ "%.2f"|format(item.price_at_time) }}</td>
+                        <td>{{ item.discount_at_time }}%</td>
+                        <td>${{ "%.2f"|format(item.price_at_time * item.quantity * (1 - item.discount_at_time/100)) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
