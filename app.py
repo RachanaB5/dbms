@@ -181,7 +181,7 @@ def init_db():
                 sample_products = [
                     {
                         'name': 'Laptop',
-                        'description': 'High performance laptop for work and play.',
+                        'description': 'Power through work and play with this sleek, high-performance laptop. Featuring a blazing-fast processor, vibrant HD display, and ample RAM, it effortlessly handles demanding tasks like video editing, complex spreadsheets, and immersive gaming. Enjoy all-day battery life, a comfortable backlit keyboard, and a lightweight design perfect for commuting. With lightning-fast Wi-Fi, multiple USB ports (including USB-C), and a crystal-clear webcam, it\'s your ultimate hub for productivity, creativity, and seamless video calls. Whether you\'re a student, professional, or creative, this laptop delivers reliable power and stunning visuals in a portable package. Experience speed, clarity, and versatility – upgrade your digital life today.',
                         'price': 59999,
                         'category': 'Electronics',
                         'image': 'laptop.jpg',
@@ -190,7 +190,7 @@ def init_db():
                     },
                     {
                         'name': 'Smart Watch',
-                        'description': 'Track your fitness and notifications on the go.',
+                        'description': 'Stay connected, motivated, and healthy effortlessly with this feature-packed smartwatch. Track your heart rate, sleep patterns, SpO2, and countless workouts with incredible accuracy. Receive call, text, and app notifications directly on your wrist, so you never miss a beat. Customize your style with interchangeable bands and watch faces. Enjoy contactless payments, music control, and built-in GPS for runs without your phone. Monitor stress levels, breathe mindfully, and set hydration reminders. With a bright, always-on display and multi-day battery life, it\'s your perfect 24/7 health companion and digital assistant. Elevate your fitness journey and streamline your day, right from your wrist.',
                         'price': 2999,
                         'category': 'Electronics',
                         'image': 'smart-watch.jpg',
@@ -199,7 +199,7 @@ def init_db():
                     },
                     {
                         'name': 'Tablet',
-                        'description': 'Portable tablet for entertainment and productivity.',
+                        'description': 'Experience stunning entertainment and productivity on a brilliant, high-resolution tablet display. Stream movies, read eBooks, browse the web, or sketch your ideas with incredible clarity and vibrant colors. Powered by a responsive processor and ample storage, it runs apps and games smoothly. The long-lasting battery ensures hours of use, while the slim, lightweight design makes it easy to carry anywhere. Perfect for video calls with its front-facing camera, note-taking with a compatible stylus, or keeping kids entertained on the go.',
                         'price': 39999,
                         'category': 'Electronics',
                         'image': 'tablet.jpg',
@@ -208,7 +208,7 @@ def init_db():
                     },
                     {
                         'name': 'Gaming Console',
-                        'description': 'Next-gen gaming console for immersive experiences.',
+                        'description': 'Dive into next-generation gaming with this powerful console. Experience breathtakingly realistic graphics, incredibly fast load times thanks to the cutting-edge SSD, and immersive 3D audio that puts you in the heart of the action. Enjoy exclusive blockbuster titles and beloved classics. The innovative controller offers haptic feedback and adaptive triggers for unprecedented realism. Stream 4K movies and shows seamlessly, connect with friends online, and enjoy backward compatibility with previous generations. Whether you are a competitive player or a story-driven adventurer, this console delivers unparalleled performance, speed, and a vast world of entertainment right in your living room. Get ready to play without limits.',
                         'price': 79999,
                         'category': 'Gadgets',
                         'image': 'gaming-console.jpg',
@@ -217,7 +217,7 @@ def init_db():
                     },
                     {
                         'name': 'Wireless Mouse',
-                        'description': 'Ergonomic wireless mouse for smooth navigation.',
+                        'description': 'Unleash productivity and comfort with this ergonomic wireless mouse. Designed to fit naturally in your hand, it reduces strain during long work or gaming sessions. Enjoy precise, lag-free tracking on almost any surface with its advanced optical sensor. Connect effortlessly via Bluetooth or included USB receiver for reliable performance. Features programmable buttons for custom shortcuts, smooth scrolling, and long battery life measured in months. The sleek, portable design slips easily into your bag. Free yourself from cords and experience responsive, comfortable control that enhances your workflow and gaming precision. Upgrade your desktop experience today.',
                         'price': 1999,
                         'category': 'Gadgets',
                         'image': 'mouse.jpg',
@@ -226,7 +226,7 @@ def init_db():
                     },
                     {
                         'name': 'Smart Phone',
-                        'description': 'Latest smartphone with advanced features.',
+                        'description': 'Capture life in stunning detail and stay effortlessly connected with this advanced smartphone. Boasting a professional-grade multi-lens camera system with AI enhancements, take breathtaking photos and videos day or night. The vibrant, edge-to-edge display offers an immersive viewing experience for streaming and gaming. Powered by a flagship processor, it handles multitasking and demanding apps with ease. Enjoy all-day battery life with super-fast charging, enhanced security features, and the latest operating system. With 5G connectivity, crystal-clear audio, and a sleek, durable design, this phone is your powerful pocket-sized companion for work, creativity, and entertainment.',
                         'price': 49999,
                         'category': 'Electronics',
                         'image': 'smart-phone.jpg',
@@ -235,7 +235,7 @@ def init_db():
                     },
                     {
                         'name': 'Headphones',
-                        'description': 'Noise-cancelling headphones for music lovers.',
+                        'description': 'Immerse yourself in pure sound with these premium headphones. Experience crystal-clear audio, deep bass, and balanced mids thanks to high-fidelity drivers and advanced noise cancellation that silences the world around you. Enjoy seamless wireless freedom with Bluetooth 5.0 or use the included audio cable. The plush, over-ear cushions and adjustable headband provide exceptional comfort for hours of listening. Take calls with the integrated microphone and manage music effortlessly with intuitive touch controls. With impressive battery life and a stylish, foldable design for portability, these headphones deliver an unparalleled auditory escape for music lovers, travelers, and professionals alike.',
                         'price': 2999,
                         'category': 'Electronics',
                         'image': 'headphones.jpg',
@@ -244,7 +244,7 @@ def init_db():
                     },
                     {
                         'name': 'Keyboard',
-                        'description': 'Mechanical keyboard for fast and accurate typing.',
+                        'description': 'Type with speed, comfort, and satisfying precision using this high-performance keyboard. Featuring responsive mechanical switches (choose your preferred type: clicky, tactile, or linear) for accurate keystrokes and a tactile feel loved by gamers and typists. The durable construction ensures longevity, while the ergonomic design promotes comfortable typing posture. Customize your experience with RGB backlighting, programmable macro keys, and dedicated media controls. Connect wirelessly via Bluetooth or use the USB-C cable for a lag-free connection. Built for productivity and gaming dominance, this keyboard offers reliability, customization, and a superior typing experience.',
                         'price': 3499,
                         'category': 'Electronics',
                         'image': 'keyboard.jpg',
@@ -253,7 +253,7 @@ def init_db():
                     },
                     {
                         'name': 'Home Decor Set',
-                        'description': 'Beautiful decor set to enhance your living space.',
+                        'description': ' Transform your space instantly with this beautifully curated home decor set. Designed to complement each other perfectly, the collection includes coordinating cushions, a luxurious throw blanket, elegant candles, and sophisticated decorative trays or vases. Crafted from high-quality materials like soft velvet, natural ceramics, and brushed metals, each piece adds texture, warmth, and a touch of modern elegance. Effortlessly elevate your living room, bedroom, or entryway with this cohesive look. Create a welcoming, stylish, and harmonious atmosphere without the hassle of matching individual items. Refresh your home aesthetic with this effortlessly chic set.',
                         'price': 2499,
                         'category': 'Home',
                         'image': 'home.jpg',
@@ -262,7 +262,7 @@ def init_db():
                     },
                     {
                         'name': 'Beauty Kit',
-                        'description': 'Complete beauty kit for your daily routine.',
+                        'description': 'Discover your signature look with this all-inclusive beauty kit, perfect for beginners and enthusiasts. Packed with high-quality, blendable essentials: a versatile eyeshadow palette with matte and shimmer finishes, creamy lip colors, long-lasting mascara, buildable foundation/concealer, and essential brushes. Achieve natural daytime glam or dramatic evening looks with ease. The curated selection features universally flattering shades and nourishing formulas that feel comfortable on the skin. Housed in a chic, travel-friendly case, it is your complete makeup solution for home or on-the-go. Simplify your routine and unleash your creativity with this must-have kit.',
                         'price': 1599,
                         'category': 'Beauty',
                         'image': 'beauty.jpg',
@@ -271,16 +271,16 @@ def init_db():
                     },
                     {
                         'name': 'Fashion Handbag',
-                        'description': 'Trendy handbag to complement your style.',
-                        'price': 2199.00,  # Added missing price
-                        'category': 'Fashion',  # Added missing category
-                        'image': 'fashion.jpg',  # Added missing image
+                        'description': 'Make a statement with this exquisite fashion handbag, the epitome of style and practicality. Crafted from premium leather or durable vegan materials, it features a sophisticated silhouette and luxe hardware. The spacious main compartment, secure zip closure, and well-organized interior pockets keep your essentials neatly stowed. Adjustable straps offer versatile carrying options – crossbody, shoulder, or handheld. Perfect for daily commutes, office days, or weekend adventures, this bag seamlessly blends timeless elegance with modern functionality. Elevate any outfit with this essential accessory that promises durability, organization, and undeniable chic.',
+                        'price': 2199.00,  
+                        'category': 'Fashion', 
+                        'image': 'fashion.jpg',  
                         'discount': 5,
                         'stock_quantity': 28
                     },
                     {
                         'name': 'Book: Learn Python',
-                        'description': 'Comprehensive guide to learning Python programming.',
+                        'description': 'Master the worlds most popular programming language with this comprehensive and beginner-friendly Python guide. Start from absolute basics and progress to building real-world applications. Clear explanations, practical examples, and hands-on exercises demystify core concepts like variables, loops, functions, data structures, and object-oriented programming. Learn to work with files, handle errors, and utilize essential libraries. Written by experienced instructors, this book focuses on practical application, making coding engaging and accessible. Perfect for aspiring developers, data analysts, or anyone seeking valuable tech skills. Unlock your coding potential and open doors to exciting career opportunities – start your Python journey today!',
                         'price': 499,
                         'category': 'Books',
                         'image': 'book.jpg',
@@ -289,7 +289,7 @@ def init_db():
                     },
                     {
                         'name': 'Decorative Wall Mirror',
-                        'description': 'Elegant wall mirror with carved wooden frame.',
+                        'description': 'Add a striking focal point to any room with this stunning decorative wall clock. More than just a timepiece, it is a work of art featuring a unique design, premium materials (like metal, wood, or acrylic), and sophisticated finishes. The large, easy-to-read face ensures functionality, while the eye-catching style – be it minimalist, industrial, vintage, or modern – makes a bold design statement. Perfect for living rooms, kitchens, offices, or entryways. Reliable quartz movement guarantees accurate timekeeping. Elevate your home decor and keep track of time in style with this conversation-starting clock.',
                         'price': 3499,
                         'category': 'Home',
                         'image': 'wall-mirror.jpg',
@@ -298,7 +298,7 @@ def init_db():
                     },
                     {
                         'name': 'Artificial Plants Set',
-                        'description': 'Set of 3 artificial plants in modern ceramic pots.',
+                        'description': ' Enjoy the beauty of nature without the upkeep! This lifelike artificial plants set brings vibrant greenery and a touch of tranquility to any space. Crafted from high-quality silk or plastic, each plant features realistic textures, colors, and details. The set includes a variety of stylish pots or planters, ready to display. Perfect for adding life to dim corners, shelves, desks, or bathrooms where real plants struggle. Allergy-friendly and permanently pristine, they require no watering, sunlight, or maintenance. Instantly refresh your home or office décor with effortless, year-round botanical charm.',
                         'price': 1499,
                         'category': 'Home',
                         'image': 'plants.jpg',
@@ -307,7 +307,7 @@ def init_db():
                     },
                     {
                         'name': 'Designer Heels',
-                        'description': 'Elegant designer heels for special occasions.',
+                        'description': ' Step out in show-stopping confidence with these exquisite designer-inspired heels. Crafted with meticulous attention to detail, they feature premium materials like supple leather or luxurious satin, elegant silhouettes (stiletto, block heel, or kitten), and sophisticated embellishments. The carefully engineered arch and cushioned insole provide surprising comfort for extended wear. A secure closure (ankle strap, pump) ensures stability. Whether for a glamorous event, a special date, or adding polish to office attire, these heels deliver unparalleled style, quality, and a touch of luxury that elevates any ensemble.',
                         'price': 3999,
                         'category': 'Fashion',
                         'image': 'heels.jpg',
@@ -316,7 +316,7 @@ def init_db():
                     },
                     {
                         'name': 'Fashion Jewelry Set',
-                        'description': 'Designer necklace and earrings set.',
+                        'description': 'Complete your look with instant glamour using this elegant fashion jewelry set. The coordinated collection features pieces like a delicate necklace, matching earrings, and a chic bracelet or ring, all designed with a cohesive aesthetic – perhaps minimalist, bohemian, geometric, or classic pearls. Crafted from high-quality plated metals and featuring lustrous faux stones or pearls, it offers sophisticated shine without the luxury price tag. Hypoallergenic materials ensure comfortable wear. Perfect for accessorizing everyday outfits or adding polish to evening wear. Effortlessly elevate your style with this versatile and beautifully presented set.',
                         'price': 1999,
                         'category': 'Fashion',
                         'image': 'jewelry.jpg',
@@ -325,7 +325,7 @@ def init_db():
                     },
                     {
                         'name': 'Premium Makeup Set',
-                        'description': 'Professional makeup kit with brushes.',
+                        'description': 'Achieve flawless makeup application every time with this premium illuminated vanity mirror. Featuring bright, natural daylight-simulating LED lights with adjustable brightness levels, it reveals true colors and every detail for perfect blending. The large magnification side (typically 5x, 7x, or 10x) allows for precise work like brows and liner, while the standard side provides an overall view. A stable, weighted base or sleek tabletop design ensures it stays put. Some models offer touch controls, dimmable settings, or Bluetooth speakers. Essential for skincare routines and professional-looking makeup results, day or night.',
                         'price': 2999,
                         'category': 'Beauty',
                         'image': 'makeup.jpg',
@@ -334,7 +334,7 @@ def init_db():
                     },
                     {
                         'name': 'Skincare Collection',
-                        'description': 'Luxury skincare products for daily routine.',
+                        'description': ' Nourish your skin and reveal a radiant complexion with this luxurious, results-driven skincare collection. Formulated with potent, high-quality ingredients like hyaluronic acid, vitamins (C, E), peptides, and natural extracts, this multi-step regimen addresses hydration, brightness, fine lines, and overall skin health. The curated set typically includes a gentle cleanser, potent serum, rich moisturizer, and targeted treatment (eye cream/mask). Dermatologist-tested and suitable for your skin type (specify if known: sensitive, dry, combination, aging), it delivers visible improvements in texture, tone, and glow. Elevate your self-care ritual with this transformative collection.',
                         'price': 3499,
                         'category': 'Beauty',
                         'image': 'skincare.jpg',
@@ -343,7 +343,7 @@ def init_db():
                     },
                     {
                         'name': 'Mystery Novel',
-                        'description': 'Bestselling mystery thriller book.',
+                        'description': 'Get lost in a gripping page-turner with this suspenseful mystery novel. A complex crime shatters the peace in [Setting - e.g., a sleepy village, a bustling city], leaving seasoned detective [Detective Name/Type] or an unlikely amateur sleuth racing against time. Clues are hidden in plain sight, suspects abound, each with motives and secrets, and unexpected twists will keep you guessing until the final, shocking reveal. Masterfully plotted with rich atmosphere and compelling characters, this novel delivers the perfect blend of intellectual puzzle and heart-pounding suspense. Escape into a world of intrigue and test your detective skills.',
                         'price': 599,
                         'category': 'Books',
                         'image': 'novel.jpg',
@@ -352,7 +352,7 @@ def init_db():
                     },
                     {
                         'name': 'Fashion Magazine',
-                        'description': 'Latest trends and style magazine.',
+                        'description': 'Stay ahead of the curve with the latest issue of this iconic fashion magazine! Immerse yourself in stunning editorial spreads showcasing the seasons hottest trends, must-have pieces, and inspiring style directions. Get expert advice from top stylists, discover emerging designers, and read insightful interviews with fashion icons. Beyond clothing, explore beauty innovations, fragrance reviews, culture features, and lifestyle inspiration. Packed with aspirational photography and authoritative reporting, it is your essential guide to navigating the ever-evolving world of style. Fuel your fashion passion and find endless inspiration within its glossy pages.',
                         'price': 299,
                         'category': 'Books',
                         'image': 'magazine.jpg',
@@ -361,7 +361,7 @@ def init_db():
                     },
                     {
                         'name': 'Smart Speaker',
-                        'description': 'Wireless smart speaker with voice control.',
+                        'description': ' Fill your home with rich sound and effortless convenience using this powerful smart speaker. Stream music, podcasts, and audiobooks from your favorite services with crystal-clear audio and impressive bass. Control it all with just your voice via the built-in intelligent assistant (e.g., Alexa, Google Assistant, Siri) – play songs, set timers, check the weather, control smart home devices, get news updates, and more. Make hands-free calls, create multi-room audio systems, and enjoy its sleek, compact design. Your voice-activated hub for entertainment, information, and smart home control.',
                         'price': 4999,
                         'category': 'Gadgets',
                         'image': 'speaker.jpg',
@@ -625,59 +625,40 @@ def product_detail_shortcut():
 
 @app.route('/product/<int:product_id>', methods=['GET'])
 def product_detail(product_id):
-    try:
-        app.logger.info(f"Fetching product details for ID: {product_id}")
-        product = Product.query.get(product_id)
-        if not product:
-            app.logger.warning(f"Product with ID {product_id} not found.")
-            return render_template('errors/404.html'), 404
-
-        reviews = Review.query.filter_by(product_id=product_id).all()
-        review_list = []
-        total_rating = 0
-        review_count = 0
-
-        for review in reviews:
-            try:
-                user = User.query.get(review.user_id)
-                review_data = {
-                    'id': getattr(review, 'id', None),
-                    'username': user.username if user else 'Anonymous',
-                    'created_at': getattr(review, 'created_at', datetime.utcnow()),
-                    'rating': getattr(review, 'rating', 0) or 0,
-                    'review_text': getattr(review, 'review_text', '') or '',
-                    'helpful_count': getattr(review, 'helpful_count', 0) or 0,
-                    'review_image': bool(getattr(review, 'review_image', None))
-                }
-                review_list.append(review_data)
-                try:
-                    rating_val = float(review_data['rating'])
-                    if not isinstance(rating_val, float) or rating_val is None:
-                        continue
-                    total_rating += rating_val
-                    review_count += 1
-                except Exception as e:
-                    app.logger.warning(f"Skipping invalid rating in review {review_data.get('id')}: {e}")
-                    continue
-            except Exception as e:
-                app.logger.error(f"Error processing review: {str(e)}")
-                continue
-
-        avg_rating = round(total_rating / review_count, 1) if review_count > 0 else 0
-
-        # Ensure all price and discount values are float for template math
-        product.price = float(product.price)
-        product.discount = float(product.discount or 0)
-
-        return render_template('product_detail.html',
-                             product=product,
-                             reviews=review_list,
-                             avg_rating=avg_rating,
-                             review_count=review_count)
-    except Exception as e:
-        app.logger.error(f"Error in product_detail: {str(e)}")
-        flash(f'Error loading product details: {str(e)}')
-        return redirect(url_for('products'))
+    product = Product.query.get_or_404(product_id)
+    reviews = Review.query.filter_by(product_id=product_id).order_by(Review.created_at.desc()).all()
+    
+    # Calculate average rating
+    total_rating = sum(review.rating for review in reviews)
+    avg_rating = round(total_rating / len(reviews)) if reviews else 0
+    
+    # Calculate prices
+    price = float(product.price)
+    discount = float(product.discount or 0)
+    discounted_price = price * (1 - discount/100)
+    
+    # Get review information with user data from join
+    review_list = []
+    for r in reviews:
+        user = User.query.get(r.user_id)
+        review_list.append({
+            'username': user.username if user else 'Anonymous',
+            'created_at': r.created_at,
+            'rating': r.rating,
+            'review_text': r.review_text,
+            'helpful_count': r.helpful_count or 0,
+            'id': r.id,
+            'review_image': r.review_image if hasattr(r, 'review_image') else None
+        })
+    
+    return render_template('product_detail.html', 
+                         product=product,
+                         price=price,
+                         discounted_price=discounted_price,
+                         reviews=review_list, 
+                         avg_rating=avg_rating,
+                         now=datetime.utcnow,
+                         timedelta=timedelta)
 
 # Add review route
 @app.route('/add_review/<int:product_id>', methods=['POST'])
@@ -884,6 +865,7 @@ def checkout():
                     user_id=current_user.id,
                     shipping_address=request.form.get('address'),
                     shipping_city=request.form.get('city'),
+                    shipping_state=request.form.get('state'),
                     shipping_zip=request.form.get('zip'),
                     status='pending'
                 )
@@ -954,7 +936,28 @@ def order_confirmation(order_id):
     order = Order.query.get_or_404(order_id)
     if order.user_id != current_user.id and not current_user.is_admin:
         abort(403)
-    return render_template('order_confirmation.html', order=order)
+    
+    # Update order and payment status
+    order.status = 'completed'
+    if order.payment:
+        order.payment.payment_status = 'completed'
+    
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'Error updating order status: {str(e)}')
+    
+    # Calculate total amount
+    total_amount = 0
+    for item in order.items:
+        item_price = item.price_at_time
+        item_discount = item.discount_at_time or 0
+        discounted_price = item_price * (1 - item_discount/100)
+        item_total = discounted_price * item.quantity
+        total_amount += item_total
+    
+    return render_template('order_confirmation.html', order=order, total_amount=total_amount)
 
 # Show login page (for non-modal fallback)
 @app.route('/login')
@@ -1617,25 +1620,58 @@ def admin_user_orders(user_id):
 def admin_edit_user(user_id):
     user = User.query.get_or_404(user_id)
     if request.method == 'POST':
-        user.username = request.form.get('username')
-        user.email = request.form.get('email')
-        user.phone = request.form.get('phone')
-        db.session.commit()
-        flash('User updated successfully')
-        return redirect(url_for('admin_users'))
+        try:
+            user.username = request.form.get('username')
+            user.email = request.form.get('email')
+            user.phone = request.form.get('phone')
+            db.session.commit()
+            flash('User updated successfully')
+            return redirect(url_for('admin_users'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating user: {str(e)}', 'error')
+            return render_template('admin/edit_user.html', user=user)
     return render_template('admin/edit_user.html', user=user)
 
 @app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+@login_required
 @admin_required
 def admin_delete_user(user_id):
-    if current_user.id == user_id:
-        return jsonify({'error': 'Cannot delete yourself'}), 400
-    user = User.query.get_or_404(user_id)
-    if user.is_admin:
-        return jsonify({'error': 'Cannot delete admin users'}), 400
-    db.session.delete(user)
-    db.session.commit()
-    return jsonify({'success': 'User deleted successfully'}), 200
+    try:
+        user = User.query.get_or_404(user_id)
+        
+        # Don't allow deleting self
+        if current_user.id == user_id:
+            return jsonify({'success': False, 'error': 'Cannot delete yourself'}), 400
+            
+        # Don't allow deleting other admins
+        if user.is_admin:
+            return jsonify({'success': False, 'error': 'Cannot delete admin users'}), 400
+            
+        # Delete user's data
+        # First delete payments
+        orders = Order.query.filter_by(user_id=user_id).all()
+        for order in orders:
+            # Delete associated payments first
+            Payment.query.filter_by(order_id=order.id).delete()
+            # Delete order items
+            OrderItem.query.filter_by(order_id=order.id).delete()
+        # Now delete orders
+        Order.query.filter_by(user_id=user_id).delete()
+        # Delete other user data
+        Review.query.filter_by(user_id=user_id).delete()
+        CartModel.query.filter_by(user_id=user_id).delete()
+        
+        # Delete user
+        db.session.delete(user)
+        db.session.commit()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Error deleting user: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/admin/orders/<int:order_id>/status', methods=['POST'])
 @admin_required
@@ -1665,3 +1701,44 @@ def serve_image(product_id):
         io.BytesIO(product.image_data),
         mimetype=product.image_mimetype
     )
+
+@app.route('/my-orders')
+@login_required
+def user_orders():
+    try:
+        # Get all orders for the current user, ordered by date
+        orders = Order.query\
+            .filter_by(user_id=current_user.id)\
+            .order_by(Order.created_at.desc())\
+            .all()
+            
+        return render_template('user_orders.html', orders=orders)
+    except Exception as e:
+        app.logger.error(f"Error fetching user orders: {str(e)}")
+        flash('Error loading orders. Please try again.')
+        return redirect(url_for('dashboard'))
+
+# Cancel order route
+@app.route('/orders/<int:order_id>/cancel', methods=['POST'])
+@login_required
+def cancel_order(order_id):
+    try:
+        order = Order.query.get_or_404(order_id)
+        
+        # Check if the order belongs to the current user
+        if order.user_id != current_user.id:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+        
+        # Only allow cancellation of orders that are not delivered or already cancelled
+        if order.status in ['delivered', 'cancelled']:
+            return jsonify({'success': False, 'error': 'Cannot cancel this order'}), 400
+            
+        # Update order status to cancelled
+        order.status = 'cancelled'
+        db.session.commit()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
