@@ -27,7 +27,7 @@ class User(UserMixin, db.Model):
 
 class Product(db.Model):
     __tablename__ = 'products'
-    id = db.Column('product_id', db.Integer, primary_key=True)  # Match the foreign key reference
+    id = db.Column('product_id', db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     price = db.Column(db.Numeric(10, 2), nullable=False)
@@ -40,10 +40,24 @@ class Product(db.Model):
     reviews = db.relationship('Review', backref='product', lazy=True)
 
     def get_discounted_price(self):
+        """Calculate the discounted price"""
+        from decimal import Decimal
+        price = Decimal(str(self.price))
         if self.discount:
-            discount_factor = Decimal('1.0') - (Decimal(str(self.discount)) / Decimal('100.0'))
-            return self.price * discount_factor
-        return self.price
+            discount = Decimal(str(self.discount))
+            return price * (Decimal('1.0') - discount / Decimal('100.0'))
+        return price
+
+    def get_price_dict(self):
+        """Get all price related information"""
+        original_price = float(self.price)
+        discounted_price = float(self.get_discounted_price())
+        return {
+            'original': original_price,
+            'discounted': discounted_price,
+            'discount': self.discount or 0,
+            'saved': original_price - discounted_price if self.discount else 0
+        }
 
     def update_stock(self, quantity):
         if self.stock_quantity >= quantity:
@@ -98,7 +112,8 @@ class Order(db.Model):
     user = db.relationship('User', backref=db.backref('orders', lazy=True))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(20), nullable=False, default='pending')  # pending, confirmed, shipped, delivered, cancelled
-    items = db.relationship('OrderItem', backref='order', lazy=True)
+    # Update the items relationship without backref
+    items = db.relationship('OrderItem', back_populates='order', lazy=True)
     shipping_address = db.Column(db.Text, nullable=True)
     shipping_city = db.Column(db.String(100), nullable=True)
     shipping_state = db.Column(db.String(100), nullable=True)
@@ -116,29 +131,24 @@ class Order(db.Model):
         return self.status.title()
 
 class OrderItem(db.Model):
+    __tablename__ = 'order_items'
     id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'))
-    product_name = db.Column(db.String(100), nullable=False)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id', ondelete='CASCADE'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    price_at_time = db.Column(db.Float, nullable=False)  # Store price at time of purchase
-    discount_at_time = db.Column(db.Integer, nullable=True)  # Store discount at time of purchase
-
-    def __init__(self, order_id, product_id, quantity, price_at_time, discount_at_time=0):
-        self.order_id = order_id
-        self.product_id = product_id
-        product = Product.query.get(product_id)
-        self.product_name = product.name if product else None
-        self.quantity = quantity
-        self.price_at_time = price_at_time
-        self.discount_at_time = discount_at_time
+    price_at_time = db.Column(db.Float, nullable=False)
+    discount_at_time = db.Column(db.Float, default=0)
+    
+    # Update relationships to use back_populates
+    order = db.relationship('Order', back_populates='items')
+    product = db.relationship('Product', backref='order_items')
 
     @property
     def subtotal(self):
-        if self.discount_at_time:
-            discounted_price = self.price_at_time * (1 - self.discount_at_time/100)
-            return discounted_price * self.quantity
-        return self.price_at_time * self.quantity
+        return self.price_at_time * self.quantity * (1 - self.discount_at_time/100)
+
+    def __repr__(self):
+        return f'<OrderItem {self.id} for Order {self.order_id}>'
 
 class Payment(db.Model):
     __tablename__ = 'payments'
