@@ -21,6 +21,76 @@
             color: var(--text);
         }
 
+        /* Navbar Styles */
+        .navbar {
+            background: var(--primary);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand img {
+            height: 30px;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        .nav-link:hover {
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
         .nav-header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             padding: 1rem 0;
@@ -176,6 +246,7 @@
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
             
             .checkout-container {
@@ -183,9 +254,119 @@
                 padding: 1.5rem;
             }
         }
+
+        /* Footer Styles */
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 3rem 0 1.5rem;
+            margin-top: 4rem;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-dark);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+            font-size: 1.2rem;
+        }
+
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: white;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Additional styles for select dropdown */
+        select.form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: border-color 0.3s;
+            background-color: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236a5acd' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4 6 8.825z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        select.form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.1);
+        }
+
+        select.form-control:hover {
+            border-color: var(--primary);
+        }
+
+        select.form-control option {
+            padding: 0.5rem;
+        }
     </style>
 </head>
 <body>
+    
+
     <div class="checkout-container">
         <h1>Checkout</h1>
         <form method="POST" action="{{ url_for('checkout') }}" id="checkoutForm" onsubmit="return validateForm()">
@@ -198,6 +379,41 @@
                 <div class="form-group">
                     <label for="city">City</label>
                     <input type="text" id="city" name="city" required value="{{ current_user.city if current_user.city else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <select id="state" name="state" class="form-control" required>
+                        <option value="">Select State</option>
+                        <option value="Andhra Pradesh" {{ 'selected' if current_user.state == 'Andhra Pradesh' else '' }}>Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh" {{ 'selected' if current_user.state == 'Arunachal Pradesh' else '' }}>Arunachal Pradesh</option>
+                        <option value="Assam" {{ 'selected' if current_user.state == 'Assam' else '' }}>Assam</option>
+                        <option value="Bihar" {{ 'selected' if current_user.state == 'Bihar' else '' }}>Bihar</option>
+                        <option value="Chhattisgarh" {{ 'selected' if current_user.state == 'Chhattisgarh' else '' }}>Chhattisgarh</option>
+                        <option value="Goa" {{ 'selected' if current_user.state == 'Goa' else '' }}>Goa</option>
+                        <option value="Gujarat" {{ 'selected' if current_user.state == 'Gujarat' else '' }}>Gujarat</option>
+                        <option value="Haryana" {{ 'selected' if current_user.state == 'Haryana' else '' }}>Haryana</option>
+                        <option value="Himachal Pradesh" {{ 'selected' if current_user.state == 'Himachal Pradesh' else '' }}>Himachal Pradesh</option>
+                        <option value="Jharkhand" {{ 'selected' if current_user.state == 'Jharkhand' else '' }}>Jharkhand</option>
+                        <option value="Karnataka" {{ 'selected' if current_user.state == 'Karnataka' else '' }}>Karnataka</option>
+                        <option value="Kerala" {{ 'selected' if current_user.state == 'Kerala' else '' }}>Kerala</option>
+                        <option value="Madhya Pradesh" {{ 'selected' if current_user.state == 'Madhya Pradesh' else '' }}>Madhya Pradesh</option>
+                        <option value="Maharashtra" {{ 'selected' if current_user.state == 'Maharashtra' else '' }}>Maharashtra</option>
+                        <option value="Manipur" {{ 'selected' if current_user.state == 'Manipur' else '' }}>Manipur</option>
+                        <option value="Meghalaya" {{ 'selected' if current_user.state == 'Meghalaya' else '' }}>Meghalaya</option>
+                        <option value="Mizoram" {{ 'selected' if current_user.state == 'Mizoram' else '' }}>Mizoram</option>
+                        <option value="Nagaland" {{ 'selected' if current_user.state == 'Nagaland' else '' }}>Nagaland</option>
+                        <option value="Odisha" {{ 'selected' if current_user.state == 'Odisha' else '' }}>Odisha</option>
+                        <option value="Punjab" {{ 'selected' if current_user.state == 'Punjab' else '' }}>Punjab</option>
+                        <option value="Rajasthan" {{ 'selected' if current_user.state == 'Rajasthan' else '' }}>Rajasthan</option>
+                        <option value="Sikkim" {{ 'selected' if current_user.state == 'Sikkim' else '' }}>Sikkim</option>
+                        <option value="Tamil Nadu" {{ 'selected' if current_user.state == 'Tamil Nadu' else '' }}>Tamil Nadu</option>
+                        <option value="Telangana" {{ 'selected' if current_user.state == 'Telangana' else '' }}>Telangana</option>
+                        <option value="Tripura" {{ 'selected' if current_user.state == 'Tripura' else '' }}>Tripura</option>
+                        <option value="Uttar Pradesh" {{ 'selected' if current_user.state == 'Uttar Pradesh' else '' }}>Uttar Pradesh</option>
+                        <option value="Uttarakhand" {{ 'selected' if current_user.state == 'Uttarakhand' else '' }}>Uttarakhand</option>
+                        <option value="West Bengal" {{ 'selected' if current_user.state == 'West Bengal' else '' }}>West Bengal</option>
+                        <option value="Delhi" {{ 'selected' if current_user.state == 'Delhi' else '' }}>Delhi</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="zip">ZIP/Postal Code</label>
@@ -253,6 +469,8 @@
             <button type="submit" class="btn-checkout">Place Order</button>
         </form>
     </div>
+
+    
 
     <script>
         function validateForm() {
