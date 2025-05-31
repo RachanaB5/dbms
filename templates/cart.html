@@ -1,527 +1,370 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Checkout - CurioCart</title>
+    <title>Your Shopping Cart - CurioCart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary: #6a5acd;
             --primary-dark: #483d8b;
-            --primary-light: #9370db;
             --accent: #ff7f50;
             --light: #f8f8ff;
-            --text: #2f4f4f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
             background-color: var(--light);
-            margin: 0;
-            padding: 0;
-            color: var(--text);
-        }
-
-        /* Navbar Styles */
-        .navbar {
-            background: var(--primary);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .navbar-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
-
-        .navbar-brand {
-            color: white;
-            font-size: 1.5rem;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .navbar-brand img {
-            height: 30px;
-        }
-
-        .navbar-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            position: relative;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: white;
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        .nav-link:hover::after {
-            width: 80%;
-        }
-
-        .nav-link:hover {
-            color: rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
         }
 
         .nav-header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            padding: 1rem 0;
-            margin-bottom: 2rem;
+            height: var(--header-height);
+            padding: var(--header-padding);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
 
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
+            height: 100%;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 1rem;
+            gap: 2rem;
+            padding: 1rem;
         }
 
         .nav-logo {
-            color: white;
-            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             text-decoration: none;
-            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-logo img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(1.1) contrast(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .nav-logo span {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: linear-gradient(45deg, #fff, rgba(255,255,255,0.9));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: none;
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: var(--nav-item-gap, 1.2rem);
+            align-items: center;
+            margin-left: auto;
         }
 
         .nav-links a {
-            color: white;
+            color: rgba(255,255,255,0.9);
             text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s;
-        }
-
-        .checkout-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        h1, h2 {
-            color: var(--primary-dark);
-            margin-bottom: 1.5rem;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
             font-weight: 500;
-            color: var(--text);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.1);
-        }
-
-        .payment-methods {
             display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
+            
+            backdrop-filter: blur(10px);
         }
 
-        .payment-option {
-            flex: 1;
-            padding: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .payment-option:hover {
-            border-color: var(--primary);
-        }
-
-        .payment-option.selected {
-            border-color: var(--primary);
-            background: rgba(106, 90, 205, 0.05);
-        }
-
-        .order-summary {
-            background: var(--light);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 1rem;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--primary-dark);
-        }
-
-        .btn-checkout {
-            width: 100%;
-            padding: 1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
+        .nav-links a i {
             font-size: 1.1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.3s;
+            transition: transform 0.3s ease;
         }
 
-        .btn-checkout:hover {
-            background: var(--primary-dark);
-        }
-
-        #cardDetails {
-            background: var(--light);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 1.5rem;
+        .nav-links a:hover i {
+            transform: scale(1.1);
         }
 
         @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
+            .nav-header {
+                height: auto;
+                padding: 1rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
                 gap: 1rem;
             }
-            
-            .checkout-container {
-                margin: 20px;
-                padding: 1.5rem;
+
+            .nav-links {
+                width: 100%;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+
+            .nav-links a {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
             }
         }
 
-        /* Footer Styles */
-        .footer {
+        .cart-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .empty-cart-message {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            margin: 2rem 0;
+        }
+        .continue-shopping {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .btn-continue {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #4a6fa5;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .cart-item {
+            display: flex;
+            gap: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .cart-item:hover {
+            transform: translateY(-5px);
+        }
+        .cart-item-image {
+            width: 120px;
+            height: 120px;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 4px;
+        }
+        .cart-item-details {
+            flex: 1;
+        }
+        .cart-item-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .cart-item-price {
+            margin-bottom: 1rem;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 0.5rem;
+        }
+        .discounted-price, .price {
+            font-weight: bold;
+            color: #4a6fa5;
+        }
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quantity-btn:hover {
             background: var(--primary);
             color: white;
-            padding: 3rem 0 1.5rem;
-            margin-top: 4rem;
-            position: relative;
         }
-
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
+        .quantity-display {
+            width: 50px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.3rem;
+        }
+        .remove-item {
+            padding: 0.5rem 1rem;
+            background: none;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .cart-item-subtotal {
+            font-weight: bold;
+        }
+        .cart-summary {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .btn-checkout {
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .btn-checkout:hover {
             background: var(--primary-dark);
         }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 3rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h4 {
-            color: white;
-            margin-bottom: 1.5rem;
-            position: relative;
-            display: inline-block;
-            font-size: 1.2rem;
-        }
-
-        .footer-section h4::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: white;
-        }
-
-        .footer-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.8rem;
-        }
-
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .footer-links a:hover {
-            color: white;
-            transform: translateX(5px);
-        }
-
-        .footer-bottom {
-            text-align: center;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Additional styles for select dropdown */
-        select.form-control {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            transition: border-color 0.3s;
-            background-color: white;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236a5acd' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4 6 8.825z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            padding-right: 2.5rem;
-        }
-
-        select.form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.1);
-        }
-
-        select.form-control:hover {
-            border-color: var(--primary);
-        }
-
-        select.form-control option {
-            padding: 0.5rem;
+        @media (max-width: 768px) {
+            .cart-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .cart-item-image {
+                width: 100%;
+                height: 200px;
+            }
+            .cart-summary {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-    
-
-    <div class="checkout-container">
-        <h1>Checkout</h1>
-        <form method="POST" action="{{ url_for('checkout') }}" id="checkoutForm" onsubmit="return validateForm()">
-            <h2>Shipping Address</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" name="address" required value="{{ current_user.address if current_user.address else '' }}">
-                </div>
-                <div class="form-group">
-                    <label for="city">City</label>
-                    <input type="text" id="city" name="city" required value="{{ current_user.city if current_user.city else '' }}">
-                </div>
-                <div class="form-group">
-                    <label for="state">State</label>
-                    <select id="state" name="state" class="form-control" required>
-                        <option value="">Select State</option>
-                        <option value="Andhra Pradesh" {{ 'selected' if current_user.state == 'Andhra Pradesh' else '' }}>Andhra Pradesh</option>
-                        <option value="Arunachal Pradesh" {{ 'selected' if current_user.state == 'Arunachal Pradesh' else '' }}>Arunachal Pradesh</option>
-                        <option value="Assam" {{ 'selected' if current_user.state == 'Assam' else '' }}>Assam</option>
-                        <option value="Bihar" {{ 'selected' if current_user.state == 'Bihar' else '' }}>Bihar</option>
-                        <option value="Chhattisgarh" {{ 'selected' if current_user.state == 'Chhattisgarh' else '' }}>Chhattisgarh</option>
-                        <option value="Goa" {{ 'selected' if current_user.state == 'Goa' else '' }}>Goa</option>
-                        <option value="Gujarat" {{ 'selected' if current_user.state == 'Gujarat' else '' }}>Gujarat</option>
-                        <option value="Haryana" {{ 'selected' if current_user.state == 'Haryana' else '' }}>Haryana</option>
-                        <option value="Himachal Pradesh" {{ 'selected' if current_user.state == 'Himachal Pradesh' else '' }}>Himachal Pradesh</option>
-                        <option value="Jharkhand" {{ 'selected' if current_user.state == 'Jharkhand' else '' }}>Jharkhand</option>
-                        <option value="Karnataka" {{ 'selected' if current_user.state == 'Karnataka' else '' }}>Karnataka</option>
-                        <option value="Kerala" {{ 'selected' if current_user.state == 'Kerala' else '' }}>Kerala</option>
-                        <option value="Madhya Pradesh" {{ 'selected' if current_user.state == 'Madhya Pradesh' else '' }}>Madhya Pradesh</option>
-                        <option value="Maharashtra" {{ 'selected' if current_user.state == 'Maharashtra' else '' }}>Maharashtra</option>
-                        <option value="Manipur" {{ 'selected' if current_user.state == 'Manipur' else '' }}>Manipur</option>
-                        <option value="Meghalaya" {{ 'selected' if current_user.state == 'Meghalaya' else '' }}>Meghalaya</option>
-                        <option value="Mizoram" {{ 'selected' if current_user.state == 'Mizoram' else '' }}>Mizoram</option>
-                        <option value="Nagaland" {{ 'selected' if current_user.state == 'Nagaland' else '' }}>Nagaland</option>
-                        <option value="Odisha" {{ 'selected' if current_user.state == 'Odisha' else '' }}>Odisha</option>
-                        <option value="Punjab" {{ 'selected' if current_user.state == 'Punjab' else '' }}>Punjab</option>
-                        <option value="Rajasthan" {{ 'selected' if current_user.state == 'Rajasthan' else '' }}>Rajasthan</option>
-                        <option value="Sikkim" {{ 'selected' if current_user.state == 'Sikkim' else '' }}>Sikkim</option>
-                        <option value="Tamil Nadu" {{ 'selected' if current_user.state == 'Tamil Nadu' else '' }}>Tamil Nadu</option>
-                        <option value="Telangana" {{ 'selected' if current_user.state == 'Telangana' else '' }}>Telangana</option>
-                        <option value="Tripura" {{ 'selected' if current_user.state == 'Tripura' else '' }}>Tripura</option>
-                        <option value="Uttar Pradesh" {{ 'selected' if current_user.state == 'Uttar Pradesh' else '' }}>Uttar Pradesh</option>
-                        <option value="Uttarakhand" {{ 'selected' if current_user.state == 'Uttarakhand' else '' }}>Uttarakhand</option>
-                        <option value="West Bengal" {{ 'selected' if current_user.state == 'West Bengal' else '' }}>West Bengal</option>
-                        <option value="Delhi" {{ 'selected' if current_user.state == 'Delhi' else '' }}>Delhi</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="zip">ZIP/Postal Code</label>
-                    <input type="text" id="zip" name="zip" required value="{{ current_user.zip_code if current_user.zip_code else '' }}">
-                </div>
-                <div class="form-group">
-                    <label for="country">Country</label>
-                    <input type="text" id="country" name="country" value="India" required>
-                </div>
-            </div>
-            
-            <h2>Payment Method</h2>
-            <div class="payment-methods">
-                <div class="payment-option">
-                    <label><input type="radio" name="payment_method" value="card" checked> Credit/Debit Card</label>
-                </div>
-                 <div class="payment-option">
-                    <label><input type="radio" name="payment_method" value="cod" > Cash on Delivery</label>
-                </div>
-            </div>
-            
-            <div id="cardDetails">
-                <div class="form-group">
-                    <label for="cardNumber">Card Number</label>
-                    <input type="text" id="cardNumber" name="card_number" maxlength="16">
-                </div>
-                <div class="form-group">
-                    <label for="cardExpiry">Expiry Date</label>
-                    <input type="text" id="cardExpiry" name="card_expiry" placeholder="MM/YY" maxlength="5">
-                </div>
-                <div class="form-group">
-                    <label for="cardCVV">CVV</label>
-                    <input type="password" id="cardCVV" name="card_cvv" maxlength="4">
-                </div>
-            </div>
-            
-            <h2>Order Summary</h2>
-            <div class="order-summary">
-                {% if items %}
-                    <ul>
-                    {% for item in items %}
-                        <li class="order-item">
-                            <strong>{{ item.product.name }}</strong> x{{ item.quantity }} - ₹{{ item.subtotal }}
-                        </li>
-                    {% endfor %}
-                    </ul>
-                    <div class="total-row">Total: ₹{{ total }}</div>
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="CurioCart">
+                <span>CurioCart</span>
+            </a>
+            <nav class="nav-links">
+                <a href="/" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="/products" class="nav-link active"><i class="fas fa-store"></i> Products</a>
+                {% if current_user.is_authenticated %}
+                    <a href="/cart" class="nav-link"><i class="fas fa-shopping-cart"></i> Cart</a>
+                    <a href="/my-orders" class="nav-link"><i class="fas fa-clipboard-list" ></i> Orders</a>
+                    {% if current_user.is_admin %}
+                        <a href="/admin" class="nav-link"><i class="fas fa-cog"></i> Admin</a>
+                    {% endif %}
+                    <a href="/dashboard" class="nav-link"><i class="fas fa-user"></i> Dashboard</a>
+                    <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 {% else %}
-                    <p>Your cart is empty.</p>
+                    <a href="/login" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    <a href="/register" class="nav-link"><i class="fas fa-user-plus"></i> Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="cart-container">
+        <h1 style="color: #3a5a8a; margin-bottom: 2rem;">Your Shopping Cart</h1>
+        {% if items|length == 0 %}
+            <div class="empty-cart-message">Your cart is empty.</div>
+            <div class="continue-shopping">
+                <a href="{{ url_for('products') }}" class="btn-continue">Continue Shopping</a>
+            </div>
+        {% else %}
+            {% for item in items %}
+            <div class="cart-item" data-product-id="{{ item.product.id }}">
+                <div class="cart-item-image">
+                    <img src="{{ item.image_url }}" 
+                         alt="{{ item.product.name }}" 
+                         style="width: 100%; height: 100%; object-fit: contain;"
+                         onerror="this.src='{{ url_for('static', filename='images/default.jpg') }}'">
+                </div>
+                <div class="cart-item-details">
+                    <h3 class="cart-item-title">{{ item.product.name }}</h3>
+                    <div class="cart-item-price">
+                        {% if item.product.discount %}
+                            <span class="original-price">₹{{ "%.2f"|format(item.product.price) }}</span>
+                            <span class="discounted-price">₹{{ "%.2f"|format(item.unit_price) }}</span>
+                        {% else %}
+                            <span class="price">₹{{ "%.2f"|format(item.unit_price) }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="quantity-controls">
+                            <form method="POST" action="{{ url_for('update_cart', product_id=item.product.id) }}" style="display:inline;">
+                                <input type="hidden" name="action" value="decrease">
+                                <button type="submit" class="quantity-btn">-</button>
+                            </form>
+                            <span class="quantity-display">{{ item.quantity }}</span>
+                            <form method="POST" action="{{ url_for('update_cart', product_id=item.product.id) }}" style="display:inline;">
+                                <input type="hidden" name="action" value="increase">
+                                <button type="submit" class="quantity-btn" {% if item.quantity >= item.product.stock_quantity %}disabled{% endif %}>+</button>
+                            </form>
+                        </div>
+                        <form method="POST" action="{{ url_for('update_cart', product_id=item.product.id) }}" style="display:inline;">
+                            <input type="hidden" name="action" value="remove">
+                            <button type="submit" class="remove-item">Remove</button>
+                        </form>
+                    </div>
+                    <div class="cart-item-subtotal">
+                        Subtotal: ₹<span class="item-subtotal">{{ "%.2f"|format(item.subtotal) }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="cart-summary">
+                <div class="cart-total">Total: ₹<span id="cartTotal">{{ "%.2f"|format(total) }}</span></div>
+                {% if items %}
+                    <a href="{{ url_for('checkout') }}" class="btn-checkout">Proceed to Checkout</a>
                 {% endif %}
             </div>
-            
-            <button type="submit" class="btn-checkout">Place Order</button>
-        </form>
+        {% endif %}
     </div>
-
-    
-
-    <script>
-        function validateForm() {
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-            if (paymentMethod === 'card') {
-                const cardNumber = document.getElementById('cardNumber').value;
-                const cardExpiry = document.getElementById('cardExpiry').value;
-                const cardCVV = document.getElementById('cardCVV').value;
-                
-                if (!cardNumber || !cardExpiry || !cardCVV) {
-                    alert('Please fill in all card details');
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        // Show/hide card details based on payment method
-        const paymentRadios = document.getElementsByName('payment_method');
-        const cardDetails = document.getElementById('cardDetails');
-        
-        paymentRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'card') {
-                    cardDetails.style.display = 'block';
-                } else {
-                    cardDetails.style.display = 'none';
-                }
-            });
-        });
-
-        // Format card expiry input
-        const cardExpiry = document.getElementById('cardExpiry');
-        if (cardExpiry) {
-            cardExpiry.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 2) {
-                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
-                }
-                e.target.value = value;
-            });
-        }
-
-        // Format card number input
-        const cardNumber = document.getElementById('cardNumber');
-        if (cardNumber) {
-            cardNumber.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                e.target.value = value;
-            }); 
-        }
-    </script>
 </body>
 </html>
