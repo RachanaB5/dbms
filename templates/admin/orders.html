@@ -76,6 +76,7 @@
                         <tr>
                             <th>Order ID</th>
                             <th>Customer</th>
+                            <th>Items</th>
                             <th>Date</th>
                             <th>Status</th>
                             <th>Total</th>
@@ -85,14 +86,33 @@
                     <tbody>
                         {% for order in orders %}
                         <tr>
-                            <td>{{ order.order_id }}</td>
+                            <td>{{ order.id }}</td>
                             <td>{% if order.user %}{{ order.user.username }}{% else %}Deleted User{% endif %}</td>
+                            <td>
+                                {% if order.items %}
+                                    <ul class="list-unstyled mb-0">
+                                    {% for item in order.items %}
+                                        <li>
+                                            {% if item.product %}
+                                                {{ item.product.name }} (x{{ item.quantity }})
+                                            {% else %}
+                                                <span class="text-muted">Deleted Item (ID: {{ item.product_id }})</span>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <span class="text-muted">No items found</span>
+                                {% endif %}
+                            </td>
                             <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                             <td><span class="badge badge-{{ order.status|lower }}">{{ order.status }}</span></td>
                             <td>${{ "%.2f"|format(order.total_amount) if order.total_amount else '0.00' }}</td>
                             <td>
-                                <button class="btn btn-sm btn-info" onclick="viewOrder({{ order.order_id }})">View</button>
-                                <button class="btn btn-sm btn-success" onclick="updateStatus({{ order.order_id }})">Update Status</button>
+                                <a href="{{ url_for('order_details', order_id=order.id) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <button class="btn btn-sm btn-success" onclick="updateStatus({{ order.id }})">Update Status</button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -148,7 +168,6 @@
     <script>
         let currentOrderId = null;
         const statusModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
-        const detailsModal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
 
         function updateStatus(orderId) {
             currentOrderId = orderId;
@@ -167,29 +186,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();
+                    window.location.reload();
                 } else {
-                    alert('Error updating status: ' + data.error);
+                    alert('Error updating status: ' + (data.error || 'Unknown error'));
                 }
             })
             .catch(error => {
-                alert('Error updating status');
-                console.error('Error:', error);
-            });
-        }
-
-        function viewOrder(orderId) {
-            const content = document.getElementById('orderDetailsContent');
-            content.innerHTML = 'Loading...';
-            detailsModal.show();
-
-            fetch(`/admin/orders/${orderId}/details`)
-            .then(response => response.text())
-            .then(html => {
-                content.innerHTML = html;
-            })
-            .catch(error => {
-                content.innerHTML = 'Error loading order details';
+                alert('Error updating status: ' + error);
                 console.error('Error:', error);
             });
         }
