@@ -85,7 +85,7 @@
                     </thead>
                     <tbody>
                         {% for user in users %}
-                        <tr>
+                        <tr data-user-id="{{ user.id }}">
                             <td>{{ user.id }}</td>
                             <td>{{ user.username }}</td>
                             <td>{{ user.email }}</td>
@@ -119,15 +119,43 @@
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(response => response.json())
-                  .then(data => {
-                      if (data.error) {
-                          alert(data.error);
-                      } else {
-                          location.reload();
-                      }
-                  });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the user row from the table
+                        const row = document.querySelector(`tr[data-user-id="${id}"]`);
+                        if (row) {
+                            row.remove();
+                        }
+                        showAlert('success', 'User deleted successfully');
+                    } else {
+                        showAlert('error', data.error || 'Failed to delete user');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('error', 'Failed to delete user. Please try again.');
+                });
             }
+        }
+
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+
+            // Auto dismiss after 3 seconds
+            setTimeout(() => {
+                alertDiv.classList.remove('show');
+                setTimeout(() => alertDiv.remove(), 150);
+            }, 3000);
         }
     </script>
 </body>
