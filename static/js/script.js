@@ -214,4 +214,13 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Failed to remove item');
         });
     }
+
+    // Add CSRF token to all AJAX requests
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+            }
+        }
+    });
 });
