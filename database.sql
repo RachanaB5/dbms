@@ -279,11 +279,30 @@ SELECT * FROM users;
 SELECT * FROM cart;
 
 -- === USER ID COLUMN MIGRATION FOR FLASK/SQLALCHEMY COMPATIBILITY ===
--- 1. Drop foreign keys referencing users.user_id
-ALTER TABLE Orders DROP FOREIGN KEY orders_ibfk_1;
-ALTER TABLE Cart DROP FOREIGN KEY cart_ibfk_1;
-ALTER TABLE Reviews DROP FOREIGN KEY reviews_ibfk_1;
-ALTER TABLE Payments DROP FOREIGN KEY payments_ibfk_1;
+-- 1. Drop all foreign keys in correct order
+ALTER TABLE OrderItems DROP FOREIGN KEY IF EXISTS orderitems_ibfk_1;
+ALTER TABLE OrderItems DROP FOREIGN KEY IF EXISTS orderitems_ibfk_2;
+ALTER TABLE Orders DROP FOREIGN KEY IF EXISTS orders_ibfk_1;
+ALTER TABLE Cart DROP FOREIGN KEY IF EXISTS cart_ibfk_1;
+ALTER TABLE Reviews DROP FOREIGN KEY IF EXISTS reviews_ibfk_1;
+ALTER TABLE Payments DROP FOREIGN KEY IF EXISTS payments_ibfk_1;
+
+-- Drop and recreate order_items table with correct references
+DROP TABLE IF EXISTS OrderItems;
+CREATE TABLE OrderItems (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    price_at_time DECIMAL(10,2) NOT NULL,
+    discount_at_time INT DEFAULT 0,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE SET NULL
+);
+
+-- Add indexes for better performance
+ALTER TABLE OrderItems ADD INDEX idx_order_id (order_id);
+ALTER TABLE OrderItems ADD INDEX idx_product_id (product_id);
 
 -- 2. Remove AUTO_INCREMENT from user_id (if needed)
 ALTER TABLE Users MODIFY user_id INT;
@@ -305,10 +324,9 @@ CREATE TABLE OrderItems (
     id INT PRIMARY KEY AUTO_INCREMENT,
     order_id INT,
     product_id INT,
-    product_name VARCHAR(100),
-    quantity INT,
-    price_at_time DECIMAL(10,2),
-    discount_at_time INT,
+    quantity INT NOT NULL,
+    price_at_time DECIMAL(10,2) NOT NULL,
+    discount_at_time INT DEFAULT 0,
     FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE SET NULL
 );
@@ -319,3 +337,4 @@ select * from orders;
 select * from cart;
 select * from reviews;
 select * from payments;
+select * from order_items;
