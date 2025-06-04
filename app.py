@@ -17,6 +17,8 @@ import requests
 from werkzeug.utils import secure_filename
 from urllib.parse import urlparse
 import io
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 app = Flask(__name__)
 
@@ -96,6 +98,70 @@ login_manager.login_view = 'show_login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.session_protection = 'strong'
 
+# Email configurations
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'rachanabhaskargowda05@gmail.com'
+app.config['MAIL_PASSWORD'] = 'efie dwpy defr xihe'
+app.config['MAIL_DEFAULT_SENDER'] = ('CurioCart', 'rachanabhaskargowda05@gmail.com')
+mail = Mail(app)
+
+def send_order_confirmation_email(order, user, total_amount):
+    try:
+        msg = Message(
+            'Your CurioCart Order Confirmation #' + str(order.id),
+            sender=('CurioCart', app.config['MAIL_USERNAME']),
+            recipients=[user.email]
+        )
+        
+        # Add headers to prevent spam classification
+        msg.extra_headers = {
+            'List-Unsubscribe': '<mailto:' + app.config['MAIL_USERNAME'] + '?subject=unsubscribe>',
+            'Precedence': 'bulk',
+            'Auto-Submitted': 'auto-generated',
+            'X-Auto-Response-Suppress': 'OOF, DR, RN, NRN, AutoReply'
+        }
+        
+        msg.html = render_template(
+            'email/order_confirmation.html',
+            order=order,
+            user=user,
+            total_amount=total_amount
+        )
+        
+        mail.send(msg)
+        app.logger.info(f"Order confirmation email sent to {user.email}")
+    except Exception as e:
+        app.logger.error(f"Failed to send order confirmation email: {str(e)}")
+        pass
+
+def send_welcome_email(user):
+    try:
+        msg = Message(
+            'Welcome to CurioCart!',
+            sender=('CurioCart', app.config['MAIL_USERNAME']),
+            recipients=[user.email]
+        )
+        
+        msg.extra_headers = {
+            'List-Unsubscribe': '<mailto:' + app.config['MAIL_USERNAME'] + '?subject=unsubscribe>',
+            'Precedence': 'bulk',
+            'Auto-Submitted': 'auto-generated',
+            'X-Auto-Response-Suppress': 'OOF, DR, RN, NRN, AutoReply'
+        }
+        
+        msg.html = render_template(
+            'email/welcome.html',
+            user=user
+        )
+        
+        mail.send(msg)
+        app.logger.info(f"Welcome email sent to {user.email}")
+    except Exception as e:
+        app.logger.error(f"Failed to send welcome email: {str(e)}")
+        pass
+
 # Error handlers
 @app.errorhandler(404)
 def not_found_error(error):
@@ -155,7 +221,7 @@ def init_db():
             # Create admin users
             admin1 = User(
                 username='Rachana',
-                email='rachana@gmail.com',
+                email='rachanabhaskargowdabtech24@rvu.edu.in',
                 phone='',
                 password_hash=generate_password_hash('12345678'),
                 is_admin=True
@@ -163,7 +229,7 @@ def init_db():
             
             admin2 = User(
                 username='Priyanshu',
-                email='priyanshu@gmail.com',
+                email='priyanshukumarsenapatibtech24@rvu.edu.in',
                 phone='',
                 password_hash=generate_password_hash('98765432'),
                 is_admin=True
@@ -431,6 +497,9 @@ def register():
             db.session.add(new_user)
             db.session.commit()
 
+            # Send welcome email
+            send_welcome_email(new_user)
+            
             flash('Registration successful! Please login.', 'success')
             return redirect(url_for('show_login'))
 
@@ -913,6 +982,10 @@ def checkout():
                     db.session.delete(item)
 
                 db.session.commit()
+                
+                # Send order confirmation email
+                send_order_confirmation_email(order, current_user, float(total))
+                
                 flash('Order placed successfully!')
                 return redirect(url_for('order_confirmation', order_id=order.id))
 
@@ -1742,3 +1815,59 @@ def cancel_order(order_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'error': str(e)}), 500
+
+from itsdangerous import URLSafeTimedSerializer
+
+def get_reset_token(user):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return serializer.dumps(user.email, salt='password-reset-salt')
+
+def verify_reset_token(token, expiration=1800):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(token, salt='password-reset-salt', max_age=expiration)
+        return User.query.filter_by(email=email).first()
+    except:
+        return None
+
+def send_reset_email(user):
+    token = get_reset_token(user)
+    msg = Message(
+        'Password Reset Request',
+        sender=('CurioCart', app.config['MAIL_USERNAME']),
+        recipients=[user.email]
+    )
+    msg.html = render_template(
+        'email/reset_password.html',
+        user=user,
+        token=token
+    )
+    mail.send(msg)
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            send_reset_email(user)
+            flash('Password reset instructions sent to your email.', 'info')
+            return redirect(url_for('show_login'))
+        flash('Email not found in our records.', 'error')
+    return render_template('forgot_password.html')
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    user = verify_reset_token(token)
+    if not user:
+        flash('Invalid or expired reset token', 'error')
+        return redirect(url_for('forgot_password'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        user.password_hash = generate_password_hash(password)
+        db.session.commit()
+        flash('Password has been updated!', 'success')
+        return redirect(url_for('show_login'))
+
+    return render_template('reset_password.html')
