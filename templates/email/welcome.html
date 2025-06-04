@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #6a5acd; color: white; padding: 20px; text-align: center; }
+        .content { margin: 20px 0; }
+        .footer { margin-top: 30px; text-align: center; color: #666; }
+        .button { display: inline-block; padding: 10px 20px; background: #6a5acd; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome to CurioCart!</h1>
+        </div>
+        
+        <div class="content">
+            <h2>Hi {{ user.username }},</h2>
+            <p>Thank you for joining CurioCart! We're excited to have you as a member of our community.</p>
+            <p>With your new account, you can:</p>
+            <ul>
+                <li>Browse our extensive collection of products</li>
+                <li>Track your orders</li>
+                <li>Save your favorite items</li>
+                <li>Get exclusive deals and discounts</li>
+            </ul>
+            <p style="text-align: center; margin-top: 30px;">
+                <a href="{{ url_for('products', _external=True) }}" class="button" style="color: white;">Start Shopping</a>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>If you have any questions, feel free to contact our support team.</p>
+            <p>Best regards,<br>The CurioCart Team</p>
+        </div>
+    </div>
+</body>
+</html>
