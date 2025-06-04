@@ -18,10 +18,14 @@
                 <label for="loginPassword">Password</label>
                 <input type="password" id="loginPassword" name="password" required>
             </div>
-            <button type="submit" class="form-submit">Continue</button>
+            
+            <button type="submit" class="form-submit" style="width: 100%; padding: 10px;  color: white; border: none; border-radius: 4px; cursor: pointer;">Continue</button>
         </form>
-        <div class="form-footer">
-            <p>New to CurioCart? <a href="{{ url_for('register') }}">Create an account</a></p>
+        <div class="form-footer" style="text-align: center; margin-top: 15px;">
+            <p>New to CurioCart? <a href="{{ url_for('register') }}" style="text-decoration: none;">Create an account</a></p>
+            <div class="form-footer" style="text-align: center; margin: 10px 0;">
+                <a href="{{ url_for('forgot_password') }}" class="forgot-password" style="color: #002b99; text-decoration: none;">Forgot Password?</a>
+            </div>
         </div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
