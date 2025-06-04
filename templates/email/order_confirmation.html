@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #6a5acd; color: white; padding: 20px; text-align: center; }
+        .order-details { margin: 20px 0; }
+        .order-items { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .order-items th, .order-items td { padding: 10px; border-bottom: 1px solid #ddd; }
+        .total { text-align: right; font-weight: bold; margin-top: 20px; }
+        .footer { margin-top: 30px; text-align: center; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmation</h1>
+            <p>Thank you for your order!</p>
+        </div>
+        
+        <div class="order-details">
+            <h2>Order Details</h2>
+            <p><strong>Order Number:</strong> #{{ order.id }}</p>
+            <p><strong>Order Date:</strong> {{ order.created_at.strftime('%B %d, %Y %I:%M %p') }}</p>
+            <p><strong>Shipping Address:</strong><br>
+                {{ order.shipping_address }}<br>
+                {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}
+            </p>
+        </div>
+
+        <table class="order-items">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ "%.2f"|format(item.price_at_time * (1 - item.discount_at_time/100)) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total">
+            <p>Total Amount: ₹{{ "%.2f"|format(total_amount) }}</p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for shopping with CurioCart!</p>
+            <p>If you have any questions, please contact our support team.</p>
+        </div>
+    </div>
+</body>
+</html>
