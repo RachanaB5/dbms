@@ -1,43 +1,194 @@
 {% extends "base.html" %}
+
+{% block title %}curiocart - Curated Elegance{% endblock %}
+
 {% block content %}
-<section class="hero">
-    <h2>Welcome to ShopEase</h2>
-    <p>Discover amazing products at unbeatable prices</p>
-    <a href="{{ url_for('products') }}" class="btn">Shop Now</a>
+<!-- Hero Carousel Banner Section -->
+<div class="hero-carousel" id="heroCarousel">
+    <div class="carousel-inner" id="carouselInner">
+        <!-- Slide 1 -->
+        <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=1200&auto=format&fit=crop');">
+            <div class="carousel-overlay"></div>
+            <div class="carousel-caption-custom">
+                <span class="brand-name" style="color: var(--secondary-light);">Featured Product</span>
+                <h1>ApexTech Laptops</h1>
+                <p>Unleash ultimate computational performance, high-speed thermal grids, and breathtaking retina displays.</p>
+                <a href="/product/1" class="carousel-btn">Discover More</a>
+            </div>
+        </div>
+        <!-- Slide 2 -->
+        <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=1200&auto=format&fit=crop');">
+            <div class="carousel-overlay"></div>
+            <div class="carousel-caption-custom">
+                <span class="brand-name" style="color: var(--secondary-light);">New Arrival</span>
+                <h1>FitPulse Smartwatches</h1>
+                <p>Track your health parameters, athletic strides, and smart active notifications in brilliant AMOLED color panels.</p>
+                <a href="/product/2" class="carousel-btn">Shop Now</a>
+            </div>
+        </div>
+        <!-- Slide 3 -->
+        <div class="carousel-item" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1200&auto=format&fit=crop');">
+            <div class="carousel-overlay"></div>
+            <div class="carousel-caption-custom">
+                <span class="brand-name" style="color: var(--secondary-light);">Season Exclusive</span>
+                <h1>Elegance Reimagined</h1>
+                <p>Explore gorgeous, structured threads and accessories tailored for premium individual styles.</p>
+                <a href="/category/Fashion" class="carousel-btn">View Catalog</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Controls -->
+    <button class="carousel-control-prev" onclick="rotateCarousel(-1)"><i class="fas fa-chevron-left"></i></button>
+    <button class="carousel-control-next" onclick="rotateCarousel(1)"><i class="fas fa-chevron-right"></i></button>
+</div>
+
+<!-- Category Grid Section -->
+<section class="category-section" style="background: linear-gradient(180deg, var(--light), #f0f0fa); border-radius: 30px; margin: 0 1.5rem; padding: 5rem 2rem;">
+    <h2 class="section-title">Shop by Collections</h2>
+    <p style="text-align: center; color: var(--text); font-weight: 500; margin-top: -2.5rem; margin-bottom: 3rem;">Explore curated lifestyle solutions by categories</p>
+    <div class="hex-grid">
+        <a href="{{ url_for('category_products', category_name='Electronics') }}" class="hex-item" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=600&auto=format&fit=crop');">
+            <div class="hex-overlay">Electronics</div>
+        </a>
+        <a href="{{ url_for('category_products', category_name='Fashion') }}" class="hex-item" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&auto=format&fit=crop');">
+            <div class="hex-overlay">Fashion</div>
+        </a>
+        <a href="{{ url_for('category_products', category_name='Home & Kitchen') }}" class="hex-item" style="background-image: url('https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop');">
+            <div class="hex-overlay">Home & Kitchen</div>
+        </a>
+        <a href="{{ url_for('category_products', category_name='Beauty') }}" class="hex-item" style="background-image: url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=600&auto=format&fit=crop');">
+            <div class="hex-overlay">Beauty</div>
+        </a>
+        <a href="{{ url_for('category_products', category_name='Books') }}" class="hex-item" style="background-image: url('https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=600&auto=format&fit=crop');">
+            <div class="hex-overlay">Books</div>
+        </a>
+        <a href="{{ url_for('category_products', category_name='Gadgets') }}" class="hex-item" style="background-image: url('https://images.unsplash.com/photo-1527689368864-3a821dbccc34?q=80&w=600&auto=format&fit=crop');">
+            <div class="hex-overlay">Gadgets</div>
+        </a>
+    </div>
 </section>
 
-<section class="featured-products">
-    <h2>Featured Products</h2>
-    <div class="products-grid">
+<!-- Featured Products Section -->
+<section class="products-section" style="padding: 6rem 2rem;">
+    <h2 class="section-title">Sensational Deals</h2>
+    <p style="text-align: center; color: var(--text); font-weight: 500; margin-top: -2.5rem; margin-bottom: 4rem;">Limited-time massive markdown catalog</p>
+    <div class="product-grid">
         {% for product in featured_products %}
         <div class="product-card">
-            <div class="product-image">
-                {% if product.discount > 0 %}
-                <span class="discount-badge">-{{ product.discount }}%</span>
-                {% endif %}
-                <img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}">
-            </div>
-            <div class="product-info">
-                <h3>{{ product.name }}</h3>
-                <p>{{ product.description }}</p>
-                <div class="product-price">
-                    {% if product.discount > 0 %}
-                    <span class="original-price">₹{{ product.price }}</span>
-                    <span class="discounted-price">₹{{ (product.price * (1 - product.discount/100))|round|int }}</span>
-                    {% else %}
-                    <span class="price">₹{{ product.price }}</span>
+            <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) if not product.image.startswith('http') else product.image }}'); height: 220px;"></div>
+            <div class="product-info" style="padding: 1.5rem; display: flex; flex-direction: column; height: calc(100% - 220px); justify-content: space-between;">
+                <div>
+                    {% if product.brand %}
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--secondary); font-weight: 700; letter-spacing: 1px; margin-bottom: 2px;">{{ product.brand }}</div>
                     {% endif %}
+                    <h3 class="product-title" style="font-size: 1.2rem; color: var(--primary-dark); font-weight: 600; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ product.name }}</h3>
+                    <div class="product-rating" style="color: var(--accent); margin: 0.3rem 0; font-size: 0.9rem;">
+                        {% set rating_val = product.rating if product.rating else 0 %}
+                        {% set rating_int = rating_val|int %}
+                        {{ '★' * rating_int }}{{ '☆' * (5 - rating_int) }}
+                        <span style="color: var(--text); font-size: 0.8rem; margin-left: 5px;">({{ product.reviews_count }})</span>
+                    </div>
                 </div>
-                <button class="add-to-cart" 
-                        data-id="{{ product.id }}"
-                        data-name="{{ product.name }}"
-                        data-price="{{ (product.price * (1 - product.discount/100))|round|int }}"
-                        data-image="{{ url_for('static', filename='image/' + product.image) }}">
-                    Add to Cart
-                </button>
+                
+                <div>
+                    <div style="margin: 0.8rem 0;">
+                        {% if product.discount > 0 %}
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">₹{{ "%.2f"|format(product.get_discounted_price()) }}</span>
+                            <span style="text-decoration: line-through; color: #999; font-size: 0.95rem;">₹{{ "%.2f"|format(product.price) }}</span>
+                            <span style="color: white; background: var(--accent); font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 4px;">{{ product.discount }}% OFF</span>
+                        </div>
+                        {% else %}
+                        <span style="font-size: 1.4rem; font-weight: 800; color: var(--primary);">₹{{ "%.2f"|format(product.price) }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="carousel-btn" style="flex: 3; text-align: center; text-decoration: none; padding: 10px; font-size: 0.9rem;">View Details</a>
+                        <button onclick="addToWishlist('{{ product.id }}')" class="btn-primary" style="flex: 1; margin: 0; background: #fee2e2; border: none; color: #dc2626; padding: 10px; border-radius: 8px; cursor: pointer; box-shadow: none; display: inline-flex; justify-content: center; align-items: center;"><i class="fas fa-heart"></i></button>
+                    </div>
+                </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </section>
+
+<!-- Brand Trust Section -->
+<section style="background: white; padding: 5rem 2rem; border-radius: 30px; margin: 0 1.5rem 4rem;">
+    <h2 class="section-title">Engineered For Perfection</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; text-align: center;">
+        <div style="padding: 1rem;">
+            <i class="fas fa-gem" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h4 style="color: var(--primary-dark); font-weight: 700; margin-bottom: 0.5rem;">Authentic Luxury</h4>
+            <p style="font-size: 0.9rem; color: var(--text);">Handpicked selection representing the zenith of manufacturing design.</p>
+        </div>
+        <div style="padding: 1rem;">
+            <i class="fas fa-undo-alt" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h4 style="color: var(--primary-dark); font-weight: 700; margin-bottom: 0.5rem;">Zero-risk Returns</h4>
+            <p style="font-size: 0.9rem; color: var(--text);">Enjoy seamless return claims within 30 days of purchase delivery.</p>
+        </div>
+        <div style="padding: 1rem;">
+            <i class="fas fa-headset" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h4 style="color: var(--primary-dark); font-weight: 700; margin-bottom: 0.5rem;">Platinum Support</h4>
+            <p style="font-size: 0.9rem; color: var(--text);">Dedicated concierge desk standing by 24/7 to resolve client requests.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Glassmorphism Newsletter Section -->
+<section style="max-width: 800px; margin: 4rem auto; padding: 4rem 2rem; text-align: center; background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 32px rgba(106,90,205,0.08);">
+    <h3 style="font-size: 1.8rem; color: var(--primary-dark); font-weight: 700; margin-bottom: 0.5rem;">Join Curiocart Club</h3>
+    <p style="color: var(--text); font-size: 0.95rem; margin-bottom: 2rem;">Subscribe to receive early releases, exclusive discounts, and fashion recommendations.</p>
+    <div style="display: flex; gap: 10px; max-width: 500px; margin: 0 auto; flex-wrap: wrap;">
+        <input type="email" placeholder="Enter your email address" style="flex: 1; min-width: 250px; padding: 12px 20px; border-radius: 30px; border: 1.5px solid var(--light-gray); font-size: 0.95rem; outline: none; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--light-gray)'">
+        <button class="carousel-btn" style="border: none; cursor: pointer; padding: 12px 28px; width: auto; min-width: 120px;">Subscribe</button>
+    </div>
+</section>
+
+<!-- Floating Action Button updates -->
+<div class="fab-container">
+    <a href="{{ url_for('cart') }}" class="fab">
+        <i class="fas fa-shopping-bag"></i>
+        {% if current_user.is_authenticated and current_user.cart_items %}
+        <div class="fab-badge">{{ current_user.cart_items|length }}</div>
+        {% endif %}
+    </a>
+    <a href="{{ url_for('dashboard') }}" class="fab fab-primary">
+        <i class="fas fa-user"></i>
+    </a>
+</div>
+
+<!-- JavaScript for Hero Slideshow -->
+<script>
+    let activeSlide = 0;
+    const slides = document.querySelectorAll('.carousel-item');
+    const inner = document.getElementById('carouselInner');
+    const totalSlides = slides.length;
+    
+    function rotateCarousel(direction) {
+        activeSlide = (activeSlide + direction + totalSlides) % totalSlides;
+        inner.style.transform = `translateX(-${activeSlide * 100}%)`;
+    }
+    
+    // Auto rotation every 6 seconds
+    setInterval(() => {
+        rotateCarousel(1);
+    }, 6000);
+
+    function addToWishlist(productId) {
+        fetch('/add_to_wishlist/' + productId, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+        })
+        .catch(err => console.error(err));
+    }
+</script>
 {% endblock %}

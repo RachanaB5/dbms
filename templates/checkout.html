@@ -1,168 +1,262 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Checkout</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
-        .checkout-container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .order-summary {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-        .order-summary ul {
-            list-style: none;
-            padding: 0;
-        }
-        .order-summary li {
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-        }
-        .btn-checkout {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #4a6fa5;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #cardDetails {
-            display: none;
-            margin-top: 10px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-    </style>
-</head>
-<body>
-    <div class="checkout-container">
-        <h1>Checkout</h1>
-        <form method="POST" action="{{ url_for('checkout') }}">
-            <h2>Shipping Address</h2>
-            <div class="form-group">
-                <label for="address">Address</label>
-                <input type="text" id="address" name="address" required value="{{ current_user.address if current_user.address else '' }}">
-            </div>
-            <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" required value="{{ current_user.city if current_user.city else '' }}">
-            </div>
-            <div class="form-group">
-                <label for="zip">ZIP/Postal Code</label>
-                <input type="text" id="zip" name="zip" required value="{{ current_user.zip_code if current_user.zip_code else '' }}">
-            </div>
-            <div class="form-group">
-                <label for="country">Country</label>
-                <input type="text" id="country" name="country" value="India" required>
-            </div>
-            
-            <h2>Payment Method</h2>
-            <label><input type="radio" name="payment_method" value="cod" checked> Cash on Delivery</label><br>
-            <label><input type="radio" name="payment_method" value="card"> Credit/Debit Card</label>
-            
-            <div id="cardDetails">
-                <div class="form-group">
-                    <label for="cardNumber">Card Number</label>
-                    <input type="text" id="cardNumber" name="card_number" maxlength="16">
-                </div>
-                <div class="form-group">
-                    <label for="cardExpiry">Expiry Date</label>
-                    <input type="text" id="cardExpiry" name="card_expiry" placeholder="MM/YY" maxlength="5">
-                </div>
-                <div class="form-group">
-                    <label for="cardCVV">CVV</label>
-                    <input type="password" id="cardCVV" name="card_cvv" maxlength="4">
-                </div>
-            </div>
-            
-            <h2>Order Summary</h2>
-            <div class="order-summary">
-                {% if items %}
-                    <ul>
-                    {% for item in items %}
-                        <li>
-                            <strong>{{ item.product.name }}</strong> x{{ item.quantity }} - ₹{{ item.subtotal }}
-                        </li>
-                    {% endfor %}
-                    </ul>
-                    <div style="font-weight:bold;">Total: ₹{{ total }}</div>
-                {% else %}
-                    <p>Your cart is empty.</p>
-                {% endif %}
-            </div>
-            
-            <button type="submit" class="btn-checkout">Place Order</button>
-        </form>
-    </div>
+{% extends "base.html" %}
+{% block title %}Checkout - curiocart{% endblock %}
 
-    <script>
-        // Show/hide card details based on payment method
-        const paymentRadios = document.getElementsByName('payment_method');
-        const cardDetails = document.getElementById('cardDetails');
-        
-        paymentRadios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.value === 'card') {
-                    cardDetails.style.display = 'block';
-                } else {
-                    cardDetails.style.display = 'none';
-                }
-            });
+{% block content %}
+<style>
+    .checkout-container {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+    }
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 30px;
+        align-items: start;
+    }
+    .section-title {
+        font-size: 1.4rem;
+        color: var(--primary-dark);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--light-gray);
+        padding-bottom: 0.5rem;
+    }
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 1.5rem;
+    }
+    .payment-option-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        padding: 1rem;
+        border: 1.5px solid var(--light-gray);
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .payment-option-label:hover {
+        border-color: var(--primary-light);
+        background: var(--light);
+    }
+    .payment-option-label input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+    }
+    #cardDetails {
+        display: none;
+        margin-top: 10px;
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 12px;
+        border: 1px dashed var(--primary-light);
+    }
+    .order-summary {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+    }
+    .order-summary-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem;
+    }
+    .order-summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--light-gray);
+        color: var(--dark);
+        font-size: 0.95rem;
+    }
+    .order-summary-item:last-child {
+        border-bottom: none;
+    }
+    .btn-checkout {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(to right, var(--secondary), var(--secondary-light));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(32, 178, 170, 0.3);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    .btn-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(32, 178, 170, 0.4);
+    }
+    @media (max-width: 768px) {
+        .checkout-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="checkout-container">
+    <h1 style="color: var(--primary-dark); font-size: 2.2rem; text-align: center; margin-bottom: 2.5rem;">Secure Checkout</h1>
+    
+    <form method="POST" action="{{ url_for('checkout') }}">
+        <div class="checkout-grid">
+            <!-- Left Panel: Shipping & Payment -->
+            <div>
+                <!-- Shipping Section -->
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-header">Shipping Address</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="address">Address Line</label>
+                            <input type="text" id="address" name="address" class="form-control" placeholder="123 Main St" required value="{{ user.address if user.address else '' }}">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" id="city" name="city" class="form-control" placeholder="San Francisco" required value="{{ user.city if user.city else '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <input type="text" id="state" name="state" class="form-control" placeholder="CA" required value="{{ user.state if user.state else '' }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="zip">ZIP/Postal Code</label>
+                            <input type="text" id="zip" name="zip" class="form-control" placeholder="94105" required value="{{ user.zip_code if user.zip_code else '' }}">
+                        </div>
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 1rem;">
+                            <input type="checkbox" id="save_address" name="save_address" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary);">
+                            <label for="save_address" style="margin: 0; cursor: pointer; font-weight: normal; color: var(--dark);">Save address to my profile</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="card">
+                    <div class="card-header">Payment Method</div>
+                    <div class="card-body">
+                        <div class="payment-options">
+                            <label class="payment-option-label">
+                                <input type="radio" name="payment_method" value="cod" checked>
+                                <span><i class="fas fa-money-bill-wave" style="color: var(--success); margin-right: 8px;"></i> Cash on Delivery (COD)</span>
+                            </label>
+                            <label class="payment-option-label">
+                                <input type="radio" name="payment_method" value="card">
+                                <span><i class="fas fa-credit-card" style="color: var(--primary); margin-right: 8px;"></i> Credit / Debit Card</span>
+                            </label>
+                        </div>
+                        
+                        <div id="cardDetails">
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input type="text" id="cardNumber" name="card_number" class="form-control" placeholder="1234567812345678" maxlength="16">
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label for="cardExpiry">Expiry Date</label>
+                                    <input type="text" id="cardExpiry" name="card_expiry" class="form-control" placeholder="MM/YY" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cardCVV">CVV</label>
+                                    <input type="password" id="cardCVV" name="card_cvv" class="form-control" placeholder="123" maxlength="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Order Summary & Coupon -->
+            <div>
+                <div class="order-summary">
+                    <h2 class="section-title">Order Summary</h2>
+                    {% if items %}
+                        <ul class="order-summary-list">
+                        {% for item in items %}
+                            <li class="order-summary-item">
+                                <div>
+                                    <span style="font-weight: 600; color: var(--primary-dark);">{{ item.product.name }}</span>
+                                    <span style="color: #666; font-size: 0.85rem; display: block;">Qty: {{ item.quantity }}</span>
+                                </div>
+                                <span style="font-weight: 600;">₹{{ "%.2f"|format(item.subtotal) }}</span>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        
+                        <h2 class="section-title">Promo / Coupon Code</h2>
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <input type="text" id="coupon_code" name="coupon_code" class="form-control" placeholder="e.g. SAVE10" style="text-transform: uppercase;">
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid var(--light-gray); padding-top: 1.5rem; margin-bottom: 2rem;">
+                            <span style="font-size: 1.2rem; font-weight: 700; color: var(--primary-dark);">Total Amount:</span>
+                            <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">₹{{ "%.2f"|format(total) }}</span>
+                        </div>
+                        
+                        <button type="submit" class="btn-checkout">Place Order & Pay</button>
+                    {% else %}
+                        <p style="text-align: center; color: var(--dark); padding: 1rem 0;">Your shopping cart is empty.</p>
+                        <a href="{{ url_for('products') }}" class="btn-checkout" style="text-decoration: none;">Continue Shopping</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Show/hide card details based on payment method
+    const paymentRadios = document.getElementsByName('payment_method');
+    const cardDetails = document.getElementById('cardDetails');
+    
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'card') {
+                cardDetails.style.display = 'block';
+                document.getElementById('cardNumber').setAttribute('required', 'true');
+                document.getElementById('cardExpiry').setAttribute('required', 'true');
+                document.getElementById('cardCVV').setAttribute('required', 'true');
+            } else {
+                cardDetails.style.display = 'none';
+                document.getElementById('cardNumber').removeAttribute('required');
+                document.getElementById('cardExpiry').removeAttribute('required');
+                document.getElementById('cardCVV').removeAttribute('required');
+            }
         });
+    });
 
-        // Format card expiry input
-        const cardExpiry = document.getElementById('cardExpiry');
-        if (cardExpiry) {
-            cardExpiry.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length > 2) {
-                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
-                }
-                e.target.value = value;
-            });
-        }
+    // Format card expiry input
+    const cardExpiry = document.getElementById('cardExpiry');
+    if (cardExpiry) {
+        cardExpiry.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
 
-        // Format card number input
-        const cardNumber = document.getElementById('cardNumber');
-        if (cardNumber) {
-            cardNumber.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                e.target.value = value;
-            });
-        }
-    </script>
-</body>
-</html>
+    // Format card number input
+    const cardNumber = document.getElementById('cardNumber');
+    if (cardNumber) {
+        cardNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+        });
+    }
+</script>
+{% endblock %}

@@ -1,92 +1,63 @@
-2025-05-08 22:43:03,096 ERROR: Exception on /login [POST] [in C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py:838]
-Traceback (most recent call last):
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 772, in cmd_query
-    self._cmysql.query(
-_mysql_connector.MySQLInterfaceError: Unknown column 'users.phone' in 'field list'
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
-    self.dialect.do_execute(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 945, in do_execute
-    cursor.execute(statement, parameters)
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\cursor_cext.py", line 356, in execute
-    self._connection.cmd_query(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
-    return method(cnx, *args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
-    raise get_mysql_exception(
-mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'users.phone' in 'field list'
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
-    response = self.full_dispatch_request()
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
-    rv = self.dispatch_request()
-         ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\flask\app.py", line 865, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\Desktop\dbms\app.py", line 334, in login
-    user = User.query.filter_by(email=email).first()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2759, in first
-    return self.limit(1)._iter().first()  # type: ignore
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\query.py", line 2858, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-                                                  ^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\session.py", line 2365, in execute
-    return self._execute_internal(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\session.py", line 2251, in _execute_internal
-    result: Result[Any] = compile_state_cls.orm_execute_statement(
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
-    result = conn.execute(
-             ^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1416, in execute
-    return meth(
-           ^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\sql\elements.py", line 523, in _execute_on_connection
-    return connection._execute_clauseelement(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1638, in _execute_clauseelement
-    ret = self._execute_context(
-          ^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1843, in _execute_context
-    return self._exec_single_context(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1983, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 2352, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\base.py", line 1964, in _exec_single_context
-    self.dialect.do_execute(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\sqlalchemy\engine\default.py", line 945, in do_execute
-    cursor.execute(statement, parameters)
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\cursor_cext.py", line 356, in execute
-    self._connection.cmd_query(
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
-    return method(cnx, *args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\PRIYANSHU\AppData\Local\Programs\Python\Python312\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
-    raise get_mysql_exception(
-sqlalchemy.exc.ProgrammingError: (mysql.connector.errors.ProgrammingError) 1054 (42S22): Unknown column 'users.phone' in 'field list'
-[SQL: SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.phone AS users_phone, users.password_hash AS users_password_hash, users.is_admin AS users_is_admin 
-FROM users 
-WHERE users.email = %(email_1)s 
- LIMIT %(param_1)s]
-[parameters: {'email_1': 'shush@test.com', 'param_1': 1}]
-(Background on this error at: https://sqlalche.me/e/20/f405)
-2025-05-08 22:43:03,115 ERROR: Server Error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application. [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:71]
-2025-05-08 22:43:09,623 INFO: Request: GET /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
-2025-05-08 22:43:21,412 INFO: Request: POST /login from 127.0.0.1 [in C:\Users\PRIYANSHU\Desktop\dbms\app.py:83]
+2026-06-02 17:56:11,292 INFO: Request: GET / from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:56:14,094 INFO: Request: GET /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:56:21,525 INFO: Request: GET /register from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:56:41,848 INFO: Request: POST /register from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:56:41,848 INFO: Register route called [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:537]
+2026-06-02 17:56:42,012 INFO: User registered successfully: rachanabhaskar556@gmail.com [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:576]
+2026-06-02 17:56:42,021 INFO: Request: GET /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:00,102 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:00,250 INFO: Request: GET /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:10,844 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:10,991 INFO: Request: GET /products from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:42,979 INFO: Request: GET /product/2 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:50,159 INFO: Request: POST /add_to_cart/2 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:50,182 INFO: Request: GET /products from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:51,838 INFO: Request: GET /cart from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:51,843 INFO: /cart accessed by user_id=5, is_authenticated=True [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:761]
+2026-06-02 17:57:51,847 INFO: Cart items found for user 5: [<Cart 1>] [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:764]
+2026-06-02 17:57:51,850 INFO: Items to render: [{'product': <Product 2>, 'quantity': 1, 'subtotal': 2849.0499999999997, 'unit_price': 2849.0499999999997}] [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:781]
+2026-06-02 17:57:54,235 INFO: Request: GET /checkout from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:58,047 INFO: Request: POST /checkout from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:57:58,100 INFO: Request: GET /payment/process/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:58:02,091 INFO: Request: POST /payment/process/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 17:58:02,112 INFO: Request: GET /order_confirmation/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:00:08,420 INFO: Ecommerce startup [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:61]
+2026-06-02 18:00:10,269 INFO: Ecommerce startup [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:61]
+2026-06-02 18:01:32,929 INFO: Ecommerce startup [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:61]
+2026-06-02 18:01:33,987 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:34,241 INFO: Request: GET /admin from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:34,305 INFO: Request: GET /admin from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:34,323 INFO: Request: POST /admin/categories from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:34,330 INFO: Request: GET /admin/categories from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:34,340 INFO: Request: POST /admin/coupons from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:34,347 INFO: Request: GET /admin/coupons from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:35,154 INFO: Request: POST /register from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:35,154 INFO: Register route called [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:537]
+2026-06-02 18:01:35,444 INFO: User registered successfully: newuser@example.com [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:576]
+2026-06-02 18:01:35,447 INFO: Request: GET /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:35,451 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:35,789 INFO: Request: GET /products from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,553 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,775 INFO: Request: GET /products from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,780 INFO: Request: POST /add_to_cart/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,795 INFO: Request: GET /products from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,803 INFO: Request: POST /checkout from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,831 INFO: Request: GET /payment/process/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,843 INFO: Request: POST /payment/process/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:36,858 INFO: Request: GET /order_confirmation/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:37,730 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:37,961 INFO: Request: GET /products from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:37,968 INFO: Request: POST /profile from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:37,974 INFO: Request: GET /profile from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:38,805 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:39,035 INFO: Request: GET /products from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:39,039 INFO: Request: POST /add_to_wishlist/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:39,048 INFO: Request: GET /wishlist from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:39,059 INFO: Request: POST /remove_from_wishlist/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:01:46,828 INFO: Ecommerce startup [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:61]
+2026-06-02 18:01:47,386 INFO: Ecommerce startup [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:61]
+2026-06-02 18:03:27,740 INFO: Request: GET /order_confirmation/1 from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:03:27,750 INFO: Request: GET /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:03:48,905 INFO: Request: POST /login from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:04:06,898 INFO: Request: GET /register from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]
+2026-06-02 18:05:29,546 INFO: Request: POST /register from 127.0.0.1 [in /Users/rachanabhaskargowda/iCloud Drive (Archive) - 1/Documents icloud/dbms/app.py:95]

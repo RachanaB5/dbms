@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Simulate Payment Gateway - curiocart{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6" style="max-width: 600px;">
+        <div class="card" style="text-align: center;">
+            <div class="card-header" style="background: linear-gradient(135deg, var(--primary-dark), #111);">Secure Payment Gateway Simulation</div>
+            <div class="card-body" style="padding: 3rem 2rem;">
+                {% if status == 'pending' %}
+                    <i class="fas fa-credit-card" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 1.5rem;"></i>
+                    <h3 style="color: var(--primary-dark); font-weight: 600; margin-bottom: 1rem;">Process Payment</h3>
+                    <p style="color: var(--dark); font-size: 1.1rem; margin-bottom: 1.5rem;">
+                        You are paying **₹{{ "%.2f"|format(order.payment.amount) }}** for Order **#{{ order.id }}** using **{{ order.payment.payment_method|replace('_', ' ')|title }}**.
+                    </p>
+                    
+                    <div style="background: var(--light); border: 1.5px solid var(--light-gray); border-radius: 8px; padding: 1rem; margin-bottom: 2rem; text-align: left;">
+                        <p style="font-size: 0.9rem; color: var(--text); margin-bottom: 0.5rem;"><strong>Shipping to:</strong></p>
+                        <p style="color: var(--dark);">{{ order.shipping_address }}, {{ order.shipping_city }}, {{ order.shipping_zip }}</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('payment_process', order_id=order.id) }}" style="display: flex; flex-direction: column; gap: 15px;">
+                        <button type="submit" name="action" value="success" class="btn-primary" style="background: linear-gradient(to right, var(--success), #2e8b57); box-shadow: 0 4px 15px rgba(60, 179, 113, 0.3);">Simulate Payment Success</button>
+                        <button type="submit" name="action" value="failure" class="btn-primary" style="background: linear-gradient(to right, #dc2626, #b91c1c); box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);">Simulate Payment Failure</button>
+                    </form>
+                {% else %}
+                    <!-- Failure screen -->
+                    <i class="fas fa-times-circle" style="font-size: 4rem; color: #dc2626; margin-bottom: 1.5rem;"></i>
+                    <h3 style="color: #dc2626; font-weight: 700; margin-bottom: 1rem;">Payment Failed</h3>
+                    <p style="color: var(--dark); font-size: 1.1rem; margin-bottom: 2rem;">
+                        Unfortunately, the payment transaction was declined. Your order **#{{ order.id }}** has been cancelled, and item stock has been restored to inventory.
+                    </p>
+                    <a href="{{ url_for('cart') }}" class="btn-primary" style="display: inline-block; width: auto; padding: 0.8rem 2rem; text-decoration: none;">Return to Cart</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,71 +1,288 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="admin-container" style="max-width:700px;margin:40px auto;padding:30px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-    <h1>Admin - Manage Products</h1>
-    {% if current_user.is_authenticated and current_user.is_admin %}
-        <h2>Add New Product</h2>
-        <form method="POST" action="{{ url_for('admin_add_product') }}" enctype="multipart/form-data" style="margin-bottom:2em;">
-            <div class="form-group">
-                <label for="name">Product Name</label>
-                <input type="text" id="name" name="name" required>
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem;">
+    <!-- Dashboard Heading and Navigation Toolbar -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 15px;">
+        <h1 style="color: var(--primary-dark); font-size: 2.2rem; font-weight: 800; margin: 0;"><i class="fas fa-chart-line"></i> Store Control Center</h1>
+        
+        <!-- Navigation Buttons -->
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <a href="{{ url_for('admin_orders') }}" class="btn-primary" style="display: inline-flex; align-items:center; gap:8px; width: auto; margin: 0; padding: 0.6rem 1.5rem; text-decoration: none; background: var(--secondary);"><i class="fas fa-shopping-bag"></i> Orders Manager</a>
+            <a href="{{ url_for('admin_categories') }}" class="btn-primary" style="display: inline-flex; align-items:center; gap:8px; width: auto; margin: 0; padding: 0.6rem 1.5rem; text-decoration: none; background: var(--primary-light);"><i class="fas fa-tags"></i> Categories</a>
+            <a href="{{ url_for('admin_coupons') }}" class="btn-primary" style="display: inline-flex; align-items:center; gap:8px; width: auto; margin: 0; padding: 0.6rem 1.5rem; text-decoration: none; background: var(--accent);"><i class="fas fa-ticket-alt"></i> Coupons</a>
+        </div>
+    </div>
+
+    <!-- Sales Analytics & Metrics Row -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        <div class="card" style="padding: 1.5rem; border-left: 5px solid var(--success); display: flex; align-items: center; gap: 20px;">
+            <div style="background: rgba(60, 179, 113, 0.1); width: 60px; height: 60px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: var(--success); font-size: 1.6rem;">
+                <i class="fas fa-coins"></i>
             </div>
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" required></textarea>
+            <div>
+                <h4 style="color: var(--text); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Gross Revenue</h4>
+                <p style="font-size: 1.6rem; font-weight: 800; color: var(--primary-dark); margin: 0;">₹{{ "%.2f"|format(total_sales) }}</p>
             </div>
-            <div class="form-group">
-                <label for="price">Price</label>
-                <input type="number" id="price" name="price" step="0.01" required>
+        </div>
+        <div class="card" style="padding: 1.5rem; border-left: 5px solid var(--primary); display: flex; align-items: center; gap: 20px;">
+            <div style="background: rgba(106, 90, 205, 0.1); width: 60px; height: 60px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: var(--primary); font-size: 1.6rem;">
+                <i class="fas fa-shopping-cart"></i>
             </div>
-            <div class="form-group">
-                <label for="image">Image Filename (place image in static/image/)</label>
-                <input type="text" id="image" name="image" required>
+            <div>
+                <h4 style="color: var(--text); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Orders</h4>
+                <p style="font-size: 1.6rem; font-weight: 800; color: var(--primary-dark); margin: 0;">{{ total_orders }}</p>
             </div>
-            <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" name="category" required>
-                    <option value="">Select Category</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Fashion">Fashion</option>
-                    <option value="Home & Kitchen">Home & Kitchen</option>
-                    <option value="Beauty">Beauty</option>
-                    <option value="Books">Books</option>
-                </select>
+        </div>
+        <div class="card" style="padding: 1.5rem; border-left: 5px solid var(--secondary); display: flex; align-items: center; gap: 20px;">
+            <div style="background: rgba(32, 178, 170, 0.1); width: 60px; height: 60px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: var(--secondary); font-size: 1.6rem;">
+                <i class="fas fa-users"></i>
             </div>
-            <button type="submit" class="form-submit">Add Product</button>
-        </form>
+            <div>
+                <h4 style="color: var(--text); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Users</h4>
+                <p style="font-size: 1.6rem; font-weight: 800; color: var(--primary-dark); margin: 0;">{{ users_count }}</p>
+            </div>
+        </div>
+        <div class="card" style="padding: 1.5rem; border-left: 5px solid var(--accent); display: flex; align-items: center; gap: 20px;">
+            <div style="background: rgba(255, 127, 80, 0.1); width: 60px; height: 60px; border-radius: 12px; display: flex; justify-content: center; align-items: center; color: var(--accent); font-size: 1.6rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div>
+                <h4 style="color: var(--text); font-weight: 600; font-size: 0.85rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px;">Low Stock alerts</h4>
+                <p style="font-size: 1.6rem; font-weight: 800; color: var(--primary-dark); margin: 0;">{{ low_stock_count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Visualization Charts Panel -->
+    <div class="admin-dashboard-grid" style="margin-bottom: 30px;">
+        <!-- Line Chart -->
+        <div class="chart-card">
+            <h3 style="color: var(--primary-dark); font-weight: 700; margin-bottom: 1.5rem; font-size: 1.15rem;"><i class="fas fa-chart-area"></i> Revenue Trend (Last 7 Days)</h3>
+            <div style="position: relative; height: 260px;">
+                <canvas id="salesTrendChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Doughnut Chart -->
+        <div class="chart-card">
+            <h3 style="color: var(--primary-dark); font-weight: 700; margin-bottom: 1.5rem; font-size: 1.15rem;"><i class="fas fa-chart-pie"></i> Inventory by Category</h3>
+            <div style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Inventory Warnings -->
+    {% if low_stock_products %}
+        <div style="background: #fff2f2; border: 1.5px solid #ffa3a3; border-radius: 12px; padding: 1.2rem; margin-bottom: 30px; display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-exclamation-circle" style="font-size: 2.2rem; color: #dc2626;"></i>
+            <div>
+                <h4 style="color: #991b1b; font-weight: 700; margin-bottom: 0.2rem;">Inventory Warning: Low Stock Items Detected</h4>
+                <p style="color: #b91c1c; font-size: 0.95rem; margin: 0;">
+                    The following items have stock count below 10: 
+                    {% for p in low_stock_products %}
+                        <strong>{{ p.name }}</strong> (stock: {{ p.stock_quantity }}){% if not loop.last %}, {% endif %}
+                    {% endfor %}. Please replenish inventory soon.
+                </p>
+            </div>
+        </div>
     {% endif %}
-    <h2>All Products</h2>
-    <table style="width:100%;border-collapse:collapse;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Image</th>
-                <th>Category</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for product in products %}
-            <tr>
-                <td>{{ product.id }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.description }}</td>
-                <td>₹{{ product.price }}</td>
-                <td><img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}" style="height:40px;"></td>
-                <td>{{ product.category }}</td>
-                <td>
-                    <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="display:inline;">
-                        <button type="submit" onclick="return confirm('Delete this product?')">Delete</button>
-                    </form>
-                    <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="btn" style="background:#0275d8;color:#fff;padding:4px 10px;border-radius:4px;margin-left:5px;">Edit</a>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+
+    <!-- Create and Catalog Layout -->
+    <div style="display: grid; grid-template-columns: 1fr 1.8fr; gap: 30px; align-items: start;" class="admin-dashboard-grid">
+        <!-- Left: Create Product form -->
+        <div>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+                <div class="card">
+                    <div class="card-header">Add New Product</div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ url_for('admin_add_product') }}">
+                            <div class="form-group">
+                                <label for="name">Product Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required placeholder="e.g. Mechanical Keyboard">
+                            </div>
+                            <div class="form-group">
+                                <label for="brand">Brand</label>
+                                <input type="text" class="form-control" id="brand" name="brand" required placeholder="e.g. Keychron">
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea class="form-control" id="description" name="description" required placeholder="Describe product details..." style="height: 80px; resize: none;"></textarea>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label for="price">Price (₹)</label>
+                                    <input type="number" class="form-control" id="price" name="price" step="0.01" required placeholder="3499">
+                                </div>
+                                <div class="form-group">
+                                    <label for="stock_quantity">Stock Qty</label>
+                                    <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" min="0" placeholder="50" required>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label for="image">Image Name</label>
+                                    <input type="text" class="form-control" id="image" name="image" required placeholder="keyboard.jpg">
+                                </div>
+                                <div class="form-group">
+                                    <label for="discount">Discount %</label>
+                                    <input type="number" class="form-control" id="discount" name="discount" min="0" max="99" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select class="form-control" id="category" name="category" required style="padding: 0.5rem 1rem;">
+                                    <option value="">Select Category</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Fashion">Fashion</option>
+                                    <option value="Home & Kitchen">Home & Kitchen</option>
+                                    <option value="Beauty">Beauty</option>
+                                    <option value="Books">Books</option>
+                                    <option value="Gadgets">Gadgets</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="specifications">Specs (JSON Format)</label>
+                                <textarea class="form-control" id="specifications" name="specifications" placeholder='e.g. {"Key1": "Val1", "Key2": "Val2"}' style="height: 80px; resize: none; font-family: monospace; font-size: 0.85rem;"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary">Add Product</button>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right: Catalog Table -->
+        <div>
+            <div class="card">
+                <div class="card-header">All Store Products</div>
+                <div class="card-body" style="padding: 1.5rem; overflow-x: auto;">
+                    <table style="width:100%; border-collapse:collapse; min-width: 600px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--light-gray); text-align: left;">
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">ID</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Image</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Name</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Price</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Stock</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Category</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr style="border-bottom: 1px solid var(--light-gray); vertical-align: middle;">
+                                    <td style="padding: 0.8rem 0.5rem;">#{{ product.id }}</td>
+                                    <td style="padding: 0.8rem 0.5rem;">
+                                        <img src="{{ url_for('static', filename='image/' + product.image) if not product.image.startswith('http') else product.image }}" alt="{{ product.name }}" style="height: 45px; width: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--light-gray);">
+                                    </td>
+                                    <td style="padding: 0.8rem 0.5rem; font-weight: 600; font-size: 0.95rem;">{{ product.name }}</td>
+                                    <td style="padding: 0.8rem 0.5rem; font-weight: 600;">₹{{ product.price }}</td>
+                                    <td style="padding: 0.8rem 0.5rem;">
+                                        <span style="font-weight: 600; {% if product.stock_quantity < 10 %} color: #dc2626; {% else %} color: var(--success); {% endif %}">
+                                            {{ product.stock_quantity }}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 0.8rem 0.5rem; font-size: 0.9rem; color: var(--text);">{{ product.category }}</td>
+                                    <td style="padding: 0.8rem 0.5rem; text-align: center;">
+                                        <div style="display: flex; gap: 8px; justify-content: center;">
+                                            <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" style="background: #e0e7ff; color: #4f46e5; border-radius: 4px; padding: 6px 10px; font-size: 0.85rem;"><i class="fas fa-edit"></i></a>
+                                            <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" style="margin: 0; display: inline;">
+                                                <button type="submit" onclick="return confirm('Delete this product?')" style="background: #fee2e2; border: none; color: #dc2626; border-radius: 4px; padding: 6px 10px; cursor: pointer; font-size: 0.85rem;"><i class="fas fa-trash-alt"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Chart rendering Javascript -->
+<script>
+    // Sales Trend Chart (Line)
+    const salesCtx = document.getElementById('salesTrendChart').getContext('2d');
+    const salesTrendChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: {{ days_labels|tojson }},
+            datasets: [{
+                label: 'Gross Sales Revenue (₹)',
+                data: {{ sales_data|tojson }},
+                borderColor: '#6a5acd',
+                backgroundColor: 'rgba(106, 90, 205, 0.15)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#20b2aa',
+                pointBorderColor: '#white',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '₹' + value;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Category Distribution Chart (Doughnut)
+    const catCtx = document.getElementById('categoryChart').getContext('2d');
+    const categoryChart = new Chart(catCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ categories_labels|tojson }},
+            datasets: [{
+                data: {{ categories_data|tojson }},
+                backgroundColor: [
+                    '#6a5acd', // Primary slate blue
+                    '#20b2aa', // Secondary light sea green
+                    '#ff7f50', // Accent coral
+                    '#9370db', // Light lavender
+                    '#48d1cc', // Light sea green
+                    '#3cb371'  // Medium sea green
+                ],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
 {% endblock %}

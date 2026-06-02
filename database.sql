@@ -72,6 +72,9 @@ CREATE TABLE Cart (
     FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE CASCADE
 );
 
+-- Add product_name column to Cart table
+ALTER TABLE Cart ADD COLUMN product_name VARCHAR(100);
+
 -- Insert sample data into Cart
 INSERT INTO Cart (user_id, product_id, quantity) VALUES
 (1, 1, 1),
@@ -115,6 +118,12 @@ CREATE TABLE Payments (
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
     FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
 );
+
+ALTER TABLE Payments
+ADD COLUMN card_number VARCHAR(16),
+ADD COLUMN card_expiry VARCHAR(5),
+ADD COLUMN card_holder VARCHAR(100),
+ADD COLUMN payment_method VARCHAR(50) DEFAULT 'card';
 
 -- Insert sample data into Payments
 INSERT INTO Payments (user_id, order_id, amount, payment_status) VALUES
@@ -237,6 +246,9 @@ ALTER TABLE products ADD COLUMN category VARCHAR(50);
 ALTER TABLE products ADD COLUMN image VARCHAR(100);
 ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT FALSE;
 
+-- Modify image column length
+ALTER TABLE products MODIFY COLUMN image VARCHAR(500);
+
 SHOW TABLES;
 SELECT * FROM users;
 SELECT * FROM cart;
@@ -267,11 +279,30 @@ SELECT * FROM users;
 SELECT * FROM cart;
 
 -- === USER ID COLUMN MIGRATION FOR FLASK/SQLALCHEMY COMPATIBILITY ===
--- 1. Drop foreign keys referencing users.user_id
-ALTER TABLE Orders DROP FOREIGN KEY orders_ibfk_1;
-ALTER TABLE Cart DROP FOREIGN KEY cart_ibfk_1;
-ALTER TABLE Reviews DROP FOREIGN KEY reviews_ibfk_1;
-ALTER TABLE Payments DROP FOREIGN KEY payments_ibfk_1;
+-- 1. Drop all foreign keys in correct order
+ALTER TABLE OrderItems DROP FOREIGN KEY IF EXISTS orderitems_ibfk_1;
+ALTER TABLE OrderItems DROP FOREIGN KEY IF EXISTS orderitems_ibfk_2;
+ALTER TABLE Orders DROP FOREIGN KEY IF EXISTS orders_ibfk_1;
+ALTER TABLE Cart DROP FOREIGN KEY IF EXISTS cart_ibfk_1;
+ALTER TABLE Reviews DROP FOREIGN KEY IF EXISTS reviews_ibfk_1;
+ALTER TABLE Payments DROP FOREIGN KEY IF EXISTS payments_ibfk_1;
+
+-- Drop and recreate order_items table with correct references
+DROP TABLE IF EXISTS OrderItems;
+CREATE TABLE OrderItems (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    price_at_time DECIMAL(10,2) NOT NULL,
+    discount_at_time INT DEFAULT 0,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE SET NULL
+);
+
+-- Add indexes for better performance
+ALTER TABLE OrderItems ADD INDEX idx_order_id (order_id);
+ALTER TABLE OrderItems ADD INDEX idx_product_id (product_id);
 
 -- 2. Remove AUTO_INCREMENT from user_id (if needed)
 ALTER TABLE Users MODIFY user_id INT;
@@ -287,3 +318,23 @@ ALTER TABLE Orders ADD CONSTRAINT orders_ibfk_1 FOREIGN KEY (user_id) REFERENCES
 ALTER TABLE Cart ADD CONSTRAINT cart_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
 ALTER TABLE Reviews ADD CONSTRAINT reviews_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
 ALTER TABLE Payments ADD CONSTRAINT payments_ibfk_1 FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE;
+
+-- Add order_items table for storing ordered products
+CREATE TABLE OrderItems (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT NOT NULL,
+    price_at_time DECIMAL(10,2) NOT NULL,
+    discount_at_time INT DEFAULT 0,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES Products(product_id) ON DELETE SET NULL
+);
+
+select * from users;
+select * from products;
+select * from orders;
+select * from cart;
+select * from reviews;
+select * from payments;
+select * from order_items;

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Manage Orders - Admin - curiocart{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1 style="color: var(--primary-dark); font-size: 2.2rem; font-weight: 700; margin: 0;">Order Management</h1>
+        <a href="{{ url_for('admin') }}" class="btn-primary" style="display: inline-block; width: auto; padding: 0.6rem 1.5rem; text-decoration: none; margin: 0; background: var(--secondary); box-shadow: none;">Back to Admin</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">All Placed Orders</div>
+        <div class="card-body" style="padding: 1.5rem 2rem;">
+            {% if orders %}
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--light-gray); text-align: left;">
+                            <th style="padding: 1rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Order ID</th>
+                            <th style="padding: 1rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Customer</th>
+                            <th style="padding: 1rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Total Amount</th>
+                            <th style="padding: 1rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Current Status</th>
+                            <th style="padding: 1rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Tracking Number</th>
+                            <th style="padding: 1rem 0.5rem; color: var(--primary-dark); font-weight: 600; text-align: center;">Modify Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr style="border-bottom: 1px solid var(--light-gray);">
+                                <td style="padding: 1.2rem 0.5rem; font-weight: 600;">#{{ order.id }}</td>
+                                <td style="padding: 1.2rem 0.5rem;">{{ order.user.username }} ({{ order.user.email }})</td>
+                                <td style="padding: 1.2rem 0.5rem; font-weight: 600; color: var(--primary);">₹{{ "%.2f"|format(order.payment.amount if order.payment else order.total_amount) }}</td>
+                                <td style="padding: 1.2rem 0.5rem;">
+                                    <span style="font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; text-transform: uppercase;
+                                        {% if order.status == 'pending' %} background: #fff3cd; color: #856404;
+                                        {% elif order.status == 'confirmed' %} background: #cfe2ff; color: #084298;
+                                        {% elif order.status == 'shipped' %} background: #e0cffc; color: #6f42c1;
+                                        {% elif order.status == 'delivered' %} background: #d1e7dd; color: #0f5132;
+                                        {% else %} background: #f8d7da; color: #842029; {% endif %}">
+                                        {{ order.status }}
+                                    </span>
+                                </td>
+                                <td style="padding: 1.2rem 0.5rem; font-family: monospace;">{{ order.tracking_number if order.tracking_number else 'Not Assigned' }}</td>
+                                <td style="padding: 1.2rem 0.5rem; text-align: center;">
+                                    <button onclick="toggleUpdateForm('{{ order.id }}')" class="btn-primary" style="margin: 0; padding: 4px 12px; font-size: 0.85rem; background: var(--primary-light); width: auto;">Edit Status</button>
+                                </td>
+                            </tr>
+                            <!-- Hidden Update Drawer Form Row -->
+                            <tr id="update-form-{{ order.id }}" style="display: none; background: rgba(106, 90, 205, 0.03);">
+                                <td colspan="6" style="padding: 1.5rem;">
+                                    <form method="POST" action="{{ url_for('admin_orders_update', order_id=order.id) }}" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;">
+                                        <div style="flex: 1; min-width: 150px;">
+                                            <label style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--primary-dark); margin-bottom: 5px;">Set Status</label>
+                                            <select name="status" class="form-control" style="padding: 0.5rem 1rem;">
+                                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                                                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                                                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                            </select>
+                                        </div>
+                                        <div style="flex: 1.5; min-width: 200px;">
+                                            <label style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--primary-dark); margin-bottom: 5px;">Assign Tracking Code</label>
+                                            <input type="text" name="tracking_number" class="form-control" style="padding: 0.5rem 1rem;" placeholder="e.g. TRK789123" value="{{ order.tracking_number if order.tracking_number else '' }}">
+                                        </div>
+                                        <div style="flex: 2; min-width: 250px;">
+                                            <label style="display: block; font-weight: 600; font-size: 0.85rem; color: var(--primary-dark); margin-bottom: 5px;">Internal Admin Notes</label>
+                                            <input type="text" name="notes" class="form-control" style="padding: 0.5rem 1rem;" placeholder="e.g. Leave with security receptionist" value="{{ order.notes if order.notes else '' }}">
+                                        </div>
+                                        <div style="display: flex; gap: 10px;">
+                                            <button type="submit" class="btn-primary" style="margin: 0; padding: 0.6rem 1.5rem; width: auto; background: var(--success); font-size: 0.9rem;">Save Details</button>
+                                            <button type="button" onclick="toggleUpdateForm('{{ order.id }}')" class="btn-primary" style="margin: 0; padding: 0.6rem 1.5rem; width: auto; background: #6c757d; font-size: 0.9rem;">Cancel</button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p style="color: var(--text); text-align: center; padding: 2rem 0;">No orders have been submitted yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleUpdateForm(orderId) {
+    const row = document.getElementById('update-form-' + orderId);
+    if (row.style.display === 'none') {
+        row.style.display = 'table-row';
+    } else {
+        row.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

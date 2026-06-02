@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}My Wishlist - curiocart{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 3rem auto; padding: 0 1.5rem;">
+    <h1 style="color: var(--primary-dark); font-size: 2.2rem; text-align: center; margin-bottom: 2rem;">My Wishlist</h1>
+
+    {% if items %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;">
+            {% for item in items %}
+                <div class="product-card" id="wishlist-item-{{ item.product.id }}">
+                    <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + item.product.image) }}'); height: 220px;"></div>
+                    <div class="product-info" style="padding: 1.5rem;">
+                        <h3 class="product-title" style="font-size: 1.2rem; color: var(--primary-dark); font-weight: 600;">{{ item.product.name }}</h3>
+                        <div class="product-price" style="color: var(--primary); font-weight: 700; font-size: 1.4rem; margin: 0.5rem 0 1rem;">₹{{ item.product.price }}</div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <form method="POST" action="{{ url_for('add_to_cart', product_id=item.product.id) }}" style="flex: 1;">
+                                <input type="hidden" name="quantity" value="1">
+                                <button class="add-to-cart" type="submit" style="width: 100%; padding: 0.8rem; background: var(--secondary); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer;">Add to Cart</button>
+                            </form>
+                            <button onclick="removeFromWishlist('{{ item.product.id }}')" style="padding: 0.8rem; background: #fee2e2; border: none; border-radius: 8px; color: #dc2626; font-weight: 600; cursor: pointer;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card" style="text-align: center; padding: 3rem;">
+            <i class="fas fa-heart" style="font-size: 3rem; color: var(--light-gray); margin-bottom: 1rem;"></i>
+            <p style="color: var(--dark); font-size: 1.2rem; margin-bottom: 1.5rem;">Your wishlist is empty.</p>
+            <a href="{{ url_for('products') }}" class="btn-primary" style="display: inline-block; width: auto; padding: 0.8rem 2rem; text-decoration: none;">Discover Products</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function removeFromWishlist(productId) {
+    fetch('/remove_from_wishlist/' + productId, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const card = document.getElementById('wishlist-item-' + productId);
+            if (card) card.remove();
+            // Reload if empty
+            if (document.querySelectorAll('.product-card').length === 0) {
+                location.reload();
+            }
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => console.error(err));
+}
+</script>
+{% endblock %}

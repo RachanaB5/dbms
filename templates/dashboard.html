@@ -1,272 +1,150 @@
-dashboard.html
 {% extends "base.html" %}
+
+{% block title %}My Dashboard - curiocart{% endblock %}
+
 {% block content %}
-<div class="dashboard">
-    <h1>Welcome, {{ current_user.name }}</h1>
+<div class="row justify-content-center" style="max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; display: block; min-height: auto;">
     
-    <div class="dashboard-sections">
-        <!-- Featured Products Section -->
-        <section class="featured-products">
-            <h2>Featured Products</h2>
-            <div class="product-grid">
-                {% for product in featured_products %}
-                <div class="product-card">
-                    <img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}">
-                    <h3>{{ product.name }}</h3>
-                    <p class="price">₹{{ "%.2f"|format(product.get_discounted_price()) }}</p>
-                    {% if product.discount > 0 %}
-                    <span class="discount">{{ product.discount }}% OFF</span>
-                    {% endif %}
-                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn">View Details</a>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-
-        <!-- Electronics Section -->
-        {% if electronics %}
-        <section class="electronics">
-            <h2>Electronics</h2>
-            <div class="product-grid">
-                {% for product in electronics %}
-                <div class="product-card">
-                    <img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}">
-                    <h3>{{ product.name }}</h3>
-                    <p class="price">₹{{ "%.2f"|format(product.get_discounted_price()) }}</p>
-                    {% if product.discount > 0 %}
-                    <span class="discount">{{ product.discount }}% OFF</span>
-                    {% endif %}
-                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn">View Details</a>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- Gadgets Section -->
-        {% if gadgets %}
-        <section class="gadgets">
-            <h2>Gadgets</h2>
-            <div class="product-grid">
-                {% for product in gadgets %}
-                <div class="product-card">
-                    <img src="{{ url_for('static', filename='image/' + product.image) }}" alt="{{ product.name }}">
-                    <h3>{{ product.name }}</h3>
-                    <p class="price">₹{{ "%.2f"|format(product.get_discounted_price()) }}</p>
-                    {% if product.discount > 0 %}
-                    <span class="discount">{{ product.discount }}% OFF</span>
-                    {% endif %}
-                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn">View Details</a>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        <!-- Recent Orders Section -->
-        <section class="recent-orders">
-            <h2>Recent Orders</h2>
-            {% if orders %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for order in orders %}
-                    <tr>
-                        <td>#{{ order.order_id }}</td>
-                        <td>{{ order.order_date.strftime('%b %d, %Y') }}</td>
-                        <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
-                        <td class="status {{ order.status|lower }}">{{ order.status }}</td>
-                        <td><a href="{{ url_for('order_confirmation', order_id=order.id) }}">View</a></td>
-                    </tr>
+    <div style="margin-bottom: 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+        <div>
+            <h1 style="color: var(--primary-dark); font-size: 2.2rem; font-weight: 800; margin: 0;">Welcome back, {{ current_user.username }}!</h1>
+            <p style="color: var(--text); font-weight: 500; margin: 5px 0 0 0;">Manage your purchase history, details, and wishlist</p>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-primary" style="width:auto; margin: 0; padding: 0.6rem 1.5rem; text-decoration:none; background: var(--accent); display: inline-flex; align-items:center; gap:8px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px;" class="admin-dashboard-grid">
+        
+        <!-- Left: Collections & Activity -->
+        <div>
+            <!-- Featured Products Section -->
+            <section style="margin-bottom: 3.5rem;">
+                <h2 style="color: var(--primary-dark); font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; position:relative; padding-bottom: 5px; display:inline-block;">Featured Products</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+                    {% for product in featured_products[:4] %}
+                    <div class="product-card" style="box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                        <div class="product-image" style="background-image: url('{{ url_for('static', filename='image/' + product.image) if not product.image.startswith('http') else product.image }}'); height: 180px;"></div>
+                        <div class="product-info" style="padding: 1.2rem; display:flex; flex-direction:column; justify-content:space-between; height:calc(100% - 180px);">
+                            <div>
+                                <h3 class="product-title" style="font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem;">{{ product.name }}</h3>
+                                <div class="product-rating" style="font-size: 0.8rem; margin-bottom: 0.5rem;">
+                                    {% set rating_val = product.rating if product.rating else 0 %}
+                                    {{ '★' * rating_val|int }}{{ '☆' * (5 - rating_val|int) }}
+                                </div>
+                            </div>
+                            <div>
+                                <div style="margin-bottom: 0.8rem;">
+                                    {% if product.discount > 0 %}
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <span style="font-weight:700; color:var(--primary); font-size:1.1rem;">₹{{ "%.2f"|format(product.get_discounted_price()) }}</span>
+                                        <span style="text-decoration:line-through; font-size:0.8rem; color:#999;">₹{{ product.price }}</span>
+                                    </div>
+                                    {% else %}
+                                    <span style="font-weight:700; color:var(--primary); font-size:1.1rem;">₹{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}" class="carousel-btn" style="display:block; text-align:center; padding: 6px 12px; font-size:0.8rem; border-radius:6px;">View Details</a>
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p>No orders yet.</p>
-            {% endif %}
-        </section>
+                </div>
+            </section>
 
-        <!-- Account Information Section -->
-        <section class="account-info">
-            <h2>Account Information</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <span class="label">Username:</span>
-                    <span class="value">{{ current_user.name }}</span>
+            <!-- Recent Orders Section -->
+            <section style="margin-bottom: 3rem;">
+                <h2 style="color: var(--primary-dark); font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">My Recent Orders</h2>
+                {% if orders %}
+                <div class="card" style="box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow-x: auto; padding: 1rem;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--light-gray); text-align: left;">
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Order ID</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Date</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Amount</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600;">Status</th>
+                                <th style="padding: 0.8rem 0.5rem; color: var(--primary-dark); font-weight: 600; text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr style="border-bottom: 1px solid var(--light-gray); vertical-align: middle;">
+                                <td style="padding: 0.8rem 0.5rem; font-weight: 600;">#{{ order.order_id }}</td>
+                                <td style="padding: 0.8rem 0.5rem; font-size: 0.9rem; color: var(--text);">{{ order.order_date.strftime('%b %d, %Y') }}</td>
+                                <td style="padding: 0.8rem 0.5rem; font-weight: 600; color: var(--primary-dark);">₹{{ "%.2f"|format(order.total_amount) }}</td>
+                                <td style="padding: 0.8rem 0.5rem;">
+                                    {% if order.status.lower() == 'confirmed' or order.status.lower() == 'delivered' %}
+                                    <span style="background: rgba(60, 179, 113, 0.1); color: var(--success); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;"><i class="fas fa-check-circle"></i> {{ order.status|title }}</span>
+                                    {% elif order.status.lower() == 'pending' %}
+                                    <span style="background: rgba(255, 127, 80, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;"><i class="fas fa-spinner"></i> {{ order.status|title }}</span>
+                                    {% else %}
+                                    <span style="background: #f1f1f1; color: #888; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">{{ order.status|title }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 0.8rem 0.5rem; text-align: center;">
+                                    <a href="{{ url_for('order_confirmation', order_id=order.id) }}" style="background: rgba(106, 90, 205, 0.1); color: var(--primary-dark); font-size: 0.8rem; font-weight: 600; text-decoration: none; padding: 5px 12px; border-radius: 6px; display: inline-block;">Receipt</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                <div class="info-item">
-                    <span class="label">Email:</span>
-                    <span class="value">{{ current_user.email }}</span>
+                {% else %}
+                <div style="text-align: center; padding: 3rem; background: white; border-radius: 15px; border: 1px solid var(--light-gray);">
+                    <i class="fas fa-box-open" style="font-size: 2.5rem; color: var(--primary-light); margin-bottom: 1rem;"></i>
+                    <p style="font-weight: 600; color: var(--primary-dark); margin:0;">No orders placed yet.</p>
+                    <a href="{{ url_for('products') }}" style="color: var(--secondary); font-weight: 600; text-decoration: none; font-size: 0.9rem; margin-top: 5px; display:inline-block;">Browse Catalog</a>
                 </div>
+                {% endif %}
+            </section>
+        </div>
+        
+        <!-- Right: Profile Details Summary -->
+        <div>
+            <div class="card" style="padding: 2rem; position: sticky; top: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; display: flex; justify-content: center; align-items: center; font-size: 2.2rem; font-weight: 800; margin: 0 auto 1rem; box-shadow: 0 4px 15px rgba(106, 90, 205, 0.3);">
+                        {{ current_user.username[0]|upper }}
+                    </div>
+                    <h3 style="color: var(--primary-dark); font-weight: 700; margin: 0;">{{ current_user.username }}</h3>
+                    <span style="font-size: 0.8rem; color: var(--text); text-transform: uppercase; font-weight: 700; tracking-widest: 1px;">Customer Member</span>
+                </div>
+                
+                <div style="border-top: 1px solid var(--light-gray); padding-top: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
+                        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text); font-weight: 700; display: block; margin-bottom: 2px;">Email Address</span>
+                        <span style="font-weight: 600; color: var(--primary-dark); font-size: 0.95rem;">{{ current_user.email }}</span>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text); font-weight: 700; display: block; margin-bottom: 2px;">Registered Address</span>
+                        {% if current_user.address %}
+                        <span style="font-weight: 600; color: var(--primary-dark); font-size: 0.95rem; line-height: 1.4; display:block;">
+                            {{ current_user.address }},<br>
+                            {{ current_user.city }}, {{ current_user.state }} - {{ current_user.zip_code }}
+                        </span>
+                        {% else %}
+                        <span style="font-size: 0.9rem; color: #888; font-style: italic;">No shipping addresses saved yet.</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <a href="{{ url_for('profile') }}" class="btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; padding: 0.8rem;"><i class="fas fa-user-cog"></i> Update Account Profile</a>
             </div>
-            <div class="actions">
-                <a href="{{ url_for('logout') }}" class="btn outline">Logout</a>
-            </div>
-        </section>
+        </div>
+        
     </div>
 </div>
 
-<style>
-.dashboard {
-    padding: 2rem;
-}
-
-.dashboard h1 {
-    margin-bottom: 2rem;
-    color: #333;
-}
-
-.dashboard-sections {
-    display: grid;
-    gap: 2rem;
-}
-
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.product-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.2s;
-    text-align: center;
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-}
-
-.product-card img {
-    width: 100%;
-    height: auto;
-    border-bottom: 1px solid #ddd;
-}
-
-.product-card h3 {
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
-}
-
-.product-card .price {
-    font-weight: bold;
-    color: #333;
-}
-
-.product-card .discount {
-    color: #ff4444;
-    font-weight: bold;
-}
-
-.product-card .btn {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: background 0.2s;
-}
-
-.product-card .btn:hover {
-    background: #45a049;
-}
-
-/* Table styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-}
-
-th, td {
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #f5f5f5;
-    font-weight: 600;
-}
-
-.status {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    text-transform: capitalize;
-}
-
-.status.pending {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.status.completed {
-    background: #d4edda;
-    color: #155724;
-}
-
-/* Account info styles */
-.info-grid {
-    display: grid;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.info-item {
-    display: flex;
-    gap: 1rem;
-}
-
-.info-item .label {
-    font-weight: 600;
-    min-width: 100px;
-}
-
-.actions {
-    margin-top: 1rem;
-}
-
-.btn {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.2s;
-}
-
-.btn.outline {
-    border: 1px solid #dc3545;
-    color: #dc3545;
-}
-
-.btn.outline:hover {
-    background: #dc3545;
-    color: white;
-}
-
-@media (max-width: 768px) {
-    .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-    
-    .dashboard {
-        padding: 1rem;
-    }
-}
-</style>
+<!-- Floating Action Button updates -->
+<div class="fab-container">
+    <a href="{{ url_for('cart') }}" class="fab">
+        <i class="fas fa-shopping-bag"></i>
+        {% if current_user.is_authenticated and current_user.cart_items %}
+        <div class="fab-badge">{{ current_user.cart_items|length }}</div>
+        {% endif %}
+    </a>
+    <a href="{{ url_for('profile') }}" class="fab fab-primary">
+        <i class="fas fa-cog"></i>
+    </a>
+</div>
 {% endblock %}
