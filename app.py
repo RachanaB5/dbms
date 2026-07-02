@@ -128,6 +128,41 @@ def internal_error(error):
     app.logger.error(f'Server Error: {error}')
     return render_template('errors/500.html'), 500
 
+@app.route('/debug-db')
+def debug_db():
+    import traceback
+    try:
+        from sqlalchemy import text
+        engine = db.engine
+        connection = engine.connect()
+        result = connection.execute(text('SELECT 1')).fetchone()
+        connection.close()
+        
+        # Check tables
+        from sqlalchemy import inspect
+        inspector = inspect(engine)
+        tables = inspector.get_table_names()
+        
+        # Check counts
+        user_count = User.query.count()
+        product_count = Product.query.count()
+        
+        return jsonify({
+            'status': 'success',
+            'connection_test': str(result),
+            'tables': tables,
+            'user_count': user_count,
+            'product_count': product_count,
+            'database_uri_configured': db_uri.split('@')[-1] if '@' in db_uri else 'Not containing @'
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error_message': str(e),
+            'traceback': traceback.format_exc(),
+            'database_uri_configured': db_uri.split('@')[-1] if '@' in db_uri else 'Not containing @'
+        }), 500
+
 # Request handlers
 @app.before_request
 def before_request():
