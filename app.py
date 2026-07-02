@@ -18,17 +18,19 @@ app = Flask(__name__)
 
 # Security configurations
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Rachana%4005@127.0.0.1:3306/EcommerceDB'
+db_uri = os.environ.get('SQLALCHEMY_DATABASE_URI', 'mysql+mysqlconnector://root:Rachana%4005@127.0.0.1:3306/EcommerceDB')
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+
+engine_options = {
     'pool_recycle': 280,
     'pool_timeout': 20,
-    'connect_args': {
-        'host': '127.0.0.1',
-        'port': 3306,
+}
+if '127.0.0.1' in db_uri or 'localhost' in db_uri:
+    engine_options['connect_args'] = {
         'auth_plugin': 'mysql_native_password'
     }
-}
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = engine_options
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 app.config['SESSION_COOKIE_SECURE'] = True
