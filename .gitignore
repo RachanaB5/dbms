@@ -1,0 +1,25 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+ENV/
+env/
+
+# Environment configurations
+.env
+
+# Flask/SQLAlchemy local instances and logs
+instance/
+logs/
+*.log
+
+# Visual HTML email logs
+static/emails/
+
+# OS specific files
+.DS_Store
+Thumbs.db
