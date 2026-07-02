@@ -18,7 +18,7 @@ app = Flask(__name__)
 
 # Security configurations
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
-db_uri = os.environ.get('SQLALCHEMY_DATABASE_URI', 'mysql+mysqlconnector://root:Rachana%4005@127.0.0.1:3306/EcommerceDB')
+db_uri = os.environ.get('SQLALCHEMY_DATABASE_URI') or os.environ.get('DATABASE_URL') or 'mysql+mysqlconnector://root:Rachana%4005@127.0.0.1:3306/EcommerceDB'
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
