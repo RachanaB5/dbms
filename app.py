@@ -74,6 +74,49 @@ login_manager.login_view = 'show_login'
 login_manager.login_message = 'Please log in to access this page.'
 login_manager.session_protection = 'strong'
 
+# Auto-create tables and default seed data if missing (convenient for cloud deployment)
+with app.app_context():
+    try:
+        db.create_all()
+        # Seed categories
+        if Category.query.count() == 0:
+            categories = [
+                Category(name='Electronics', description='Gadgets, devices, and accessories'),
+                Category(name='Gadgets', description='Useful tools and novelties'),
+                Category(name='Home & Kitchen', description='Decorations and cooking utilities'),
+                Category(name='Beauty', description='Skincare and cosmetics'),
+                Category(name='Fashion', description='Trendy garments and bags'),
+                Category(name='Books', description='Educational and leisure reading')
+            ]
+            for cat in categories:
+                db.session.add(cat)
+            db.session.commit()
+
+        # Seed coupons
+        if Coupon.query.count() == 0:
+            coupons = [
+                Coupon(code='SAVE10', discount_percent=10, active=True),
+                Coupon(code='WELCOME20', discount_percent=20, active=True),
+                Coupon(code='MEGA30', discount_percent=30, active=True)
+            ]
+            for c in coupons:
+                db.session.add(c)
+            db.session.commit()
+
+        # Seed admin
+        if not User.query.filter_by(email='admin@example.com').first():
+            admin = User(
+                username='Admin',
+                email='admin@example.com',
+                password_hash=generate_password_hash('admin123'),
+                _is_admin=True,
+                phone=''
+            )
+            db.session.add(admin)
+            db.session.commit()
+    except Exception as e:
+        app.logger.warning(f"Database auto-setup skipped or failed: {e}")
+
 # Error handlers
 @app.errorhandler(404)
 def not_found_error(error):
