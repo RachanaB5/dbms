@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, abort
+import os
 from dotenv import load_dotenv
-load_dotenv(override=True)
+if not os.environ.get('RENDER'):
+    load_dotenv(override=True)
 from extensions import db, login_manager
 from models import User, Product, Review, Order, OrderItem, Payment, Cart as CartModel, Wishlist, Address, Category, Coupon, ProductImage
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user

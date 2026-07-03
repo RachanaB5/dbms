@@ -3,7 +3,8 @@ import smtplib
 import threading
 import logging
 from dotenv import load_dotenv
-load_dotenv(override=True)
+if not os.environ.get('RENDER'):
+    load_dotenv(override=True)
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
